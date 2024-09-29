@@ -49,7 +49,7 @@ jobs:
         run: hugo version
 
       - name: Install Dart Sass
-        run: sudo snap install dart-sass
+        run: npm install -g sass
       - name: Verify Dart Sass installation
         run: sass --version
 
