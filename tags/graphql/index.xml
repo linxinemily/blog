@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>GraphQL on Emmie' s Workspace</title><link>/tags/graphql/</link><description>Recent content in GraphQL on Emmie' s Workspace</description><generator>Hugo</generator><language>en-us</language><lastBuildDate>Sun, 04 Jun 2023 17:44:11 +0800</lastBuildDate><atom:link href="/tags/graphql/index.xml" rel="self" type="application/rss+xml"/><item><title>GraphQL Dataloader 在 Golang 當中的打開方法與原理解析（下）</title><link>/posts/golang-graphql-dataloader-2/</link><pubDate>Sun, 04 Jun 2023 17:44:11 +0800</pubDate><guid>/posts/golang-graphql-dataloader-2/</guid><description>&lt;p>接續上一篇文章：&lt;a href="/posts/golang-graphql-dataloader-1/">GraphQL Dataloader 在 Golang 當中的打開方法與原理解析（上）&lt;/a>。&lt;/p>
+&lt;p>在進入原始碼之前，先複習一下 use case。首先從 resolver 開始看起：&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;span class="lnt">5
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-go" data-lang="go">&lt;span class="line">&lt;span class="cl">&lt;span class="c1">// IconURL is the resolver for the icon_url field.
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span>&lt;span class="kd">func&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="nx">r&lt;/span> &lt;span class="o">*&lt;/span>&lt;span class="nx">roomFeatureResolver&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="nf">IconURL&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">ctx&lt;/span> &lt;span class="nx">context&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">Context&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">obj&lt;/span> &lt;span class="o">*&lt;/span>&lt;span class="nx">model&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">RoomFeature&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="o">*&lt;/span>&lt;span class="kt">string&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="kt">error&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">f&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">_&lt;/span> &lt;span class="o">:=&lt;/span> &lt;span class="nx">storage&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">GetFeature&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">ctx&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="o">*&lt;/span>&lt;span class="nx">obj&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">ID&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">return&lt;/span> &lt;span class="nx">f&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">IconUrl&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="kc">nil&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>當中呼叫了我們的自定義方法 &lt;code>storage.GetFeature&lt;/code>：&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;span class="lnt">5
+&lt;/span>&lt;span class="lnt">6
+&lt;/span>&lt;span class="lnt">7
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-go" data-lang="go">&lt;span class="line">&lt;span class="cl">&lt;span class="kd">func&lt;/span> &lt;span class="nf">GetFeature&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">ctx&lt;/span> &lt;span class="nx">context&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">Context&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">featureID&lt;/span> &lt;span class="kt">int&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="o">*&lt;/span>&lt;span class="nx">model&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">RoomFeatureWithData&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="kt">error&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="c1">//...
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="nx">thunk&lt;/span> &lt;span class="o">:=&lt;/span> &lt;span class="nx">loaders&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">FeatureLoader&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">Load&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">ctx&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">DataLoader&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">StringKey&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">fmt&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">Sprintf&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;%d&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">featureID&lt;/span>&lt;span class="p">)))&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">result&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">err&lt;/span> &lt;span class="o">:=&lt;/span> &lt;span class="nf">thunk&lt;/span>&lt;span class="p">()&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="c1">//...
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="k">return&lt;/span> &lt;span class="nx">result&lt;/span>&lt;span class="p">.(&lt;/span>&lt;span class="o">*&lt;/span>&lt;span class="nx">model&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">RoomFeatureWithData&lt;/span>&lt;span class="p">),&lt;/span> &lt;span class="kc">nil&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>重點就是這裡使用到的 &lt;code>loaders.FeatureLoader.Load&lt;/code> 方法。&lt;/p>
+&lt;blockquote>
+&lt;p>&lt;code>FeatureLoader&lt;/code> 雖為自定義屬性，但是透過 DataLoader 套件提供的 &lt;code>*DataLoader.Loader&lt;/code> 建構子 &lt;code>DataLoader.NewBatchedLoader&lt;/code> 所創建出，所以本身就具備了 Load 方法。&lt;/p>
+&lt;/blockquote>
+&lt;p>在深入探究 &lt;code>Load&lt;/code> 方法之前，先釐清一下這個 &lt;code>GetFeature&lt;/code> 方法什麼時候會被執行到。回到一開始的案例，
+當 Client 進行如下 Query 時：&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-graphql" data-lang="graphql">&lt;span class="line">&lt;span class="cl">&lt;span class="kd">query&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nc">content&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="py">hotel_id&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="nc">1&lt;/span>&lt;span class="p">)&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="py">rooms&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="py">features&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="py">id&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="py">icon_url&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="p">}&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="p">}&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="p">}&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="p">}&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>如果有 n 個 rooms，每個 room 有 m 個 features，總共會執行 n * m 次 &lt;code>IconURL&lt;/code> 來取得每個 feature 的 icon URL，也就是執行 m * n 次 &lt;code>GetFeature&lt;/code>。而在每個 &lt;code>GetFeature&lt;/code> 方法當中又呼叫了 &lt;code>loaders.FeatureLoader.Load&lt;/code> 方法，透過回傳的函數取得 feature 資料。&lt;/p></description></item><item><title>GraphQL Dataloader 在 Golang 當中的打開方法與原理解析（上）</title><link>/posts/golang-graphql-dataloader-1/</link><pubDate>Sun, 04 Jun 2023 17:43:11 +0800</pubDate><guid>/posts/golang-graphql-dataloader-1/</guid><description>&lt;h2 id="the-problem">
+ &lt;a href="#the-problem" class="anchor">
+ &lt;svg class="icon" aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16">
+ &lt;path fill-rule="evenodd"
+ d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z">
+ &lt;/path>
+ &lt;/svg>
+ &lt;/a>
+ The Problem
+&lt;/h2>
+&lt;p>使用 GraphQL 時，遇到以下的查詢：&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;span class="lnt">13
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-graphql" data-lang="graphql">&lt;span class="line">&lt;span class="cl">&lt;span class="kd">query&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nc">content&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="py">hotel_id&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="nc">1&lt;/span>&lt;span class="p">)&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="py">rooms&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="py">features&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="py">id&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="py">icon_url&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="py">text&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="py">zh_tw&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="p">}&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="p">}&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="p">}&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="p">}&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="p">}&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>在資料的關聯上，content 底下有許多 rooms，每個 room 底下都有多個 features。但在資料表結構上，room 有一個 &lt;code>content_id&lt;/code> 欄位，以及一個 &lt;code>features&lt;/code> 欄位，裏面儲存了所有 features 的 id。&lt;/p></description></item></channel></rss>

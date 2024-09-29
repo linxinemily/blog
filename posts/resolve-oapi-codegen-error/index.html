@@ -1,0 +1,210 @@
+<!doctype html><html lang=en-us><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=theme-color content="dark"><title>解決使用 oapi-codegen 時報錯 unexpected reference depth | Emmie' s Workspace</title>
+<meta property="og:site_name" content="Emmie' s Workspace"><meta property="og:title" content="解決使用 oapi-codegen 時報錯 unexpected reference depth | Emmie' s Workspace"><meta itemprop=name content="解決使用 oapi-codegen 時報錯 unexpected reference depth | Emmie' s Workspace"><meta name=twitter:title content="解決使用 oapi-codegen 時報錯 unexpected reference depth | Emmie' s Workspace"><meta name=application-name content="解決使用 oapi-codegen 時報錯 unexpected reference depth | Emmie' s Workspace"><meta name=twitter:card content="summary"><meta name=description content="放一些筆記的地方"><meta name=twitter:description content="放一些筆記的地方"><meta itemprop=description content="放一些筆記的地方"><meta property="og:description" content="放一些筆記的地方"><link rel="shortcut icon" type=image/x-icon href=/favicon.ico><link rel=stylesheet href=/sass/main.min.9606ece50dffeea1ff779aaa181ca0dd8f1e40cd70c1cdd128c568088ecf6f83.css></head><script>(function(){const e="ThemeColorScheme";localStorage.getItem(e)||localStorage.setItem(e,"auto")})()</script><script>(function(){const t="ThemeColorScheme",e=localStorage.getItem(t),n=window.matchMedia("(prefers-color-scheme: dark)").matches===!0;e=="dark"||e==="auto"&&n?document.documentElement.dataset.userColorScheme="dark":document.documentElement.dataset.userColorScheme="light"})()</script><body class=dark><nav class=navbar><div class=container><div class=flex><div><a class=brand href=/>Emmie' s Workspace</a></div><div class=flex><a href=/about/>About</a>
+<a href=/articles/>Articles</a>
+<button id=dark-mode-button><svg class="light" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false" width="1em" height="1em" style="-ms-transform:rotate(360deg);-webkit-transform:rotate(360deg);transform:rotate(360deg)" viewBox="0 0 36 36"><path fill="#ffd983" d="M30.312.776C32 19 20 32 .776 30.312c8.199 7.717 21.091 7.588 29.107-.429C37.9 21.867 38.03 8.975 30.312.776z"/><path d="M30.705 15.915a1.163 1.163.0 101.643 1.641 1.163 1.163.0 00-1.643-1.641zm-16.022 14.38a1.74 1.74.0 000 2.465 1.742 1.742.0 100-2.465zm13.968-2.147a2.904 2.904.0 01-4.108.0 2.902 2.902.0 010-4.107 2.902 2.902.0 014.108.0 2.902 2.902.0 010 4.107z" fill="#ffcc4d"/><rect x="0" y="0" width="36" height="36" fill="rgba(0, 0, 0, 0)"/></svg><svg class="dark" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false" width="1em" height="1em" style="-ms-transform:rotate(360deg);-webkit-transform:rotate(360deg);transform:rotate(360deg)" viewBox="0 0 36 36"><path fill="#ffd983" d="M16 2s0-2 2-2 2 2 2 2v2s0 2-2 2-2-2-2-2V2zm18 14s2 0 2 2-2 2-2 2h-2s-2 0-2-2 2-2 2-2h2zM4 16s2 0 2 2-2 2-2 2H2s-2 0-2-2 2-2 2-2h2zm5.121-8.707s1.414 1.414.0 2.828-2.828.0-2.828.0L4.878 8.708s-1.414-1.414.0-2.829c1.415-1.414 2.829.0 2.829.0l1.414 1.414zm21 21s1.414 1.414.0 2.828-2.828.0-2.828.0l-1.414-1.414s-1.414-1.414.0-2.828 2.828.0 2.828.0l1.414 1.414zm-.413-18.172s-1.414 1.414-2.828.0.0-2.828.0-2.828l1.414-1.414s1.414-1.414 2.828.0.0 2.828.0 2.828l-1.414 1.414zm-21 21s-1.414 1.414-2.828.0.0-2.828.0-2.828l1.414-1.414s1.414-1.414 2.828.0.0 2.828.0 2.828l-1.414 1.414zM16 32s0-2 2-2 2 2 2 2v2s0 2-2 2-2-2-2-2v-2z"/><circle fill="#ffd983" cx="18" cy="18" r="10"/><rect x="0" y="0" width="36" height="36" fill="rgba(0, 0, 0, 0)"/></svg></button></div></div></div></nav><main><div class=container><article><header class=article-header><div class=thumb><div><h1>解決使用 oapi-codegen 時報錯 unexpected reference depth</h1><div class=post-meta><div>By Emmie | <time>March 17, 2023</time>
+| 3 minutes</div><div class=tags><a href=/tags/golang/>Golang</a>
+<a href=/tags/openapi/>OpenAPI</a></div></div></div></div></header></article><div class=article-post><p>最近在研究 <a href=https://github.com/deepmap/oapi-codegen>oapi-codegen</a> 這套基於 OpenAPI 3.0 自動生成 Go boilerplate 程式的工具，能幫助開發者省下很多撰寫實現 HTTP Server 端口、marshalling 和 unmarshalling 的重複程式碼的時間。當進行系統重構或使用像是文件先行(Documentation-Driven Development)的開發方法時也很適用。
+在此紀錄一下餵入 OpenAPI 檔案時遇到的問題。</p><h2 id=問題概述><a href=#%e5%95%8f%e9%a1%8c%e6%a6%82%e8%bf%b0 class=anchor><svg class="icon" aria-hidden="true" focusable="false" height="16" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5.0-3-1.69-3-3.5S2.55 3 4 3h4c1.45.0 3 1.69 3 3.5.0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98.0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98.0-2-1.22-2-2.5.0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45.0 3-1.69 3-3.5S14.5 6 13 6z"/></svg>
+</a>問題概述</h2><p>使用以下 OpenAPI yaml 檔（擷取片段）</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span><span class=lnt>39
+</span><span class=lnt>40
+</span><span class=lnt>41
+</span><span class=lnt>42
+</span><span class=lnt>43
+</span><span class=lnt>44
+</span><span class=lnt>45
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-yaml data-lang=yaml><span class=line><span class=cl><span class=nt>schemas</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>Response</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>status</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>description</span><span class=p>:</span><span class=w> </span><span class=l>狀態</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>type</span><span class=p>:</span><span class=w> </span><span class=l>integer</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>example</span><span class=p>:</span><span class=w> </span><span class=m>200</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>message</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>description</span><span class=p>:</span><span class=w> </span><span class=l>訊息</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>type</span><span class=p>:</span><span class=w> </span><span class=l>string</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>example</span><span class=p>:</span><span class=w> </span><span class=l>success</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>detail</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>description</span><span class=p>:</span><span class=w> </span><span class=l>詳細訊息</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>type</span><span class=p>:</span><span class=w> </span><span class=l>object</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>example</span><span class=p>:</span><span class=w> </span>{}<span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=c>#...more</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>paths</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>/iot/stations</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>get</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>parameters</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span>- <span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>uniqid</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>          </span><span class=nt>in</span><span class=p>:</span><span class=w> </span><span class=l>query</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>          </span><span class=nt>description</span><span class=p>:</span><span class=w> </span><span class=l>Uniqid</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>          </span><span class=nt>required</span><span class=p>:</span><span class=w> </span><span class=kc>false</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>          </span><span class=nt>schema</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=nt>type</span><span class=p>:</span><span class=w> </span><span class=l>string</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>responses</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>&#39;200&#39;</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>          </span><span class=nt>description</span><span class=p>:</span><span class=w> </span><span class=l>OK</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>          </span><span class=nt>content</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=nt>application/json</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>              </span><span class=nt>schema</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=nt>type</span><span class=p>:</span><span class=w> </span><span class=l>object</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=nt>properties</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                  </span><span class=nt>data</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                    </span><span class=nt>type</span><span class=p>:</span><span class=w> </span><span class=l>object</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                    </span><span class=nt>properties</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                      </span><span class=nt>items</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                        </span><span class=nt>type</span><span class=p>:</span><span class=w> </span><span class=l>array</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                     </span><span class=c>#...more</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                  </span><span class=nt>message</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                    </span><span class=nt>$ref</span><span class=p>:</span><span class=w> </span><span class=s1>&#39;#/components/schemas/Response/message&#39;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                  </span><span class=nt>status</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                    </span><span class=nt>$ref</span><span class=p>:</span><span class=w> </span><span class=s1>&#39;#/components/schemas/Response/status&#39;</span><span class=w>
+</span></span></span></code></pre></td></tr></table></div></div><p>跑生成代碼的指令時</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>$ oapi-codegen -package main openapi.yaml &gt; openapi.gen.go
+</span></span></code></pre></td></tr></table></div></div><p>會噴這個錯誤</p><pre tabindex=0><code>error generating code: error creating operation definitions: error generating response definitions: error generating request body definition: error generating Go schema for property &#39;message&#39;: error turning reference (#/components/schemas/Response/message) into a Go type: unexpected reference depth: 5 for ref: #/components/schemas/Response/message local: true
+</code></pre><p>看了一下<a href=https://github.com/deepmap/oapi-codegen/blob/master/pkg/codegen/utils.go#L322-L332>原始碼</a>，發現他只能解析四層的 $ref path：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-go data-lang=go><span class=line><span class=cl><span class=c1>// https://github.com/deepmap/oapi-codegen/blob/master/pkg/codegen/utils.go#L322-L332
+</span></span></span><span class=line><span class=cl><span class=c1></span>
+</span></span><span class=line><span class=cl><span class=c1>// refPathToGoType returns the Go typename for refPath given its
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=kd>func</span> <span class=nf>refPathToGoType</span><span class=p>(</span><span class=nx>refPath</span> <span class=kt>string</span><span class=p>,</span> <span class=nx>local</span> <span class=kt>bool</span><span class=p>)</span> <span class=p>(</span><span class=kt>string</span><span class=p>,</span> <span class=kt>error</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>	<span class=k>if</span> <span class=nx>refPath</span><span class=p>[</span><span class=mi>0</span><span class=p>]</span> <span class=o>==</span> <span class=sc>&#39;#&#39;</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>		<span class=nx>pathParts</span> <span class=o>:=</span> <span class=nx>strings</span><span class=p>.</span><span class=nf>Split</span><span class=p>(</span><span class=nx>refPath</span><span class=p>,</span> <span class=s>&#34;/&#34;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>		<span class=nx>depth</span> <span class=o>:=</span> <span class=nb>len</span><span class=p>(</span><span class=nx>pathParts</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>		<span class=k>if</span> <span class=nx>local</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>			<span class=k>if</span> <span class=nx>depth</span> <span class=o>!=</span> <span class=mi>4</span> <span class=p>{</span>  <span class=c1>// &lt;---------here!
+</span></span></span><span class=line><span class=cl><span class=c1></span>				<span class=k>return</span> <span class=s>&#34;&#34;</span><span class=p>,</span> <span class=nx>fmt</span><span class=p>.</span><span class=nf>Errorf</span><span class=p>(</span><span class=s>&#34;unexpected reference depth: %d for ref: %s local: %t&#34;</span><span class=p>,</span> <span class=nx>depth</span><span class=p>,</span> <span class=nx>refPath</span><span class=p>,</span> <span class=nx>local</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>			<span class=p>}</span>
+</span></span><span class=line><span class=cl>		<span class=p>}</span> <span class=k>else</span> <span class=k>if</span> <span class=nx>depth</span> <span class=o>!=</span> <span class=mi>4</span> <span class=o>&amp;&amp;</span> <span class=nx>depth</span> <span class=o>!=</span> <span class=mi>2</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>			<span class=k>return</span> <span class=s>&#34;&#34;</span><span class=p>,</span> <span class=nx>fmt</span><span class=p>.</span><span class=nf>Errorf</span><span class=p>(</span><span class=s>&#34;unexpected reference depth: %d for ref: %s local: %t&#34;</span><span class=p>,</span> <span class=nx>depth</span><span class=p>,</span> <span class=nx>refPath</span><span class=p>,</span> <span class=nx>local</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>		<span class=p>}</span>
+</span></span></code></pre></td></tr></table></div></div><p>也就是說，只有長這樣的 path 才能被順利解析：</p><pre tabindex=0><code>#/components/responses/Baz 
+</code></pre><p>而在上面的 yaml 當中的 path 已經到第五層 <code>#/components/schemas/Response/message</code> ，因此會報錯。</p><p>後來發現，這種寫法不是合法的 OpenAPI 格式的寫法（但用 <a href=https://redocly.com/docs/redoc/quickstart/>redoc</a> 可以 build 出來），因為當跑 lint 的時候會報錯。</p><p>如果要改成合法的格式，首先 schema 的地方要在每個 Object 底下增加 <code>properties</code> 屬性：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-yaml data-lang=yaml><span class=line><span class=cl><span class=nt>schemas</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>Response</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>properties</span><span class=p>:</span><span class=w>  </span><span class=c># &lt;-------- add this</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>status</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>description</span><span class=p>:</span><span class=w> </span><span class=l>狀態</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>type</span><span class=p>:</span><span class=w> </span><span class=l>integer</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>example</span><span class=p>:</span><span class=w> </span><span class=m>200</span><span class=w>      
+</span></span></span></code></pre></td></tr></table></div></div><p>然後 $ref path 要改成 <code>#/components/schemas/Response/properties/message</code>
+才能通過 linter 檢查。</p><p>但即使改成了合法格式，在用 oapi-codegen 生成代碼時還是會報錯。因為 path 總層數變成 6 層，依然無法被解析。</p><h2 id=解決方法><a href=#%e8%a7%a3%e6%b1%ba%e6%96%b9%e6%b3%95 class=anchor><svg class="icon" aria-hidden="true" focusable="false" height="16" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5.0-3-1.69-3-3.5S2.55 3 4 3h4c1.45.0 3 1.69 3 3.5.0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98.0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98.0-2-1.22-2-2.5.0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45.0 3-1.69 3-3.5S14.5 6 13 6z"/></svg>
+</a>解決方法</h2><h3 id=1-改成只使用四層的-ref><a href=#1-%e6%94%b9%e6%88%90%e5%8f%aa%e4%bd%bf%e7%94%a8%e5%9b%9b%e5%b1%a4%e7%9a%84-ref class=anchor><svg class="icon" aria-hidden="true" focusable="false" height="16" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5.0-3-1.69-3-3.5S2.55 3 4 3h4c1.45.0 3 1.69 3 3.5.0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98.0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98.0-2-1.22-2-2.5.0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45.0 3-1.69 3-3.5S14.5 6 13 6z"/></svg>
+</a>1. 改成只使用四層的 $ref</h3><p>像這樣：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-yaml data-lang=yaml><span class=line><span class=cl><span class=nt>schemas</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>Resource</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>type</span><span class=p>:</span><span class=w> </span><span class=l>object</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>properties</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>data</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>          </span><span class=nt>type</span><span class=p>:</span><span class=w> </span><span class=l>object</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>          </span><span class=nt>properties</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=nt>items</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>              </span><span class=nt>type</span><span class=p>:</span><span class=w> </span><span class=l>array</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=c>#...more</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>message</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=c>#...more</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>status</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=c>#...more</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>paths</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=c>#...more</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>responses</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>&#39;200&#39;</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>description</span><span class=p>:</span><span class=w> </span><span class=l>OK</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>content</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>application/json</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>          </span><span class=nt>schema</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>          </span><span class=nt>$ref</span><span class=p>:</span><span class=w> </span><span class=s1>&#39;#/components/schemas/Resource&#39;</span><span class=w>
+</span></span></span></code></pre></td></tr></table></div></div><p>但這樣一來就變得很不彈性，在幾乎沒什麼 $ref 會引用到相同內容的情況下，還不如直接 inline，而且要改的地方有點太多了(懶)</p><h3 id=2-先把檔案修正成可以通過-openapi-的-linter-檢查然後再用工具-取代掉-ref-的部分><a href=#2-%e5%85%88%e6%8a%8a%e6%aa%94%e6%a1%88%e4%bf%ae%e6%ad%a3%e6%88%90%e5%8f%af%e4%bb%a5%e9%80%9a%e9%81%8e-openapi-%e7%9a%84-linter-%e6%aa%a2%e6%9f%a5%e7%84%b6%e5%be%8c%e5%86%8d%e7%94%a8%e5%b7%a5%e5%85%b7-%e5%8f%96%e4%bb%a3%e6%8e%89-ref-%e7%9a%84%e9%83%a8%e5%88%86 class=anchor><svg class="icon" aria-hidden="true" focusable="false" height="16" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5.0-3-1.69-3-3.5S2.55 3 4 3h4c1.45.0 3 1.69 3 3.5.0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98.0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98.0-2-1.22-2-2.5.0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45.0 3-1.69 3-3.5S14.5 6 13 6z"/></svg>
+</a>2. 先把檔案修正成可以通過 OpenAPI 的 linter 檢查，然後再用工具 取代掉 $ref 的部分</h3><p>想說反正只是為了能夠使用代碼生成工具，不想花太多精力大改原本的 OpenAPI 文件，於是最後採取了這個方法。</p><p>剛剛有稍微提到原本的格式跑 lint 時會有錯誤，需要進行修正，只要能夠成功跑過 linter 的檢查，就可以再用工具把 $ref 引用的地方全都取代成相對應的定義內容。<a href=https://stackoverflow.com/questions/65549855/openapi-specification-yml-yaml-all-refs-replace-or-expand-to-its-definition>這篇問答</a>有提供兩種工具都能達成這個目的，在這邊我們選用了 <a href=https://redocly.com/docs/cli/>redockly-cli</a>（沒有為什麼只是我們也有用 redoc）。</p><h4 id=run-linterhttpsredoclycomdocsclicommandslint><a href=#run-linterhttpsredoclycomdocsclicommandslint class=anchor><svg class="icon" aria-hidden="true" focusable="false" height="16" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5.0-3-1.69-3-3.5S2.55 3 4 3h4c1.45.0 3 1.69 3 3.5.0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98.0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98.0-2-1.22-2-2.5.0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45.0 3-1.69 3-3.5S14.5 6 13 6z"/></svg>
+</a><a href=https://redocly.com/docs/cli/commands/lint/>run linter</a></h4><p>首先修正上面剛剛提到的 properties 和 $ref 的部分後，就可以成功跑過 linter：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>$ redocly lint openapi.yaml
+</span></span></code></pre></td></tr></table></div></div><p><img loading=lazy src=/images/oapi-codegen-2.png alt=Untitled width=886 height=182></p><p>warning 的部分不用理他。</p><h4 id=bundle-file-and-dereferencedhttpsredoclycomdocsclicommandsbundle><a href=#bundle-file-and-dereferencedhttpsredoclycomdocsclicommandsbundle class=anchor><svg class="icon" aria-hidden="true" focusable="false" height="16" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5.0-3-1.69-3-3.5S2.55 3 4 3h4c1.45.0 3 1.69 3 3.5.0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98.0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98.0-2-1.22-2-2.5.0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45.0 3-1.69 3-3.5S14.5 6 13 6z"/></svg>
+</a><a href=https://redocly.com/docs/cli/commands/bundle/>bundle file and dereferenced</a></h4><p>然後再對檔案跑 bundle 指令：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>$ redocly bundle --dereferenced openapi.yaml --output openapi_0317.yaml
+</span></span></code></pre></td></tr></table></div></div><p><img loading=lazy src=/images/oapi-codegen-1.png alt=Untitled width=948 height=76></p><p>然後再一次跑 oapi-codegen 指令：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl> $ oapi-codegen -package ports openapi_0317.yaml &gt; openapi.gen.go
+</span></span></code></pre></td></tr></table></div></div><p>總算成功 gen 出檔案啦🎉</p><h4 id=note><a href=#note class=anchor><svg class="icon" aria-hidden="true" focusable="false" height="16" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5.0-3-1.69-3-3.5S2.55 3 4 3h4c1.45.0 3 1.69 3 3.5.0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98.0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98.0-2-1.22-2-2.5.0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45.0 3-1.69 3-3.5S14.5 6 13 6z"/></svg>
+</a>Note</h4><p>在預設不帶任何 <code>-generate</code> 參數的情況下，該指令會幫我們產生所有包含 server, types, client, spec 等等相關程式碼在指定輸出的檔案裡，且預設使用的 server 是 Echo。（詳細說明參考<a href=https://github.com/deepmap/oapi-codegen#using-oapi-codegen>文件</a>）</p><p>假設我們的需求是使用 gin ，並且只需要 server 和 types 部分的程式碼</p><blockquote><p><strong><code>server</code></strong>：生成 server 接口以及相關的程式碼，包括將參數綁定到 struct、參數類型錯誤 throw Exception 的處理等等<br><strong><code>types</code></strong>：定義在 OpenAPI components 當中的類型(struct)，包含 request params/body 和 response body</p></blockquote><p>並且分別放置於不同檔案中，可以這樣做：</p><p>先產生 gin server 的檔案</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>$ oapi-codegen -package ports -generate gin openapi_0317.yaml &gt; openapi_api.gen.go
+</span></span></code></pre></td></tr></table></div></div><p>再產生 types 的檔案</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>$ oapi-codegen -package ports -generate types openapi_0317.yaml &gt; openapi_types.gen.go
+</span></span></code></pre></td></tr></table></div></div></div></div><div class=container><nav class="flex container suggested"><a rel=prev href=/posts/netlify-function-google-indexing-api/ title="Previous post (older)"><span>Previous</span>
+讓架在 Netlify 上的網站發文同時向 Google 要求為新頁面建立索引! - 使用 Netlify Functions 串接 Google Indexing API
+</a><a rel=next href=/posts/golang-struct-to-json-and-empty-data/ title="Next post (newer)"><span>Next</span>
+Golang struct 轉 JSON 遇到欄位沒有值的問題</a></nav></div><div class=container><script src=https://utteranc.es/client.js repo=linxinemily/hugo-emmie-blog-comments issue-term=pathname crossorigin=anonymous async></script><style>.utterances{max-width:unset}</style><script>function setUtterancesTheme(e){let t=document.querySelector(".utterances iframe");t&&t.contentWindow.postMessage({type:"set-theme",theme:`github-${e}`},"https://utteranc.es")}addEventListener("message",e=>{if(e.origin!=="https://utteranc.es")return;setUtterancesTheme(document.documentElement.dataset.userColorScheme)}),window.addEventListener("onColorSchemeChange",e=>{setUtterancesTheme(e.detail)})</script></div></main></main><footer class="footer flex"><section class=container><nav class=footer-links><a href=/index.xml>RSS</a></nav></section><script defer src=/ts/features.706a523ba43e6d0427c7fdf2b9d05dbd0920d3f12942b453690b495cb2522743.js data-enable-footnotes=true></script></footer></body></html>

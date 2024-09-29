@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Laravel on Emmie' s Workspace</title><link>/tags/laravel/</link><description>Recent content in Laravel on Emmie' s Workspace</description><generator>Hugo</generator><language>en-us</language><lastBuildDate>Thu, 29 Dec 2022 00:00:00 +0000</lastBuildDate><atom:link href="/tags/laravel/index.xml" rel="self" type="application/rss+xml"/><item><title>Laravel Prevent Lazy Loading 踩坑心得及原理分析</title><link>/posts/laravel-prevent-lazy-loading/</link><pubDate>Thu, 29 Dec 2022 00:00:00 +0000</pubDate><guid>/posts/laravel-prevent-lazy-loading/</guid><description>&lt;p>在 Laravel 當中，我們可以透過「&lt;a href="https://laravel.com/docs/9.x/eloquent-relationships#relationship-methods-vs-dynamic-properties">動態關聯屬性(Dynamic relationship properties)&lt;/a>」直接取得 Model 的關聯資料，而該行為被官方稱為 「Lazy Loading」，當取值時就會自動將關聯資料載入，非常方便。但使用上一不小心就很有可能會造成 N+1 問題。&lt;/p>
+&lt;blockquote>
+&lt;p>N+1 問題通常是指，在得到一個 Models of Collection/Array 後，又在遍歷每個 Model 時，透過 Lazy Loading 取得其關聯資料，會導致 有 N 個 Model 就會執行 N+1 次 Query。過多的 DB Query 次數可能會對效能造成嚴重影響。&lt;/p>
+&lt;/blockquote>
+&lt;p>Laravel 8 開始就有提供&lt;a href="https://laravel.com/docs/9.x/eloquent-relationships#preventing-lazy-loading">避免 Lazy Loading 的方法&lt;/a>，
+只要在 &lt;code>App\Providers\AppServiceProvider&lt;/code> 當中的 &lt;code>boot()&lt;/code> 方法裡面加上：&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;span class="lnt">5
+&lt;/span>&lt;span class="lnt">6
+&lt;/span>&lt;span class="lnt">7
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-php" data-lang="php">&lt;span class="line">&lt;span class="cl">&lt;span class="c1">// app/Providers/AppServiceProvider.php
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span>&lt;span class="k">use&lt;/span> &lt;span class="nx">Illuminate\Database\Eloquent\Model&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">public&lt;/span> &lt;span class="k">function&lt;/span> &lt;span class="nf">boot&lt;/span>&lt;span class="p">()&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">Model&lt;/span>&lt;span class="o">::&lt;/span>&lt;span class="na">preventLazyLoading&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="o">!&lt;/span> &lt;span class="nx">app&lt;/span>&lt;span class="p">()&lt;/span>&lt;span class="o">-&amp;gt;&lt;/span>&lt;span class="na">isProduction&lt;/span>&lt;span class="p">());&lt;/span> &lt;span class="c1">//預設為 true
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span>&lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>如此一來，當 Lazy Loading 被觸發時，就會直接拋出例外 (&lt;code>Illuminate\Database\LazyLoadingViolationException&lt;/code>)&lt;/p>
+&lt;p>而當初該新功能發布時，laravel-news 網站&lt;a href="https://laravel-news.com/disable-eloquent-lazy-loading-during-development">有一篇文章&lt;/a>就在介紹這個功能。該篇文章當中舉的例子為，有兩個 Model - User 和 Posts 為一對多關係：&lt;/p></description></item><item><title>在 Laravel 當中使用 Redis 分布式鎖 避免 race condition 重複插入相同資料問題</title><link>/posts/%E5%9C%A8-laravel-%E7%95%B6%E4%B8%AD%E4%BD%BF%E7%94%A8-redis-%E5%88%86%E5%B8%83%E5%BC%8F%E9%8E%96-%E9%81%BF%E5%85%8D-race-condition-%E9%87%8D%E8%A4%87%E6%8F%92%E5%85%A5%E7%9B%B8%E5%90%8C%E8%B3%87%E6%96%99%E5%95%8F%E9%A1%8C/</link><pubDate>Sun, 06 Nov 2022 00:00:00 +0000</pubDate><guid>/posts/%E5%9C%A8-laravel-%E7%95%B6%E4%B8%AD%E4%BD%BF%E7%94%A8-redis-%E5%88%86%E5%B8%83%E5%BC%8F%E9%8E%96-%E9%81%BF%E5%85%8D-race-condition-%E9%87%8D%E8%A4%87%E6%8F%92%E5%85%A5%E7%9B%B8%E5%90%8C%E8%B3%87%E6%96%99%E5%95%8F%E9%A1%8C/</guid><description>&lt;p>前幾天遇到一個狀況，原本程式裡有一段邏輯是 &lt;strong>「如果該筆資料不存在，就寫入新資料，但如果已存在，就直接回傳該筆已存在的資料」&lt;/strong>，程式碼大概長這樣：&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;span class="lnt">5
+&lt;/span>&lt;span class="lnt">6
+&lt;/span>&lt;span class="lnt">7
+&lt;/span>&lt;span class="lnt">8
+&lt;/span>&lt;span class="lnt">9
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-php" data-lang="php">&lt;span class="line">&lt;span class="cl">&lt;span class="nv">$snapshot&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="nx">OrderSnapshot&lt;/span>&lt;span class="o">::&lt;/span>&lt;span class="na">where&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s1">&amp;#39;order_id&amp;#39;&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nv">$order&lt;/span>&lt;span class="o">-&amp;gt;&lt;/span>&lt;span class="na">id&lt;/span>&lt;span class="p">)&lt;/span>&lt;span class="o">-&amp;gt;&lt;/span>&lt;span class="na">first&lt;/span>&lt;span class="p">();&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">if&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="o">!&lt;/span>&lt;span class="k">empty&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nv">$snapshot&lt;/span>&lt;span class="p">))&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">return&lt;/span> &lt;span class="nv">$snapshot&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">// do something...
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">return&lt;/span> &lt;span class="nx">OrderSnapshot&lt;/span>&lt;span class="o">::&lt;/span>&lt;span class="na">create&lt;/span>&lt;span class="p">([&lt;/span>&lt;span class="s1">&amp;#39;payload&amp;#39;&lt;/span> &lt;span class="o">=&amp;gt;&lt;/span> &lt;span class="nv">$order_array&lt;/span>&lt;span class="p">]);&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>上面程式碼其實也可以使用 Laravel 的 &lt;code>firstOrCreate&lt;/code> 方法做簡化:&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-php" data-lang="php">&lt;span class="line">&lt;span class="cl">&lt;span class="k">return&lt;/span> &lt;span class="nx">OrderSnapshot&lt;/span>&lt;span class="o">::&lt;/span>&lt;span class="na">firstOrCreate&lt;/span>&lt;span class="p">(&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">[&lt;/span>&lt;span class="s1">&amp;#39;order_id&amp;#39;&lt;/span> &lt;span class="o">=&amp;gt;&lt;/span> &lt;span class="nv">$order&lt;/span>&lt;span class="o">-&amp;gt;&lt;/span>&lt;span class="na">id&lt;/span>&lt;span class="p">],&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">[&lt;/span>&lt;span class="s1">&amp;#39;payload&amp;#39;&lt;/span> &lt;span class="o">=&amp;gt;&lt;/span> &lt;span class="nv">$order_array&lt;/span>&lt;span class="p">]&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>這段邏輯看起來很簡單，在單一 process 的情況下，這段程式碼確實沒有任何問題，但如果今天同時有兩個 process 要執行這段程式的話，就可能會有非預期的結果出現。
+由於不論是上面的程式碼，或是簡化後的程式碼，如果沒有撈出資料的話（也就是資料不存在），都是要繼續往下執行新增資料的動作，而「撈出資料」和「新增資料」都是單獨的 Query，所以如果幾乎同時執行這段程式時，可能就會產生兩筆相同的資料：&lt;/p>
+&lt;p>&lt;img loading="lazy" 
+ src="/images/laravel-redis-lock.png" 
+ alt="Untitled" 
+ 
+ width=2651 
+ height="1250" />&lt;/p>
+&lt;p>而要解決這個問題，大概有以下幾種辦法：&lt;/p>
+&lt;h4 id="1-避免多個-process-執行">
+ &lt;a href="#1-%e9%81%bf%e5%85%8d%e5%a4%9a%e5%80%8b-process-%e5%9f%b7%e8%a1%8c" class="anchor">
+ &lt;svg class="icon" aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16">
+ &lt;path fill-rule="evenodd"
+ d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z">
+ &lt;/path>
+ &lt;/svg>
+ &lt;/a>
+ 1. 避免多個 process 執行
+&lt;/h4>
+&lt;p>如果是因為放在 job 裡面，同時有多個 queue worker 在消化這些 job，就保持 queue worker 的數量為 1。
+但我們這次遇到的情況並不適用，因為還可以透過 API Request realtime 執行這段程式。而且如果遇到真的很耗時的工作，也不可能為此只開一個 worker。&lt;/p></description></item><item><title>Laravel 9 factory recycle method 用法與原理分析</title><link>/posts/laravel-9-factory-recycle-method-%E7%94%A8%E6%B3%95%E8%88%87%E5%8E%9F%E7%90%86%E5%88%86%E6%9E%90/</link><pubDate>Wed, 05 Oct 2022 00:00:00 +0000</pubDate><guid>/posts/laravel-9-factory-recycle-method-%E7%94%A8%E6%B3%95%E8%88%87%E5%8E%9F%E7%90%86%E5%88%86%E6%9E%90/</guid><description>&lt;h2 id="recycle-方法的使用情境及欲解決之問題">
+ &lt;a href="#recycle-%e6%96%b9%e6%b3%95%e7%9a%84%e4%bd%bf%e7%94%a8%e6%83%85%e5%a2%83%e5%8f%8a%e6%ac%b2%e8%a7%a3%e6%b1%ba%e4%b9%8b%e5%95%8f%e9%a1%8c" class="anchor">
+ &lt;svg class="icon" aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16">
+ &lt;path fill-rule="evenodd"
+ d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z">
+ &lt;/path>
+ &lt;/svg>
+ &lt;/a>
+ &lt;code>recycle&lt;/code> 方法的使用情境及欲解決之問題
+&lt;/h2>
+&lt;p>在 laravel 9 factory 的&lt;a href="https://laravel.com/docs/9.x/eloquent-factories#recycling-an-existing-model-for-relationships">文件當中最後一段&lt;/a>是在說明 &lt;code>recycle&lt;/code> 的使用情境與方法：&lt;/p>
+&lt;blockquote>
+&lt;p>If you have models that share a common relationship with another model, you may use the &lt;strong>&lt;code>recycle&lt;/code>&lt;/strong> method to ensure a single instance of the related model is recycled for all of the relationships.&lt;br />
+For example, imagine you have &lt;strong>&lt;code>Airline&lt;/code>&lt;/strong>, &lt;strong>&lt;code>Flight&lt;/code>&lt;/strong>, and &lt;strong>&lt;code>Ticket&lt;/code>&lt;/strong> models, where the ticket belongs to an airline and a flight, and the flight also belongs to an airline. When creating tickets, you will probably want the same airline for both the ticket and the flight, so you may pass an airline instance to the &lt;strong>&lt;code>recycle&lt;/code>&lt;/strong> method:&lt;/p></description></item><item><title>Laravel IoC Container 如何解析 Controller method 當中的依賴(DI)</title><link>/posts/laravel-ioc-container-%E5%A6%82%E4%BD%95%E8%A7%A3%E6%9E%90-controller-method-%E7%95%B6%E4%B8%AD%E7%9A%84%E4%BE%9D%E8%B3%B4/</link><pubDate>Mon, 18 Jul 2022 00:00:00 +0000</pubDate><guid>/posts/laravel-ioc-container-%E5%A6%82%E4%BD%95%E8%A7%A3%E6%9E%90-controller-method-%E7%95%B6%E4%B8%AD%E7%9A%84%E4%BE%9D%E8%B3%B4/</guid><description>&lt;blockquote>
+&lt;p>由於以下所分析的原始碼是舊版(5.5)的 laravel，但因為本文主要探討 IoC 在特定 method 的依賴解析，核心概念是不變的，但可能不同版本在部分程式碼上面會有些許差異。&lt;/p>
+&lt;/blockquote>
+&lt;p>熟悉 Laravel 的人應該都曉得 IoC Container 的強大之處，在 laravel 當中，可以簡單地透過一行 &lt;code>app(MyClass::class)&lt;/code> 取得已經被注入依賴後 Class 的實例：&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;span class="lnt">13
+&lt;/span>&lt;span class="lnt">14
+&lt;/span>&lt;span class="lnt">15
+&lt;/span>&lt;span class="lnt">16
+&lt;/span>&lt;span class="lnt">17
+&lt;/span>&lt;span class="lnt">18
+&lt;/span>&lt;span class="lnt">19
+&lt;/span>&lt;span class="lnt">20
+&lt;/span>&lt;span class="lnt">21
+&lt;/span>&lt;span class="lnt">22
+&lt;/span>&lt;span class="lnt">23
+&lt;/span>&lt;span class="lnt">24
+&lt;/span>&lt;span class="lnt">25
+&lt;/span>&lt;span class="lnt">26
+&lt;/span>&lt;span class="lnt">27
+&lt;/span>&lt;span class="lnt">28
+&lt;/span>&lt;span class="lnt">29
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-php" data-lang="php">&lt;span class="line">&lt;span class="cl">&lt;span class="k">class&lt;/span> &lt;span class="nc">Dependence1&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">function&lt;/span> &lt;span class="nf">foo&lt;/span>&lt;span class="p">()&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">echo&lt;/span> &lt;span class="s2">&amp;#34;foo&amp;#34;&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">class&lt;/span> &lt;span class="nc">Dependence2&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">function&lt;/span> &lt;span class="nf">foo2&lt;/span>&lt;span class="p">()&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">echo&lt;/span> &lt;span class="s2">&amp;#34;foo2&amp;#34;&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">final&lt;/span> &lt;span class="k">class&lt;/span> &lt;span class="nc">MyClass&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">private&lt;/span> &lt;span class="nv">$dep1&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">private&lt;/span> &lt;span class="nv">$dep2&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">public&lt;/span> &lt;span class="k">function&lt;/span> &lt;span class="fm">__construct&lt;/span>&lt;span class="p">(&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">Dependence1&lt;/span> &lt;span class="nv">$dependence1&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">Dependence2&lt;/span> &lt;span class="nv">$dependence2&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nv">$this&lt;/span>&lt;span class="o">-&amp;gt;&lt;/span>&lt;span class="na">dep1&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="nv">$dependence1&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nv">$this&lt;/span>&lt;span class="o">-&amp;gt;&lt;/span>&lt;span class="na">dep2&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="nv">$dependence2&lt;/span>&lt;span class="p">;&lt;/span> 
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nx">app&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">MyClass&lt;/span>&lt;span class="o">::&lt;/span>&lt;span class="na">class&lt;/span>&lt;span class="p">);&lt;/span> &lt;span class="c1">// maybe $this-&amp;gt;app-&amp;gt;make(MyClass::class) in ServiceProvider
+&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>這是一個 laravel 實現控制反轉(IoC)的簡單例子 ，MyClass 的建構子當中的兩個引數(依賴的Class) 被 container 讀取到後，先分別被實例化並作為參數傳進 MyClass 的建構子，最後返回實例化完成的 MyClass 物件。(每次拜讀到這邊真的是想跪 laravel 作者）&lt;/p></description></item></channel></rss>
