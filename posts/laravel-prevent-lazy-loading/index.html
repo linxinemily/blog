@@ -1,0 +1,150 @@
+<!doctype html><html lang=en-us><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=theme-color content="dark"><title>Laravel Prevent Lazy Loading 踩坑心得及原理分析 | Emmie' s Workspace</title>
+<meta property="og:site_name" content="Emmie' s Workspace"><meta property="og:title" content="Laravel Prevent Lazy Loading 踩坑心得及原理分析 | Emmie' s Workspace"><meta itemprop=name content="Laravel Prevent Lazy Loading 踩坑心得及原理分析 | Emmie' s Workspace"><meta name=twitter:title content="Laravel Prevent Lazy Loading 踩坑心得及原理分析 | Emmie' s Workspace"><meta name=application-name content="Laravel Prevent Lazy Loading 踩坑心得及原理分析 | Emmie' s Workspace"><meta name=twitter:card content="summary"><meta name=description content="放一些筆記的地方"><meta name=twitter:description content="放一些筆記的地方"><meta itemprop=description content="放一些筆記的地方"><meta property="og:description" content="放一些筆記的地方"><link rel="shortcut icon" type=image/x-icon href=/favicon.ico><link rel=stylesheet href=/sass/main.min.9606ece50dffeea1ff779aaa181ca0dd8f1e40cd70c1cdd128c568088ecf6f83.css></head><script>(function(){const e="ThemeColorScheme";localStorage.getItem(e)||localStorage.setItem(e,"auto")})()</script><script>(function(){const t="ThemeColorScheme",e=localStorage.getItem(t),n=window.matchMedia("(prefers-color-scheme: dark)").matches===!0;e=="dark"||e==="auto"&&n?document.documentElement.dataset.userColorScheme="dark":document.documentElement.dataset.userColorScheme="light"})()</script><body class=dark><nav class=navbar><div class=container><div class=flex><div><a class=brand href=/>Emmie' s Workspace</a></div><div class=flex><a href=/about/>About</a>
+<a href=/articles/>Articles</a>
+<button id=dark-mode-button><svg class="light" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false" width="1em" height="1em" style="-ms-transform:rotate(360deg);-webkit-transform:rotate(360deg);transform:rotate(360deg)" viewBox="0 0 36 36"><path fill="#ffd983" d="M30.312.776C32 19 20 32 .776 30.312c8.199 7.717 21.091 7.588 29.107-.429C37.9 21.867 38.03 8.975 30.312.776z"/><path d="M30.705 15.915a1.163 1.163.0 101.643 1.641 1.163 1.163.0 00-1.643-1.641zm-16.022 14.38a1.74 1.74.0 000 2.465 1.742 1.742.0 100-2.465zm13.968-2.147a2.904 2.904.0 01-4.108.0 2.902 2.902.0 010-4.107 2.902 2.902.0 014.108.0 2.902 2.902.0 010 4.107z" fill="#ffcc4d"/><rect x="0" y="0" width="36" height="36" fill="rgba(0, 0, 0, 0)"/></svg><svg class="dark" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false" width="1em" height="1em" style="-ms-transform:rotate(360deg);-webkit-transform:rotate(360deg);transform:rotate(360deg)" viewBox="0 0 36 36"><path fill="#ffd983" d="M16 2s0-2 2-2 2 2 2 2v2s0 2-2 2-2-2-2-2V2zm18 14s2 0 2 2-2 2-2 2h-2s-2 0-2-2 2-2 2-2h2zM4 16s2 0 2 2-2 2-2 2H2s-2 0-2-2 2-2 2-2h2zm5.121-8.707s1.414 1.414.0 2.828-2.828.0-2.828.0L4.878 8.708s-1.414-1.414.0-2.829c1.415-1.414 2.829.0 2.829.0l1.414 1.414zm21 21s1.414 1.414.0 2.828-2.828.0-2.828.0l-1.414-1.414s-1.414-1.414.0-2.828 2.828.0 2.828.0l1.414 1.414zm-.413-18.172s-1.414 1.414-2.828.0.0-2.828.0-2.828l1.414-1.414s1.414-1.414 2.828.0.0 2.828.0 2.828l-1.414 1.414zm-21 21s-1.414 1.414-2.828.0.0-2.828.0-2.828l1.414-1.414s1.414-1.414 2.828.0.0 2.828.0 2.828l-1.414 1.414zM16 32s0-2 2-2 2 2 2 2v2s0 2-2 2-2-2-2-2v-2z"/><circle fill="#ffd983" cx="18" cy="18" r="10"/><rect x="0" y="0" width="36" height="36" fill="rgba(0, 0, 0, 0)"/></svg></button></div></div></div></nav><main><div class=container><article><header class=article-header><div class=thumb><div><h1>Laravel Prevent Lazy Loading 踩坑心得及原理分析</h1><div class=post-meta><div>By Emmie | <time>December 29, 2022</time>
+| 2 minutes</div><div class=tags><a href=/tags/laravel/>Laravel</a></div></div></div></div></header></article><div class=article-post><p>在 Laravel 當中，我們可以透過「<a href=https://laravel.com/docs/9.x/eloquent-relationships#relationship-methods-vs-dynamic-properties>動態關聯屬性(Dynamic relationship properties)</a>」直接取得 Model 的關聯資料，而該行為被官方稱為 「Lazy Loading」，當取值時就會自動將關聯資料載入，非常方便。但使用上一不小心就很有可能會造成 N+1 問題。</p><blockquote><p>N+1 問題通常是指，在得到一個 Models of Collection/Array 後，又在遍歷每個 Model 時，透過 Lazy Loading 取得其關聯資料，會導致 有 N 個 Model 就會執行 N+1 次 Query。過多的 DB Query 次數可能會對效能造成嚴重影響。</p></blockquote><p>Laravel 8 開始就有提供<a href=https://laravel.com/docs/9.x/eloquent-relationships#preventing-lazy-loading>避免 Lazy Loading 的方法</a>，
+只要在 <code>App\Providers\AppServiceProvider</code> 當中的 <code>boot()</code> 方法裡面加上：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-php data-lang=php><span class=line><span class=cl><span class=c1>// app/Providers/AppServiceProvider.php
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=k>use</span> <span class=nx>Illuminate\Database\Eloquent\Model</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>public</span> <span class=k>function</span> <span class=nf>boot</span><span class=p>()</span>
+</span></span><span class=line><span class=cl><span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=nx>Model</span><span class=o>::</span><span class=na>preventLazyLoading</span><span class=p>(</span><span class=o>!</span> <span class=nx>app</span><span class=p>()</span><span class=o>-&gt;</span><span class=na>isProduction</span><span class=p>());</span> <span class=c1>//預設為 true
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=p>}</span>
+</span></span></code></pre></td></tr></table></div></div><p>如此一來，當 Lazy Loading 被觸發時，就會直接拋出例外 (<code>Illuminate\Database\LazyLoadingViolationException</code>)</p><p>而當初該新功能發布時，laravel-news 網站<a href=https://laravel-news.com/disable-eloquent-lazy-loading-during-development>有一篇文章</a>就在介紹這個功能。該篇文章當中舉的例子為，有兩個 Model - User 和 Posts 為一對多關係：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-php data-lang=php><span class=line><span class=cl><span class=nv>$user</span> <span class=o>=</span> <span class=nx>User</span><span class=o>::</span><span class=na>first</span><span class=p>();</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nv>$user</span><span class=o>-&gt;</span><span class=na>posts</span><span class=p>;</span> <span class=c1>// 這邊就會觸發 Lazy Loading, 將所有 user 的 post 都從 DB 撈出
+</span></span></span></code></pre></td></tr></table></div></div><p>所以如果加上 <code>Model::preventLazyLoading()</code> ，執行上面範例時應該就會拋出 <code>Illuminate\Database\LazyLoadingViolationException</code> 阻止我們透過 Lazy Loading 得到 posts。</p><p>於是打開專案來試試，卻發現一切正常，沒有例外拋出&mldr;</p><p><img loading=lazy src=/images/laravel-lazy-loading-1.png alt=Untitled width=2840 height=1644></p><p>但如果換一個方法試試：</p><p><img loading=lazy src=/images/laravel-lazy-loading-2.png alt=Untitled width=2142 height=958></p><p>這時候才會如預期拋出例外。</p><p>另外，如果當 DB 裡只有一筆 user 資料，就算像上面這樣取 <code>all()</code>，也不會拋出例外。</p><p><img loading=lazy src=/images/laravel-lazy-loading-3.png alt=Untitled width=2848 height=1644></p><p>一開始很疑惑為什麼範例的 code 執行後沒有拋出例外，所以就研究了一下原始碼的部分，順便看一下這個功能是如何實現的。</p><h2 id=原始碼分析><a href=#%e5%8e%9f%e5%a7%8b%e7%a2%bc%e5%88%86%e6%9e%90 class=anchor><svg class="icon" aria-hidden="true" focusable="false" height="16" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5.0-3-1.69-3-3.5S2.55 3 4 3h4c1.45.0 3 1.69 3 3.5.0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98.0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98.0-2-1.22-2-2.5.0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45.0 3-1.69 3-3.5S14.5 6 13 6z"/></svg>
+</a>原始碼分析</h2><p>首先，從 <code>Illuminate\Database\Eloquent\Model::preventLazyLoading()</code> 這個方法開始看起：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-php data-lang=php><span class=line><span class=cl><span class=k>public</span> <span class=k>static</span> <span class=k>function</span> <span class=nf>preventLazyLoading</span><span class=p>(</span><span class=nv>$value</span> <span class=o>=</span> <span class=k>true</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>static</span><span class=o>::</span><span class=nv>$modelsShouldPreventLazyLoading</span> <span class=o>=</span> <span class=nv>$value</span><span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></td></tr></table></div></div><p>這邊會將 <code>Illuminate\Database\Eloquent\Model</code> 當中的一個靜態屬性 <code>$modelsShouldPreventLazyLoading</code> 設值成傳入的布林值。</p><p>該屬性預設為 <code>false</code>：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-php data-lang=php><span class=line><span class=cl><span class=k>protected</span> <span class=k>static</span> <span class=nv>$modelsShouldPreventLazyLoading</span> <span class=o>=</span> <span class=k>false</span><span class=p>;</span>
+</span></span></code></pre></td></tr></table></div></div><p>但其實 <code>Illuminate\Database\Eloquent\Model</code> 另外還有一個非靜態屬性 <code>$preventsLazyLoading</code>（待會會提到在哪裡被使用）</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-php data-lang=php><span class=line><span class=cl><span class=k>public</span> <span class=nv>$preventsLazyLoading</span> <span class=o>=</span> <span class=k>false</span><span class=p>;</span>
+</span></span></code></pre></td></tr></table></div></div><p>當執行 DB Query，取得 <code>App\Models\User</code> 時(eg: <code>User::first();</code>)，會進入以下方法</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-php data-lang=php><span class=line><span class=cl><span class=c1>//src/Illuminate/Database/Eloquent/Builder.php
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=k>public</span> <span class=k>function</span> <span class=nf>hydrate</span><span class=p>(</span><span class=k>array</span> <span class=nv>$items</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=nv>$instance</span> <span class=o>=</span> <span class=nv>$this</span><span class=o>-&gt;</span><span class=na>newModelInstance</span><span class=p>();</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=nv>$instance</span><span class=o>-&gt;</span><span class=na>newCollection</span><span class=p>(</span><span class=nx>array_map</span><span class=p>(</span><span class=k>function</span> <span class=p>(</span><span class=nv>$item</span><span class=p>)</span> <span class=k>use</span> <span class=p>(</span><span class=nv>$items</span><span class=p>,</span> <span class=nv>$instance</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=nv>$model</span> <span class=o>=</span> <span class=nv>$instance</span><span class=o>-&gt;</span><span class=na>newFromBuilder</span><span class=p>(</span><span class=nv>$item</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=k>if</span> <span class=p>(</span><span class=nx>count</span><span class=p>(</span><span class=nv>$items</span><span class=p>)</span> <span class=o>&gt;</span> <span class=mi>1</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>            <span class=nv>$model</span><span class=o>-&gt;</span><span class=na>preventsLazyLoading</span> <span class=o>=</span> <span class=nx>Model</span><span class=o>::</span><span class=na>preventsLazyLoading</span><span class=p>();</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=nv>$model</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=p>},</span> <span class=nv>$items</span><span class=p>));</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></td></tr></table></div></div><p>如果執行 <code>User::first()</code>，此處的 <code>$items</code> 引數會是一個陣列，內含一個 stdClass 物件 (從 users table 取出的第一個 row 的資料)，像這樣：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-php data-lang=php><span class=line><span class=cl> <span class=k>array</span><span class=o>:</span><span class=mi>1</span> <span class=p>[</span>
+</span></span><span class=line><span class=cl>  <span class=mi>0</span> <span class=o>=&gt;</span> <span class=p>{</span><span class=c1>#4352
+</span></span></span><span class=line><span class=cl><span class=c1></span>    <span class=o>+</span><span class=s2>&#34;id&#34;</span><span class=o>:</span> <span class=mi>1</span>
+</span></span><span class=line><span class=cl>    <span class=o>+</span><span class=s2>&#34;name&#34;</span><span class=o>:</span> <span class=s2>&#34;Mrs. Gisselle Sauer&#34;</span>
+</span></span><span class=line><span class=cl>    <span class=o>+</span><span class=s2>&#34;email&#34;</span><span class=o>:</span> <span class=s2>&#34;dion.kiehn@example.com&#34;</span>
+</span></span><span class=line><span class=cl>    <span class=o>+</span><span class=s2>&#34;email_verified_at&#34;</span><span class=o>:</span> <span class=s2>&#34;2022-12-22 03:53:59&#34;</span>
+</span></span><span class=line><span class=cl>    <span class=o>+</span><span class=s2>&#34;password&#34;</span><span class=o>:</span> <span class=s2>&#34;$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi&#34;</span>
+</span></span><span class=line><span class=cl>    <span class=o>+</span><span class=s2>&#34;remember_token&#34;</span><span class=o>:</span> <span class=s2>&#34;jq4qLUs2qQ&#34;</span>
+</span></span><span class=line><span class=cl>    <span class=o>+</span><span class=s2>&#34;created_at&#34;</span><span class=o>:</span> <span class=s2>&#34;2022-12-22 03:53:59&#34;</span>
+</span></span><span class=line><span class=cl>    <span class=o>+</span><span class=s2>&#34;updated_at&#34;</span><span class=o>:</span> <span class=s2>&#34;2022-12-22 03:53:59&#34;</span>
+</span></span><span class=line><span class=cl>  <span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=p>]</span>
+</span></span></code></pre></td></tr></table></div></div><p>接著在遍歷陣列的過程中，將遍歷到的 stdClass 物件轉成 Eloquent Model 時，會先判斷如果 <code>$items</code> 陣列長度大於 1，才會將這個 Model(在此範例也就是 <code>App\Models\User</code>)的 <code>$preventsLazyLoading</code> 屬性設為<code>Model::preventsLazyLoading()</code> 的值，而這個靜態方法其實回傳的就是先前我們在 <code>App\Providers\AppServiceProvider</code> 設定的靜態屬性 <code>$modelsShouldPreventLazyLoading</code>：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-php data-lang=php><span class=line><span class=cl><span class=k>public</span> <span class=k>static</span> <span class=k>function</span> <span class=nf>preventsLazyLoading</span><span class=p>()</span>
+</span></span><span class=line><span class=cl><span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=k>static</span><span class=o>::</span><span class=nv>$modelsShouldPreventLazyLoading</span><span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></td></tr></table></div></div><p>接著，當呼叫 <code>$user->posts</code> 時，會進入 <code>Illuminate\Database\Eloquent\Concerns\HasAttributes</code> 當中的 <code>getRelationValue()</code> 方法:</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-php data-lang=php><span class=line><span class=cl><span class=c1>// src/Illuminate/Database/Eloquent/Concerns/HasAttributes.php
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=k>public</span> <span class=k>function</span> <span class=nf>getRelationValue</span><span class=p>(</span><span class=nv>$key</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=o>...</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=k>if</span> <span class=p>(</span><span class=nv>$this</span><span class=o>-&gt;</span><span class=na>preventsLazyLoading</span><span class=p>)</span> <span class=p>{</span> <span class=c1>// here
+</span></span></span><span class=line><span class=cl><span class=c1></span>            <span class=nv>$this</span><span class=o>-&gt;</span><span class=na>handleLazyLoadingViolation</span><span class=p>(</span><span class=nv>$key</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=nv>$this</span><span class=o>-&gt;</span><span class=na>getRelationshipFromMethod</span><span class=p>(</span><span class=nv>$key</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span></code></pre></td></tr></table></div></div><p>當 <code>$preventsLazyLoading</code> 為 <code>true</code> 時，就會拋出例外</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-php data-lang=php><span class=line><span class=cl><span class=c1>// src/Illuminate/Database/Eloquent/Concerns/HasAttributes.php
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=k>protected</span> <span class=k>function</span> <span class=nf>handleLazyLoadingViolation</span><span class=p>(</span><span class=nv>$key</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=o>...</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>throw</span> <span class=k>new</span> <span class=nx>LazyLoadingViolationException</span><span class=p>(</span><span class=nv>$this</span><span class=p>,</span> <span class=nv>$key</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></td></tr></table></div></div><p>也就是說，<strong>從 DB 取出的資料筆數需大於 1 ，對該 Model 取關聯時才會觸發 Prevent Lazy Loading 的效果</strong>。</p><p>所以如果撈出的結果都是一筆資料，就也不會觸發 Prevent Lazy Loading 了。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-php data-lang=php><span class=line><span class=cl><span class=nv>$user</span> <span class=o>=</span> <span class=nx>User</span><span class=o>::</span><span class=na>first</span><span class=p>();</span> <span class=c1>// 只有從 DB 撈出一筆資料
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=nv>$user</span><span class=o>-&gt;</span><span class=na>posts</span><span class=p>;</span> <span class=c1>// no exception
+</span></span></span><span class=line><span class=cl><span class=c1></span>
+</span></span><span class=line><span class=cl><span class=nv>$users</span> <span class=o>=</span> <span class=nx>User</span><span class=o>::</span><span class=na>all</span><span class=p>();</span> <span class=c1>// 假使 DB 裏其實也只有一筆 user 資料
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=nv>$users</span><span class=p>[</span><span class=mi>0</span><span class=p>]</span><span class=o>-&gt;</span><span class=na>posts</span><span class=p>;</span> <span class=c1>// no exception
+</span></span></span></code></pre></td></tr></table></div></div><p>其實按照常理，大概能夠理解爲什麼會有這種效果，因為只有一個 Model 的時候，取得其底下關聯，應該不能算是 N+1 問題。（不過該網站的例子為什麼這樣舉就不得而知，算是小踩坑了下）</p></div></div><div class=container><nav class="flex container suggested"><a rel=prev href=/posts/%E5%9C%A8-laravel-%E7%95%B6%E4%B8%AD%E4%BD%BF%E7%94%A8-redis-%E5%88%86%E5%B8%83%E5%BC%8F%E9%8E%96-%E9%81%BF%E5%85%8D-race-condition-%E9%87%8D%E8%A4%87%E6%8F%92%E5%85%A5%E7%9B%B8%E5%90%8C%E8%B3%87%E6%96%99%E5%95%8F%E9%A1%8C/ title="Previous post (older)"><span>Previous</span>
+在 Laravel 當中使用 Redis 分布式鎖 避免 race condition 重複插入相同資料問題
+</a><a rel=next href=/posts/migrate-data-from-mariadb-to-dynamodb/ title="Next post (newer)"><span>Next</span>
+將資料從 MariaDB 遷移至 AWS DynamoDB 過程紀錄</a></nav></div><div class=container><script src=https://utteranc.es/client.js repo=linxinemily/hugo-emmie-blog-comments issue-term=pathname crossorigin=anonymous async></script><style>.utterances{max-width:unset}</style><script>function setUtterancesTheme(e){let t=document.querySelector(".utterances iframe");t&&t.contentWindow.postMessage({type:"set-theme",theme:`github-${e}`},"https://utteranc.es")}addEventListener("message",e=>{if(e.origin!=="https://utteranc.es")return;setUtterancesTheme(document.documentElement.dataset.userColorScheme)}),window.addEventListener("onColorSchemeChange",e=>{setUtterancesTheme(e.detail)})</script></div></main></main><footer class="footer flex"><section class=container><nav class=footer-links><a href=/index.xml>RSS</a></nav></section><script defer src=/ts/features.706a523ba43e6d0427c7fdf2b9d05dbd0920d3f12942b453690b495cb2522743.js data-enable-footnotes=true></script></footer></body></html>

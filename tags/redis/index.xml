@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Redis on Emmie' s Workspace</title><link>/tags/redis/</link><description>Recent content in Redis on Emmie' s Workspace</description><generator>Hugo</generator><language>en-us</language><lastBuildDate>Sun, 06 Nov 2022 00:00:00 +0000</lastBuildDate><atom:link href="/tags/redis/index.xml" rel="self" type="application/rss+xml"/><item><title>在 Laravel 當中使用 Redis 分布式鎖 避免 race condition 重複插入相同資料問題</title><link>/posts/%E5%9C%A8-laravel-%E7%95%B6%E4%B8%AD%E4%BD%BF%E7%94%A8-redis-%E5%88%86%E5%B8%83%E5%BC%8F%E9%8E%96-%E9%81%BF%E5%85%8D-race-condition-%E9%87%8D%E8%A4%87%E6%8F%92%E5%85%A5%E7%9B%B8%E5%90%8C%E8%B3%87%E6%96%99%E5%95%8F%E9%A1%8C/</link><pubDate>Sun, 06 Nov 2022 00:00:00 +0000</pubDate><guid>/posts/%E5%9C%A8-laravel-%E7%95%B6%E4%B8%AD%E4%BD%BF%E7%94%A8-redis-%E5%88%86%E5%B8%83%E5%BC%8F%E9%8E%96-%E9%81%BF%E5%85%8D-race-condition-%E9%87%8D%E8%A4%87%E6%8F%92%E5%85%A5%E7%9B%B8%E5%90%8C%E8%B3%87%E6%96%99%E5%95%8F%E9%A1%8C/</guid><description>&lt;p>前幾天遇到一個狀況，原本程式裡有一段邏輯是 &lt;strong>「如果該筆資料不存在，就寫入新資料，但如果已存在，就直接回傳該筆已存在的資料」&lt;/strong>，程式碼大概長這樣：&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;span class="lnt">5
+&lt;/span>&lt;span class="lnt">6
+&lt;/span>&lt;span class="lnt">7
+&lt;/span>&lt;span class="lnt">8
+&lt;/span>&lt;span class="lnt">9
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-php" data-lang="php">&lt;span class="line">&lt;span class="cl">&lt;span class="nv">$snapshot&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="nx">OrderSnapshot&lt;/span>&lt;span class="o">::&lt;/span>&lt;span class="na">where&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s1">&amp;#39;order_id&amp;#39;&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nv">$order&lt;/span>&lt;span class="o">-&amp;gt;&lt;/span>&lt;span class="na">id&lt;/span>&lt;span class="p">)&lt;/span>&lt;span class="o">-&amp;gt;&lt;/span>&lt;span class="na">first&lt;/span>&lt;span class="p">();&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">if&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="o">!&lt;/span>&lt;span class="k">empty&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nv">$snapshot&lt;/span>&lt;span class="p">))&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">return&lt;/span> &lt;span class="nv">$snapshot&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">// do something...
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">return&lt;/span> &lt;span class="nx">OrderSnapshot&lt;/span>&lt;span class="o">::&lt;/span>&lt;span class="na">create&lt;/span>&lt;span class="p">([&lt;/span>&lt;span class="s1">&amp;#39;payload&amp;#39;&lt;/span> &lt;span class="o">=&amp;gt;&lt;/span> &lt;span class="nv">$order_array&lt;/span>&lt;span class="p">]);&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>上面程式碼其實也可以使用 Laravel 的 &lt;code>firstOrCreate&lt;/code> 方法做簡化:&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-php" data-lang="php">&lt;span class="line">&lt;span class="cl">&lt;span class="k">return&lt;/span> &lt;span class="nx">OrderSnapshot&lt;/span>&lt;span class="o">::&lt;/span>&lt;span class="na">firstOrCreate&lt;/span>&lt;span class="p">(&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">[&lt;/span>&lt;span class="s1">&amp;#39;order_id&amp;#39;&lt;/span> &lt;span class="o">=&amp;gt;&lt;/span> &lt;span class="nv">$order&lt;/span>&lt;span class="o">-&amp;gt;&lt;/span>&lt;span class="na">id&lt;/span>&lt;span class="p">],&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">[&lt;/span>&lt;span class="s1">&amp;#39;payload&amp;#39;&lt;/span> &lt;span class="o">=&amp;gt;&lt;/span> &lt;span class="nv">$order_array&lt;/span>&lt;span class="p">]&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>這段邏輯看起來很簡單，在單一 process 的情況下，這段程式碼確實沒有任何問題，但如果今天同時有兩個 process 要執行這段程式的話，就可能會有非預期的結果出現。
+由於不論是上面的程式碼，或是簡化後的程式碼，如果沒有撈出資料的話（也就是資料不存在），都是要繼續往下執行新增資料的動作，而「撈出資料」和「新增資料」都是單獨的 Query，所以如果幾乎同時執行這段程式時，可能就會產生兩筆相同的資料：&lt;/p>
+&lt;p>&lt;img loading="lazy" 
+ src="/images/laravel-redis-lock.png" 
+ alt="Untitled" 
+ 
+ width=2651 
+ height="1250" />&lt;/p>
+&lt;p>而要解決這個問題，大概有以下幾種辦法：&lt;/p>
+&lt;h4 id="1-避免多個-process-執行">
+ &lt;a href="#1-%e9%81%bf%e5%85%8d%e5%a4%9a%e5%80%8b-process-%e5%9f%b7%e8%a1%8c" class="anchor">
+ &lt;svg class="icon" aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16">
+ &lt;path fill-rule="evenodd"
+ d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z">
+ &lt;/path>
+ &lt;/svg>
+ &lt;/a>
+ 1. 避免多個 process 執行
+&lt;/h4>
+&lt;p>如果是因為放在 job 裡面，同時有多個 queue worker 在消化這些 job，就保持 queue worker 的數量為 1。
+但我們這次遇到的情況並不適用，因為還可以透過 API Request realtime 執行這段程式。而且如果遇到真的很耗時的工作，也不可能為此只開一個 worker。&lt;/p></description></item></channel></rss>
