@@ -1,0 +1,13 @@
+[build]
+    publish = "public"
+    command = "hugo -b $URL"
+
+[context.production.environment]
+			HUGO_ENV = "production"
+			GOOGLE_APPLICATION_CREDENTIALS = "$GOOGLE_APPLICATION_CREDENTIALS"
+
+[context.branch-deploy]
+    command = "hugo --gc --minify -b $DEPLOY_PRIME_URL"
+
+[context.deploy-preview]
+    command = "hugo --gc --minify --buildFuture -b $DEPLOY_PRIME_URL"

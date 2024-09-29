@@ -1,0 +1,47 @@
+baseurl = "/"
+languageCode = 'en-us'
+title = '''Emmie' s Workspace'''
+theme = "hugo-tania"
+googleAnalytics = 'G-H540WMJ59Q'
+
+[params]
+	siteName = '''Emmie' s Workspace'''
+  siteDesc = "放一些筆記的地方"
+  author = "Emmie"
+  gtmContainerId="GTM-M9JRM86"
+
+  [params.socialOptions]
+    email = "tiahi5914@gmail.com"
+    github = "https://github.com/linxinemily"
+    medium = "https://emmielin.medium.com"
+
+
+  [params.comments]
+    enabled = true
+    provider = "utterances"
+    [params.comments.utterances]
+      enable = true
+      repo = "linxinemily/hugo-emmie-blog-comments"
+      issueTerm= "pathname"
+      theme = "github-light"
+
+[menu]
+[[menu.header]]
+  name = "Articles"
+  url = "/articles/"
+[[menu.header]]
+  name = "About"
+  url = "/about/"
+[[menu.footer]]
+    name = "RSS"
+    url = "/index.xml"
+	
+[markup]
+[markup.highlight]
+  noClasses = false
+  lineNos = true
+[markup.goldmark.renderer]
+  unsafe = true
+
+[outputs]
+  home = ["HTML", "RSS", "JSON"]
