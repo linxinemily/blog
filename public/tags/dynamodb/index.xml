@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>DynamoDB on Emmie&#39; s Workspace</title>
+    <link>//localhost:1313/tags/dynamodb/</link>
+    <description>Recent content in DynamoDB on Emmie&#39; s Workspace</description>
+    <generator>Hugo</generator>
+    <language>en-us</language>
+    <lastBuildDate>Wed, 08 Feb 2023 00:00:00 +0000</lastBuildDate>
+    <atom:link href="//localhost:1313/tags/dynamodb/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>將資料從 MariaDB 遷移至 AWS DynamoDB 過程紀錄</title>
+      <link>//localhost:1313/posts/migrate-data-from-mariadb-to-dynamodb/</link>
+      <pubDate>Wed, 08 Feb 2023 00:00:00 +0000</pubDate>
+      <guid>//localhost:1313/posts/migrate-data-from-mariadb-to-dynamodb/</guid>
+      <description>&lt;h2 id=&#34;前情提要&#34;&gt;&#xA;    &lt;a href=&#34;#%e5%89%8d%e6%83%85%e6%8f%90%e8%a6%81&#34; class=&#34;anchor&#34;&gt;&#xA;        &lt;svg class=&#34;icon&#34; aria-hidden=&#34;true&#34; focusable=&#34;false&#34; height=&#34;16&#34; version=&#34;1.1&#34; viewBox=&#34;0 0 16 16&#34; width=&#34;16&#34;&gt;&#xA;            &lt;path fill-rule=&#34;evenodd&#34;&#xA;                d=&#34;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&#34;&gt;&#xA;            &lt;/path&gt;&#xA;        &lt;/svg&gt;&#xA;    &lt;/a&gt;&#xA;    前情提要&#xA;&lt;/h2&gt;&#xA;&lt;p&gt;前陣子將公司一個 Laravel 專案當中通知的功能部分切出到另一個用 Golang 構建的服務，並且把資料從 MariaDB 遷移到 AWS DynamoDB。想說稍微紀錄一下這個過程，算是一個收穫滿多的經驗。&lt;/p&gt;&#xA;&lt;p&gt;由於原本存在 MariaDB 的通知資料量日益肥大，雖然當前仍不算是巨量資料，大約千萬級資料量而已，但是光是這個等級的資料量，只要不小心下一個範圍性的 select 語句都有可能會造成整個 DB 卡死然後服務掛掉（真實發生過在 production 環境上的事件…）。然而通知在我們的系統當中其實僅是一個輔助的功能，但一有問題卻可能直接導致整個服務停擺，怎麼想都不太合理。因此，「隔離」就是我們首要的目的——&lt;em&gt;通知的資料不該和主服務的資料擺在同個資料庫裡&lt;/em&gt; 。&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

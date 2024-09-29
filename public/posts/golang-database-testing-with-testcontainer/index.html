@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en-us">
+    
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="theme-color" content="dark">
+    <title>Golang 的資料庫(整合)測試 Part 2 - 使用 Testcontainers | Emmie&#39; s Workspace</title>
+    
+    <meta property="og:site_name" content="Emmie&#39; s Workspace" />
+    <meta property="og:title" content="Golang 的資料庫(整合)測試 Part 2 - 使用 Testcontainers | Emmie&#39; s Workspace"/>
+    <meta itemprop="name" content="Golang 的資料庫(整合)測試 Part 2 - 使用 Testcontainers | Emmie&#39; s Workspace" />
+    <meta name="twitter:title" content="Golang 的資料庫(整合)測試 Part 2 - 使用 Testcontainers | Emmie&#39; s Workspace" />
+    <meta name="application-name" content="Golang 的資料庫(整合)測試 Part 2 - 使用 Testcontainers | Emmie&#39; s Workspace" /><meta name="twitter:card" content="summary"/>
+
+    <meta name="description" content="在 Golang 資料庫整合測試當中使用 Testcontainers 解決測試所需的外部依賴。介紹 Testcontainers 及其用法，提供使用範例參考。" />
+    <meta name="twitter:description" content="在 Golang 資料庫整合測試當中使用 Testcontainers 解決測試所需的外部依賴。介紹 Testcontainers 及其用法，提供使用範例參考。 "/>
+    <meta itemprop="description" content=" 在 Golang 資料庫整合測試當中使用 Testcontainers 解決測試所需的外部依賴。介紹 Testcontainers 及其用法，提供使用範例參考。 "/>
+    <meta property="og:description" content=" 在 Golang 資料庫整合測試當中使用 Testcontainers 解決測試所需的外部依賴。介紹 Testcontainers 及其用法，提供使用範例參考。 " />
+
+    
+
+
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+    
+    <link rel="stylesheet" href="/sass/main.min.9606ece50dffeea1ff779aaa181ca0dd8f1e40cd70c1cdd128c568088ecf6f83.css">
+    
+</head>
+    
+    <script>
+        (function() {
+            const colorSchemeKey = 'ThemeColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'ThemeColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.userColorScheme = 'dark';
+        } else {
+            document.documentElement.dataset.userColorScheme = 'light';
+        }
+    })();
+</script>
+
+
+    <body class="dark">
+        <nav class="navbar">
+    <div class="container">
+        <div class="flex">
+            <div>
+                <a class="brand" href="/">
+                    
+                    
+                    Emmie&#39; s Workspace
+                    </a>
+            </div>
+            <div class="flex">
+                
+                <a href="/about/">About</a>
+                
+                <a href="/articles/">Articles</a>
+                
+                
+                    <button id="dark-mode-button">
+                    <svg class="light" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false" width="1em" height="1em" style="-ms-transform: rotate(360deg); -webkit-transform: rotate(360deg); transform: rotate(360deg);" preserveAspectRatio="xMidYMid meet" viewBox="0 0 36 36"><path fill="#FFD983" d="M30.312.776C32 19 20 32 .776 30.312c8.199 7.717 21.091 7.588 29.107-.429C37.9 21.867 38.03 8.975 30.312.776z"/><path d="M30.705 15.915a1.163 1.163 0 1 0 1.643 1.641a1.163 1.163 0 0 0-1.643-1.641zm-16.022 14.38a1.74 1.74 0 0 0 0 2.465a1.742 1.742 0 1 0 0-2.465zm13.968-2.147a2.904 2.904 0 0 1-4.108 0a2.902 2.902 0 0 1 0-4.107a2.902 2.902 0 0 1 4.108 0a2.902 2.902 0 0 1 0 4.107z" fill="#FFCC4D"/><rect x="0" y="0" width="36" height="36" fill="rgba(0, 0, 0, 0)" /></svg>
+                    <svg class="dark" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false" width="1em" height="1em" style="-ms-transform: rotate(360deg); -webkit-transform: rotate(360deg); transform: rotate(360deg);" preserveAspectRatio="xMidYMid meet" viewBox="0 0 36 36"><path fill="#FFD983" d="M16 2s0-2 2-2s2 2 2 2v2s0 2-2 2s-2-2-2-2V2zm18 14s2 0 2 2s-2 2-2 2h-2s-2 0-2-2s2-2 2-2h2zM4 16s2 0 2 2s-2 2-2 2H2s-2 0-2-2s2-2 2-2h2zm5.121-8.707s1.414 1.414 0 2.828s-2.828 0-2.828 0L4.878 8.708s-1.414-1.414 0-2.829c1.415-1.414 2.829 0 2.829 0l1.414 1.414zm21 21s1.414 1.414 0 2.828s-2.828 0-2.828 0l-1.414-1.414s-1.414-1.414 0-2.828s2.828 0 2.828 0l1.414 1.414zm-.413-18.172s-1.414 1.414-2.828 0s0-2.828 0-2.828l1.414-1.414s1.414-1.414 2.828 0s0 2.828 0 2.828l-1.414 1.414zm-21 21s-1.414 1.414-2.828 0s0-2.828 0-2.828l1.414-1.414s1.414-1.414 2.828 0s0 2.828 0 2.828l-1.414 1.414zM16 32s0-2 2-2s2 2 2 2v2s0 2-2 2s-2-2-2-2v-2z"/><circle fill="#FFD983" cx="18" cy="18" r="10"/><rect x="0" y="0" width="36" height="36" fill="rgba(0, 0, 0, 0)" /></svg>
+                    </button>
+                
+            </div>
+            </div>
+    </div>
+</nav>
+
+        <main>
+            
+<div class="container">
+    <article>
+        <header class="article-header">
+            <div class="thumb">
+                <div>
+                    <h1>Golang 的資料庫(整合)測試 Part 2 - 使用 Testcontainers</h1>
+                    <div class="post-meta">
+                        <div>
+                            
+                            
+                              
+                            
+                            By Emmie | <time>May 17, 2023</time>
+                            | 2 minutes
+                        </div>
+                        <div class="tags">
+                            
+                            <a href="/tags/golang/">Golang</a>
+                            
+                            <a href="/tags/testing/">Testing</a>
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+    </article>
+
+    <div class="article-post">
+    <h2 id="前言">
+    <a href="#%e5%89%8d%e8%a8%80" class="anchor">
+        <svg class="icon" aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16">
+            <path fill-rule="evenodd"
+                d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z">
+            </path>
+        </svg>
+    </a>
+    前言
+</h2>
+<p>上一篇文章 <a href="//localhost:1313/posts/golang-database-testing/">Golang 資料庫(整合)測試</a> 當中提到了在使用真實資料庫作為測試資料庫時，還可以使用 <a href="https://golang.testcontainers.org/">testcontainers</a> 讓我們能夠在測試當中直接操作 Docker Container，去建立測試時需要的資料庫環境。這樣一來，也不用像一開始那樣，得另外手動配置一個專門拿來跑測試用的資料庫，將測試整合到 CI/CD 流程上時也比較方便。</p>
+<p><small> 然後應該是不會有 Part 3 啦。 </small></p>
+<h2 id="testcontainers-簡介">
+    <a href="#testcontainers-%e7%b0%a1%e4%bb%8b" class="anchor">
+        <svg class="icon" aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16">
+            <path fill-rule="evenodd"
+                d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z">
+            </path>
+        </svg>
+    </a>
+    Testcontainers 簡介
+</h2>
+<p><a href="https://golang.testcontainers.org/">Testcontainers</a> 為多種語言提供套件（Golang、Java、Python 等等），開發人員可以透過該套件所提供的 API，在程式當中建立和清除基於容器的依賴項，以進行自動化整合測試。</p>
+<p>所以就延續使用上篇文章當中的範例，把它改成使用 Testcontainers 的版本吧！</p>
+<h2 id="使用-testcontainers">
+    <a href="#%e4%bd%bf%e7%94%a8-testcontainers" class="anchor">
+        <svg class="icon" aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16">
+            <path fill-rule="evenodd"
+                d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z">
+            </path>
+        </svg>
+    </a>
+    使用 Testcontainers
+</h2>
+<h3 id="requirement">
+    <a href="#requirement" class="anchor">
+        <svg class="icon" aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16">
+            <path fill-rule="evenodd"
+                d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z">
+            </path>
+        </svg>
+    </a>
+    Requirement
+</h3>
+<p>首先必須先確保環境當中有安裝 Docker，狀態為 running，且使用者要有權限可以執行 docker 指令。
+不同的作業系統會有不同的建議版本和注意事項，可以參考<a href="https://www.testcontainers.org/supported_docker_environment/">官方文件</a>。</p>
+<blockquote>
+<p>note: 原本在 local 跑，電腦是 Mac 又是 M1 晶片，遇到一堆環境問題快被搞瘋，後來索性放棄，改成在 linux 主機上面跑就都一切正常QQ</p>
+</blockquote>
+<h3 id="安裝-testcontainers-for-go-包">
+    <a href="#%e5%ae%89%e8%a3%9d-testcontainers-for-go-%e5%8c%85" class="anchor">
+        <svg class="icon" aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16">
+            <path fill-rule="evenodd"
+                d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z">
+            </path>
+        </svg>
+    </a>
+    安裝 Testcontainers for Go 包
+</h3>
+<pre tabindex="0"><code>go get github.com/testcontainers/testcontainers-go
+</code></pre><h3 id="安裝-mysql-module-包">
+    <a href="#%e5%ae%89%e8%a3%9d-mysql-module-%e5%8c%85" class="anchor">
+        <svg class="icon" aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16">
+            <path fill-rule="evenodd"
+                d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z">
+            </path>
+        </svg>
+    </a>
+    安裝 MySql Module 包
+</h3>
+<p>由於我們使用的 MariaDB 為 MySql 旁系血親，所以可以安裝官方提供的 <a href="https://golang.testcontainers.org/modules/mysql/">MySql Module 包</a>，直接用包提供的 API 可以再多省下一些程式碼：</p>
+<pre tabindex="0"><code>go get github.com/testcontainers/testcontainers-go/modules/mysql
+</code></pre><h3 id="調整程式碼">
+    <a href="#%e8%aa%bf%e6%95%b4%e7%a8%8b%e5%bc%8f%e7%a2%bc" class="anchor">
+        <svg class="icon" aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16">
+            <path fill-rule="evenodd"
+                d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z">
+            </path>
+        </svg>
+    </a>
+    調整程式碼
+</h3>
+<p>上回我們將重置資料庫的步驟放在 suite 的 setup 當中，那我們勢必得在這個動作之前先準備好資料庫，也就是要先把 MariaDB container 起起來：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="hl"><span class="lnt">10
+</span></span><span class="hl"><span class="lnt">11
+</span></span><span class="hl"><span class="lnt">12
+</span></span><span class="hl"><span class="lnt">13
+</span></span><span class="hl"><span class="lnt">14
+</span></span><span class="hl"><span class="lnt">15
+</span></span><span class="hl"><span class="lnt">16
+</span></span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="hl"><span class="lnt">20
+</span></span><span class="hl"><span class="lnt">21
+</span></span><span class="hl"><span class="lnt">22
+</span></span><span class="hl"><span class="lnt">23
+</span></span><span class="hl"><span class="lnt">24
+</span></span><span class="hl"><span class="lnt">25
+</span></span><span class="hl"><span class="lnt">26
+</span></span><span class="hl"><span class="lnt">27
+</span></span><span class="hl"><span class="lnt">28
+</span></span><span class="hl"><span class="lnt">29
+</span></span><span class="hl"><span class="lnt">30
+</span></span><span class="hl"><span class="lnt">31
+</span></span><span class="hl"><span class="lnt">32
+</span></span><span class="hl"><span class="lnt">33
+</span></span><span class="hl"><span class="lnt">34
+</span></span><span class="hl"><span class="lnt">35
+</span></span><span class="hl"><span class="lnt">36
+</span></span><span class="hl"><span class="lnt">37
+</span></span><span class="hl"><span class="lnt">38
+</span></span><span class="hl"><span class="lnt">39
+</span></span><span class="hl"><span class="lnt">40
+</span></span><span class="hl"><span class="lnt">41
+</span></span><span class="hl"><span class="lnt">42
+</span></span><span class="hl"><span class="lnt">43
+</span></span><span class="hl"><span class="lnt">44
+</span></span><span class="hl"><span class="lnt">45
+</span></span><span class="hl"><span class="lnt">46
+</span></span><span class="hl"><span class="lnt">47
+</span></span><span class="hl"><span class="lnt">48
+</span></span><span class="hl"><span class="lnt">49
+</span></span><span class="hl"><span class="lnt">50
+</span></span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kn">import</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="s">&#34;github.com/testcontainers/testcontainers-go&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="s">&#34;github.com/testcontainers/testcontainers-go/wait&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">testcontainermysql</span> <span class="s">&#34;github.com/testcontainers/testcontainers-go/modules/mysql&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// 添加了幾個屬性到 struct 裡面
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">type</span> <span class="nx">MysqlRepoTestSuite</span> <span class="kd">struct</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">suite</span><span class="p">.</span><span class="nx">Suite</span>
+</span></span><span class="line hl"><span class="cl">  <span class="nx">dbUser</span>     <span class="kt">string</span>
+</span></span><span class="line hl"><span class="cl">  <span class="nx">dbPassword</span> <span class="kt">string</span>
+</span></span><span class="line hl"><span class="cl">  <span class="nx">dbName</span>     <span class="kt">string</span> 
+</span></span><span class="line hl"><span class="cl">  <span class="nx">dbHost</span>     <span class="kt">string</span>
+</span></span><span class="line hl"><span class="cl">  <span class="nx">dbPort</span>     <span class="kt">string</span>
+</span></span><span class="line hl"><span class="cl">  <span class="nx">mariadbC</span>   <span class="o">*</span><span class="nx">testcontainermysql</span><span class="p">.</span><span class="nx">MySQLContainer</span>
+</span></span><span class="line hl"><span class="cl">  <span class="nx">ctx</span>        <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="p">(</span><span class="nx">suite</span> <span class="o">*</span><span class="nx">MysqlRepoTestSuite</span><span class="p">)</span> <span class="nf">SetupSuite</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line hl"><span class="cl">  <span class="c1">// ------開始啟動 container 的作業------
+</span></span></span><span class="line hl"><span class="cl"><span class="c1"></span>  <span class="nx">suite</span><span class="p">.</span><span class="nx">ctx</span> <span class="p">=</span> <span class="nx">context</span><span class="p">.</span><span class="nf">Background</span><span class="p">()</span>
+</span></span><span class="line hl"><span class="cl">  <span class="nx">mariadbC</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">testcontainermysql</span><span class="p">.</span><span class="nf">RunContainer</span><span class="p">(</span>
+</span></span><span class="line hl"><span class="cl">    <span class="nx">suite</span><span class="p">.</span><span class="nx">ctx</span><span class="p">,</span>
+</span></span><span class="line hl"><span class="cl">    <span class="nx">testcontainers</span><span class="p">.</span><span class="nf">WithImage</span><span class="p">(</span><span class="s">&#34;mariadb:10.5&#34;</span><span class="p">),</span>
+</span></span><span class="line hl"><span class="cl">    <span class="nx">testcontainermysql</span><span class="p">.</span><span class="nf">WithPassword</span><span class="p">(</span><span class="nx">suite</span><span class="p">.</span><span class="nx">dbPassword</span><span class="p">),</span>
+</span></span><span class="line hl"><span class="cl">    <span class="nx">testcontainermysql</span><span class="p">.</span><span class="nf">WithDatabase</span><span class="p">(</span><span class="nx">suite</span><span class="p">.</span><span class="nx">dbName</span><span class="p">),</span>
+</span></span><span class="line hl"><span class="cl">    <span class="nx">testcontainers</span><span class="p">.</span><span class="nf">WithWaitStrategy</span><span class="p">(</span>
+</span></span><span class="line hl"><span class="cl">        <span class="nx">wait</span><span class="p">.</span><span class="nf">ForLog</span><span class="p">(</span><span class="s">&#34;mysqld: ready for connections.&#34;</span><span class="p">).</span>
+</span></span><span class="line hl"><span class="cl">            <span class="nf">WithOccurrence</span><span class="p">(</span><span class="mi">2</span><span class="p">).</span>
+</span></span><span class="line hl"><span class="cl">            <span class="nf">WithStartupTimeout</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="nx">time</span><span class="p">.</span><span class="nx">Minute</span><span class="p">),</span>
+</span></span><span class="line hl"><span class="cl">    <span class="p">),</span>
+</span></span><span class="line hl"><span class="cl">  <span class="p">)</span>
+</span></span><span class="line hl"><span class="cl">
+</span></span><span class="line hl"><span class="cl">  <span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line hl"><span class="cl">    <span class="nx">log</span><span class="p">.</span><span class="nf">Fatal</span><span class="p">(</span><span class="s">&#34;Failed to start MariaDB container: &#34;</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
+</span></span><span class="line hl"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line hl"><span class="cl">
+</span></span><span class="line hl"><span class="cl">  <span class="nx">suite</span><span class="p">.</span><span class="nx">host</span><span class="p">,</span> <span class="nx">err</span> <span class="p">=</span> <span class="nx">mariadbC</span><span class="p">.</span><span class="nf">Host</span><span class="p">(</span><span class="nx">suite</span><span class="p">.</span><span class="nx">ctx</span><span class="p">)</span> <span class="c1">// 取得 container 的 host
+</span></span></span><span class="line hl"><span class="cl"><span class="c1"></span>  <span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line hl"><span class="cl">    <span class="nx">log</span><span class="p">.</span><span class="nf">Fatal</span><span class="p">(</span><span class="s">&#34;Failed to get MariaDB container host: &#34;</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
+</span></span><span class="line hl"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line hl"><span class="cl">  <span class="c1">// 將 container 3306 port 映射到主機上，並取得映射到主機上的 port
+</span></span></span><span class="line hl"><span class="cl"><span class="c1"></span>  <span class="c1">// (等同下 docker run 指令時的 -P {主機port}:{container port} 操作)
+</span></span></span><span class="line hl"><span class="cl"><span class="c1"></span>  <span class="nx">mappedPort</span><span class="p">,</span> <span class="nx">_</span> <span class="o">:=</span> <span class="nx">mariadbC</span><span class="p">.</span><span class="nf">MappedPort</span><span class="p">(</span><span class="nx">suite</span><span class="p">.</span><span class="nx">ctx</span><span class="p">,</span> <span class="s">&#34;3306/tcp&#34;</span><span class="p">)</span>
+</span></span><span class="line hl"><span class="cl">  <span class="nx">suite</span><span class="p">.</span><span class="nx">container</span> <span class="p">=</span> <span class="nx">mariadbC</span>
+</span></span><span class="line hl"><span class="cl">  <span class="nx">suite</span><span class="p">.</span><span class="nx">port</span> <span class="p">=</span> <span class="nx">strconv</span><span class="p">.</span><span class="nf">Itoa</span><span class="p">(</span><span class="nx">mappedPort</span><span class="p">.</span><span class="nf">Int</span><span class="p">())</span>
+</span></span><span class="line hl"><span class="cl">
+</span></span><span class="line hl"><span class="cl">  <span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line hl"><span class="cl">    <span class="nx">log</span><span class="p">.</span><span class="nf">Fatal</span><span class="p">(</span><span class="s">&#34;Failed to get MariaDB container port: &#34;</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
+</span></span><span class="line hl"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="nx">_</span><span class="p">,</span> <span class="nx">err</span> <span class="p">=</span> <span class="nx">suite</span><span class="p">.</span><span class="nf">freshDatabase</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">panic</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>傳入 <code>testcontainermysql.RunContainer()</code> 的參數除了 ctx 之外都是選填，分別解釋上面傳入各個參數的意義：</p>
+<h5 id="testcontainerswithimagemariadb105">
+    <a href="#testcontainerswithimagemariadb105" class="anchor">
+        <svg class="icon" aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16">
+            <path fill-rule="evenodd"
+                d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z">
+            </path>
+        </svg>
+    </a>
+    <code>testcontainers.WithImage(&quot;mariadb:10.5&quot;)</code>
+</h5>
+<p>指定使用 mariadb 10.5 版本的 docker image（不傳入該參數的話，預設會抓取 mysql:8 的 docker image）</p>
+<h5 id="testcontainermysqlwithpasswordsuitedbpassword">
+    <a href="#testcontainermysqlwithpasswordsuitedbpassword" class="anchor">
+        <svg class="icon" aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16">
+            <path fill-rule="evenodd"
+                d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z">
+            </path>
+        </svg>
+    </a>
+    <code>testcontainermysql.WithPassword(suite.dbPassword)</code>
+</h5>
+<p>指定啟動 container 時傳入的環境變數 <code>MYSQL_PASSWORD</code>（不傳入的預設值是 <code>test</code>）</p>
+<h5 id="testcontainermysqlwithdatabasesuitedbname">
+    <a href="#testcontainermysqlwithdatabasesuitedbname" class="anchor">
+        <svg class="icon" aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16">
+            <path fill-rule="evenodd"
+                d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z">
+            </path>
+        </svg>
+    </a>
+    <code>testcontainermysql.WithDatabase(suite.dbName)</code>
+</h5>
+<p>指定啟動 container 時傳入的環境變數 <code>MYSQL_DATABASE</code>，建立一個名為 <code>suite.dbName</code>(變數) 的 database（不傳入的預設值是 <code>test</code>）</p>
+<h5 id="testcontainerswithwaitstrategywaitforlogmysqld-ready-for-connectionswithoccurrence2withstartuptimeout2timeminute">
+    <a href="#testcontainerswithwaitstrategywaitforlogmysqld-ready-for-connectionswithoccurrence2withstartuptimeout2timeminute" class="anchor">
+        <svg class="icon" aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16">
+            <path fill-rule="evenodd"
+                d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z">
+            </path>
+        </svg>
+    </a>
+    <code>testcontainers.WithWaitStrategy(wait.ForLog(&quot;mysqld: ready for connections.&quot;).WithOccurrence(2).WithStartupTimeout(2*time.Minute))</code>
+</h5>
+<p>由於下建立 container 的指令之後，需等待 container 完全啟動，才能保證後續的使用可以正常地連接上 container，因此這個參數是讓我們可以設定等待的策略。分別解釋鏈的各個方法意義：</p>
+<ul>
+<li><code>wait.ForLog()</code>：程式會被 blocking 住，直到 container 當中特定的 log 出現後，才繼續往下執行</li>
+<li><code>WithOccurrence()</code>：指定 log 必須出現的次數</li>
+<li><code>WithStartupTimeout()</code>：指定等待的超時時間</li>
+</ul>
+<p>用人話來總結這一行的操作： 等待 log 當中出現 <code>mysqld: ready for connections.</code>這段文字 <code>2</code> 次之後才繼續往下執行，如果 <code>2</code> 分鐘之內沒等到的話就跳 timeout 錯誤。</p>
+<p>接著，就是要記得在 suite 的 teardown 當中，關閉 container 釋放資源：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">func</span> <span class="p">(</span><span class="nx">suite</span> <span class="o">*</span><span class="nx">MysqlRepoTestSuite</span><span class="p">)</span> <span class="nf">TearDownSuite</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">err</span> <span class="o">:=</span> <span class="nx">suite</span><span class="p">.</span><span class="nx">mariadbC</span><span class="p">.</span><span class="nf">Terminate</span><span class="p">(</span><span class="nx">suite</span><span class="p">.</span><span class="nx">ctx</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">panic</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>最後就可以來跑看看測試了：</p>
+<pre tabindex="0"><code>go test
+</code></pre><p><img loading="lazy" 
+    src="/images/testcontainer-go.png" 
+    alt="database-testing-in-golang" 
+     
+    width=1474 
+    height="656"  />
+成功囉🎉</p>
+<h2 id="小結">
+    <a href="#%e5%b0%8f%e7%b5%90" class="anchor">
+        <svg class="icon" aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16">
+            <path fill-rule="evenodd"
+                d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z">
+            </path>
+        </svg>
+    </a>
+    小結
+</h2>
+<p>其實使用的方式滿簡易的，概念上也不難，就是在 setup 當中最一開始多一個「啟動資料庫 Server 的 Docker Container」以及最後 teardown 時「關閉 container」的步驟而已，後面就可以繼續原本的流程(重置資料庫、開啟連線&hellip;等等)，但比較會遇到問題的部分可能會是在環境配置以及 API 的使用，因為官方文件的範例都沒有到很完整，使用時會需要摸索一陣子，因此才特別寫一篇筆記記錄。</p>
+<p>最後附上完整的程式碼範例：
+<a href="https://gist.github.com/linxinemily/276905e0145218538cb0be3a79a36153">https://gist.github.com/linxinemily/276905e0145218538cb0be3a79a36153</a></p>
+
+    </div>
+</div>
+
+<div class="container">
+    
+    <nav class="flex container suggested">
+        
+        <a rel="prev" href="/posts/golang-database-testing/" title="Previous post (older)">
+            <span>Previous</span>
+            Golang 的資料庫(整合)測試
+            </a>
+        
+        
+        
+        <a rel="next" href="/posts/golang-graphql-dataloader-1/" title="Next post (newer)">
+            <span>Next</span>
+            GraphQL Dataloader 在 Golang 當中的打開方法與原理解析（上）
+            </a> 
+        
+    </nav>
+    
+</div>
+ 
+<div class="container">
+    
+    <script src="https://utteranc.es/client.js" 
+        repo="linxinemily/hugo-emmie-blog-comments"
+        issue-term="pathname"
+        
+        crossorigin="anonymous"
+        async
+        >
+</script>
+
+<style>
+    .utterances {
+        max-width: unset;
+    }
+</style>
+
+<script>
+    function setUtterancesTheme(theme) {
+        let utterances = document.querySelector('.utterances iframe');
+        if (utterances) {
+            utterances.contentWindow.postMessage(
+                {
+                    type: 'set-theme',
+                    theme: `github-${theme}`
+                },
+                'https://utteranc.es'
+            );
+        }
+    }
+
+    addEventListener('message', event => {
+        if (event.origin !== 'https://utteranc.es') return;
+        setUtterancesTheme(document.documentElement.dataset.userColorScheme)
+    });
+
+    window.addEventListener('onColorSchemeChange', (e) => {
+        setUtterancesTheme(e.detail)
+    })
+</script>
+
+</div>
+
+</main>
+
+
+        </main>
+        <footer class="footer flex">
+    <section class="container">
+        <nav class="footer-links">
+            
+            <a href="/index.xml">RSS</a>
+            
+        </nav>
+
+        
+    </section>
+    <script defer src="/ts/features.0e4ad6a8cf3364ce36345e6c4b51eba6cc886aa2d8a4a63a617e906062690ffd.js" 
+    data-enable-footnotes="true"
+    ></script>
+</footer>
+
+    </body>
+</html>

@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en-us">
+    
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="theme-color" content="dark">
+    <title>Mock Dynamodb Client(use aws SDK for golang) with testify/mock | Emmie&#39; s Workspace</title>
+    
+    <meta property="og:site_name" content="Emmie&#39; s Workspace" />
+    <meta property="og:title" content="Mock Dynamodb Client(use aws SDK for golang) with testify/mock | Emmie&#39; s Workspace"/>
+    <meta itemprop="name" content="Mock Dynamodb Client(use aws SDK for golang) with testify/mock | Emmie&#39; s Workspace" />
+    <meta name="twitter:title" content="Mock Dynamodb Client(use aws SDK for golang) with testify/mock | Emmie&#39; s Workspace" />
+    <meta name="application-name" content="Mock Dynamodb Client(use aws SDK for golang) with testify/mock | Emmie&#39; s Workspace" /><meta name="twitter:card" content="summary"/>
+
+    <meta name="description" content="放一些筆記的地方" />
+    <meta name="twitter:description" content="放一些筆記的地方"/>
+    <meta itemprop="description" content="放一些筆記的地方"/>
+    <meta property="og:description" content="放一些筆記的地方" />
+
+    
+
+
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+    
+    <link rel="stylesheet" href="/sass/main.min.9606ece50dffeea1ff779aaa181ca0dd8f1e40cd70c1cdd128c568088ecf6f83.css">
+    
+</head>
+    
+    <script>
+        (function() {
+            const colorSchemeKey = 'ThemeColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'ThemeColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.userColorScheme = 'dark';
+        } else {
+            document.documentElement.dataset.userColorScheme = 'light';
+        }
+    })();
+</script>
+
+
+    <body class="dark">
+        <nav class="navbar">
+    <div class="container">
+        <div class="flex">
+            <div>
+                <a class="brand" href="/">
+                    
+                    
+                    Emmie&#39; s Workspace
+                    </a>
+            </div>
+            <div class="flex">
+                
+                <a href="/about/">About</a>
+                
+                <a href="/articles/">Articles</a>
+                
+                
+                    <button id="dark-mode-button">
+                    <svg class="light" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false" width="1em" height="1em" style="-ms-transform: rotate(360deg); -webkit-transform: rotate(360deg); transform: rotate(360deg);" preserveAspectRatio="xMidYMid meet" viewBox="0 0 36 36"><path fill="#FFD983" d="M30.312.776C32 19 20 32 .776 30.312c8.199 7.717 21.091 7.588 29.107-.429C37.9 21.867 38.03 8.975 30.312.776z"/><path d="M30.705 15.915a1.163 1.163 0 1 0 1.643 1.641a1.163 1.163 0 0 0-1.643-1.641zm-16.022 14.38a1.74 1.74 0 0 0 0 2.465a1.742 1.742 0 1 0 0-2.465zm13.968-2.147a2.904 2.904 0 0 1-4.108 0a2.902 2.902 0 0 1 0-4.107a2.902 2.902 0 0 1 4.108 0a2.902 2.902 0 0 1 0 4.107z" fill="#FFCC4D"/><rect x="0" y="0" width="36" height="36" fill="rgba(0, 0, 0, 0)" /></svg>
+                    <svg class="dark" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false" width="1em" height="1em" style="-ms-transform: rotate(360deg); -webkit-transform: rotate(360deg); transform: rotate(360deg);" preserveAspectRatio="xMidYMid meet" viewBox="0 0 36 36"><path fill="#FFD983" d="M16 2s0-2 2-2s2 2 2 2v2s0 2-2 2s-2-2-2-2V2zm18 14s2 0 2 2s-2 2-2 2h-2s-2 0-2-2s2-2 2-2h2zM4 16s2 0 2 2s-2 2-2 2H2s-2 0-2-2s2-2 2-2h2zm5.121-8.707s1.414 1.414 0 2.828s-2.828 0-2.828 0L4.878 8.708s-1.414-1.414 0-2.829c1.415-1.414 2.829 0 2.829 0l1.414 1.414zm21 21s1.414 1.414 0 2.828s-2.828 0-2.828 0l-1.414-1.414s-1.414-1.414 0-2.828s2.828 0 2.828 0l1.414 1.414zm-.413-18.172s-1.414 1.414-2.828 0s0-2.828 0-2.828l1.414-1.414s1.414-1.414 2.828 0s0 2.828 0 2.828l-1.414 1.414zm-21 21s-1.414 1.414-2.828 0s0-2.828 0-2.828l1.414-1.414s1.414-1.414 2.828 0s0 2.828 0 2.828l-1.414 1.414zM16 32s0-2 2-2s2 2 2 2v2s0 2-2 2s-2-2-2-2v-2z"/><circle fill="#FFD983" cx="18" cy="18" r="10"/><rect x="0" y="0" width="36" height="36" fill="rgba(0, 0, 0, 0)" /></svg>
+                    </button>
+                
+            </div>
+            </div>
+    </div>
+</nav>
+
+        <main>
+            
+<div class="container">
+    <article>
+        <header class="article-header">
+            <div class="thumb">
+                <div>
+                    <h1>Mock Dynamodb Client(use aws SDK for golang) with testify/mock</h1>
+                    <div class="post-meta">
+                        <div>
+                            
+                            
+                              
+                            
+                            By Emmie | <time>August 04, 2022</time>
+                            | 2 minutes
+                        </div>
+                        <div class="tags">
+                            
+                            <a href="/tags/golang/">Golang</a>
+                            
+                            <a href="/tags/testing/">Testing</a>
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+    </article>
+
+    <div class="article-post">
+    <p>測試時若涉及第三方服務，往往會需要運用到 Mock （測試替身）的概念，將外部模組代換成一個假的物件，並模擬其行為與回傳值，讓我們能專注於業務邏輯的單元測試。</p>
+<p>當前的情境為，在 Repository 裡使用 <a href="https://github.com/aws/aws-sdk-go">aws SDK for go</a> 當中的 dynamodb client 來建立與 dynamodb 的連線以及後續相關對資料庫的操作。但在進行測試時，為了避免每次跑測試都要真的戳資料庫（因在單元測試中，我們只想要確定與 dynamodb client 的互動有<strong>確實呼叫預期的方法、傳入相應的參數</strong>，而不在乎資料庫到底有沒有寫入資料這種事），會需要將這個 client 替換成 Mock 物件。</p>
+<p>而 <a href="https://github.com/aws/aws-sdk-go">aws SDK for go</a> 就提供了一個方便開發者進行 mocking 的 interface：<a href="https://docs.aws.amazon.com/sdk-for-go/api/service/dynamodb/dynamodbiface/">dynamodb interface</a></p>
+<p>我們可以直接使用 <a href="https://docs.aws.amazon.com/sdk-for-go/api/service/dynamodb/dynamodbiface/">dynamodb interface</a> 作為依賴的類型，也就是說如果要放一個 dynamodb client 在 struct 裡面，原本可能會直接使用 <code>*dynamodb.DynamoDB</code> 類型：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">type</span> <span class="nx">dynamodbUserNotificationRepository</span> <span class="kd">struct</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">Client</span> <span class="o">*</span><span class="nx">dynamodb</span><span class="p">.</span><span class="nx">DynamoDB</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// 實例化時注入 dynamodb client 依賴
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">func</span> <span class="nf">NewDynamondbUserNotificationRepository</span><span class="p">(</span><span class="nx">Client</span> <span class="o">*</span><span class="nx">dynamodb</span><span class="p">.</span><span class="nx">DynamoDB</span><span class="p">)</span> <span class="nx">domain</span><span class="p">.</span><span class="nx">UserNotificationRepository</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="o">&amp;</span><span class="nx">dynamodbUserNotificationRepository</span><span class="p">{</span><span class="nx">Client</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>但為了之後方便在測試時能輕鬆注入 Mock 物件，可以替換成 <code>dynamodbiface.DynamoDBAPI</code> ：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">type</span> <span class="nx">dynamodbUserNotificationRepository</span> <span class="kd">struct</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">Client</span> <span class="nx">dynamodbiface</span><span class="p">.</span><span class="nx">DynamoDBAPI</span>  <span class="c1">// instead of *dynamodb.DynamoDB
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">NewDynamondbUserNotificationRepository</span><span class="p">(</span><span class="nx">Client</span> <span class="nx">dynamodbiface</span><span class="p">.</span><span class="nx">DynamoDBAPI</span><span class="p">)</span> <span class="nx">domain</span><span class="p">.</span><span class="nx">UserNotificationRepository</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="o">&amp;</span><span class="nx">dynamodbUserNotificationRepository</span><span class="p">{</span><span class="nx">Client</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>繼續完整這個範例，假設 <code>dynamodbUserNotificationRepository</code> 有一個 <code>Store</code> 方法：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">func</span> <span class="p">(</span><span class="nx">d</span> <span class="o">*</span><span class="nx">dynamodbUserNotificationRepository</span><span class="p">)</span> <span class="nf">Store</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">user_notification_input</span> <span class="o">*</span><span class="nx">domain</span><span class="p">.</span><span class="nx">UserNotificationRequestInputStore</span><span class="p">,</span> <span class="nx">batch</span> <span class="kt">string</span><span class="p">)</span> <span class="p">(</span><span class="nx">user_notification</span> <span class="o">*</span><span class="nx">domain</span><span class="p">.</span><span class="nx">UserNotification</span><span class="p">,</span> <span class="nx">err</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// 裡面會呼叫到 d.Client.PutItem 方法
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>要測試上面這個 <code>Store</code> 方法，需要將 <code>dynamodbUserNotificationRepository</code> 裡面的 <code>Client</code> 取代成 Mock 物件，所以我們先按照官方文件範例定義一個 Mock client struct：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">type</span> <span class="nx">MockDynamoDBClient</span> <span class="kd">struct</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">dynamodbiface</span><span class="p">.</span><span class="nx">DynamoDBAPI</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>接著複寫 <code>PutItem</code> 方法，回傳 dummy 資料：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">func</span> <span class="p">(</span><span class="nx">m</span> <span class="o">*</span><span class="nx">mockDynamoDBClient</span><span class="p">)</span> <span class="nf">PutItem</span><span class="p">(</span><span class="nx">input</span> <span class="o">*</span><span class="nx">dynamodb</span><span class="p">.</span><span class="nx">PutItemInput</span><span class="p">)</span> <span class="p">(</span><span class="o">*</span><span class="nx">dynamodb</span><span class="p">.</span><span class="nx">PutItemOutput</span><span class="p">,</span><span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="o">&amp;</span><span class="nx">dynamodb</span><span class="p">.</span><span class="nx">PutItemOutput</span><span class="p">{},</span> <span class="kc">nil</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>然後就可以在測試中 new 一個 <code>mockDynamoDBClient</code> 傳入 <code>NewDynamondbUserNotificationRepository</code>：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">TestStore</span><span class="p">(</span><span class="nx">t</span> <span class="o">*</span><span class="nx">testing</span><span class="p">.</span><span class="nx">T</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">mockSvc</span> <span class="o">:=</span> <span class="o">&amp;</span><span class="nx">mockDynamoDBClient</span><span class="p">{}</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">repo</span> <span class="o">:=</span> <span class="nx">repository</span><span class="p">.</span><span class="nf">NewDynamondbUserNotificationRepository</span><span class="p">(</span><span class="nx">mockSvc</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// do something...
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>感覺就很開心地寫完測試了。但如果同時有另外一個方法也會呼叫 <code>PutItem</code> ，而在為這個方法寫測試時，<code>PutItem</code> 的回傳值必須不同，該怎麼辦？首先想到的可能是再另外寫個 Mock client 2，但有 n 個難道要寫 n 次嗎？</p>
+<p>這就是 testify/mock 出場的時候了，使用它能讓我們在個別測試裡定義 Mock 物件會被呼叫的方法名及其回傳值。</p>
+<p>將 <code>MockDynamoDBClient</code> 修改為：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">type</span> <span class="nx">MockDynamoDBClient</span> <span class="kd">struct</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">dynamodbiface</span><span class="p">.</span><span class="nx">DynamoDBAPI</span> <span class="c1">// 1. 
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="nx">mock</span><span class="p">.</span><span class="nx">Mock</span> <span class="c1">// (多加上的部分) 2. 
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>這裡同時使用到兩個 package 提供的 interface 以及 struct</p>
+<ol>
+<li><a href="https://github.com/aws/aws-sdk-go/blob/v1.44.69/service/dynamodb/dynamodbiface/interface.go#L62-L286">aws/aws-sdk-go dynamodbiface.DynamoDBAPI</a>:
+依照<a href="https://docs.aws.amazon.com/sdk-for-go/api/service/dynamodb/dynamodbiface/">官方文件範例</a>，將 <code>dynamodbiface.DynamoDBAPI</code> interface 用匿名的方式嵌進 Mock client struct 裡面，使得該 struct 等同”繼承”了這些 interface 當中的方法，因此可以被視為一個有實現該 interface 的 struct。</li>
+<li><a href="https://github.com/stretchr/testify/blob/master/mock/mock.go#L266-L283">stretchr/testify mock.Mock</a>:
+依照官方範例，在定義 Mock client struct 當中嵌入 <code>mock.Mock</code>（同樣會有”繼承“ <code>mock.Mock</code> 裏的方法的效果）。</li>
+</ol>
+<blockquote>
+<p>兩者都利用到了 golang struct embed 的特性，關於 golang 的 struct with embedded anonymous interface 有空會再寫另一篇筆記來解釋。
+Ref：<a href="https://stackoverflow.com/a/24546029/10943670">https://stackoverflow.com/a/24546029/10943670</a></p>
+</blockquote>
+<p>接著定義 mock client 待會在測試中會被呼叫到的方法：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">func</span> <span class="p">(</span><span class="nx">m</span> <span class="o">*</span><span class="nx">MockDynamoDBClient</span><span class="p">)</span> <span class="nf">PutItem</span><span class="p">(</span><span class="nx">input</span> <span class="o">*</span><span class="nx">dynamodb</span><span class="p">.</span><span class="nx">PutItemInput</span><span class="p">)</span> <span class="p">(</span><span class="o">*</span><span class="nx">dynamodb</span><span class="p">.</span><span class="nx">PutItemOutput</span><span class="p">,</span><span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">arg</span> <span class="o">:=</span> <span class="nx">m</span><span class="p">.</span><span class="nf">Called</span><span class="p">(</span><span class="nx">input</span><span class="p">)</span> <span class="c1">// 1.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="k">return</span> <span class="nx">arg</span><span class="p">.</span><span class="nf">Get</span><span class="p">(</span><span class="mi">0</span><span class="p">).(</span><span class="o">*</span><span class="nx">dynamodb</span><span class="p">.</span><span class="nx">PutItemOutput</span><span class="p">),</span> <span class="nx">arg</span><span class="p">.</span><span class="nf">Error</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="c1">// 2.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ol>
+<li><strong>取得參數</strong>:
+這裏的 <code>Called</code> 方法會取得 <code>PutItem</code> 方法被呼叫之後應該要回傳的參數，待會會在寫測試時實際定義，總之這邊就是預期會得到一組在測試時定義的回傳參數。</li>
+<li><strong>類型檢查</strong>:
+檢查得到的參數是否符合類型，是的話才會真的將其當成 <code>PutItem</code> 方法的回傳值傳出去。 <code>arg.Get(0).(*dynamodb.PutItemOutput)</code> 表示得到的第一個參數必須是 <code>*dynamodb.PutItemOutput</code> 類型，<code>arg.Error(1)</code> 表示得到的第二個參數必須是 <code>Error</code> 類型，若不符合類型會引發 panic。</li>
+</ol>
+<blockquote>
+<p>官方文件：<a href="https://github.com/stretchr/testify/blob/master/mock/doc.go">https://github.com/stretchr/testify/blob/master/mock/doc.go</a></p>
+</blockquote>
+<p>最後來跑一次加入了 <code>mock.Mock</code> 之後的整個測試流程吧：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">TestStore</span><span class="p">(</span><span class="nx">t</span> <span class="o">*</span><span class="nx">testing</span><span class="p">.</span><span class="nx">T</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="nx">mockSvc</span> <span class="o">:=</span> <span class="o">&amp;</span><span class="nx">mockDynamoDBClient</span><span class="p">{}</span> <span class="c1">// 1.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl">  <span class="nx">mockSvc</span><span class="p">.</span><span class="nf">On</span><span class="p">(</span><span class="s">&#34;PutItem&#34;</span><span class="p">,</span> <span class="nx">mock</span><span class="p">.</span><span class="nx">Anything</span><span class="p">).</span><span class="nf">Return</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">dynamodb</span><span class="p">.</span><span class="nx">PutItemOutput</span><span class="p">{},</span> <span class="kc">nil</span><span class="p">).</span><span class="nf">Once</span><span class="p">()</span> <span class="c1">// 2.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl">  <span class="nx">repo</span> <span class="o">:=</span> <span class="nx">repository</span><span class="p">.</span><span class="nf">NewDynamondbUserNotificationRepository</span><span class="p">(</span><span class="nx">mockSvc</span><span class="p">)</span> <span class="c1">// 3.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// other arrangements...
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// action
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="nx">ret</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">repo</span><span class="p">.</span><span class="nf">Store</span><span class="p">(</span><span class="nx">context</span><span class="p">.</span><span class="nf">TODO</span><span class="p">(),</span> <span class="nx">mockedInput</span><span class="p">,</span> <span class="nx">batch</span><span class="p">)</span> <span class="c1">// 4.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  
+</span></span><span class="line"><span class="cl">  <span class="c1">// assertions...
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ol>
+<li>首先實例化一個 Mock client</li>
+<li>重點在於這個部分，使用了 <code>mock.Mock</code> 當中的方法，分別解釋各個方法作用：
+<ul>
+<li><code>On(&quot;PutItem&quot;, mock.Anything)</code> ：斷言呼叫該物件的 <code>PutItem</code> 方法時會收到一個任意參數 <code>mock.Anything</code></li>
+<li><code>Return(&amp;dynamodb.PutItemOutput{}, nil)</code> ：也就是上面提到的 <code>Called</code> 方法被呼叫後的回傳值</li>
+<li><code>Once()</code> ：斷言該方法應該要被呼叫一次</li>
+</ul>
+</li>
+<li>再來將 Mock client 物件注入 <code>NewDynamondbUserNotificationRepository</code></li>
+<li>呼叫 <code>repo.Store(context.TODO(), mockedInput, batch)</code> 時，裡面將會呼叫  Mock client 的 <code>PutItem</code> 方法</li>
+</ol>
+<p>以上就是結合 <a href="https://github.com/aws/aws-sdk-go">aws SDK for go</a> 所提供的 <a href="https://docs.aws.amazon.com/sdk-for-go/api/service/dynamodb/dynamodbiface/">dynamodb interface</a> 搭配 testify/mock 進行單元測試的方法～</p>
+
+    </div>
+</div>
+
+<div class="container">
+    
+    <nav class="flex container suggested">
+        
+        <a rel="prev" href="/posts/laravel-ioc-container-%E5%A6%82%E4%BD%95%E8%A7%A3%E6%9E%90-controller-method-%E7%95%B6%E4%B8%AD%E7%9A%84%E4%BE%9D%E8%B3%B4/" title="Previous post (older)">
+            <span>Previous</span>
+            Laravel IoC Container 如何解析 Controller method 當中的依賴(DI)
+            </a>
+        
+        
+        
+        <a rel="next" href="/posts/golang-slice-assignment-%E8%88%87-append-%E6%96%B9%E6%B3%95/" title="Next post (newer)">
+            <span>Next</span>
+            Golang Slice Assignment 與 append 方法
+            </a> 
+        
+    </nav>
+    
+</div>
+ 
+<div class="container">
+    
+    <script src="https://utteranc.es/client.js" 
+        repo="linxinemily/hugo-emmie-blog-comments"
+        issue-term="pathname"
+        
+        crossorigin="anonymous"
+        async
+        >
+</script>
+
+<style>
+    .utterances {
+        max-width: unset;
+    }
+</style>
+
+<script>
+    function setUtterancesTheme(theme) {
+        let utterances = document.querySelector('.utterances iframe');
+        if (utterances) {
+            utterances.contentWindow.postMessage(
+                {
+                    type: 'set-theme',
+                    theme: `github-${theme}`
+                },
+                'https://utteranc.es'
+            );
+        }
+    }
+
+    addEventListener('message', event => {
+        if (event.origin !== 'https://utteranc.es') return;
+        setUtterancesTheme(document.documentElement.dataset.userColorScheme)
+    });
+
+    window.addEventListener('onColorSchemeChange', (e) => {
+        setUtterancesTheme(e.detail)
+    })
+</script>
+
+</div>
+
+</main>
+
+
+        </main>
+        <footer class="footer flex">
+    <section class="container">
+        <nav class="footer-links">
+            
+            <a href="/index.xml">RSS</a>
+            
+        </nav>
+
+        
+    </section>
+    <script defer src="/ts/features.0e4ad6a8cf3364ce36345e6c4b51eba6cc886aa2d8a4a63a617e906062690ffd.js" 
+    data-enable-footnotes="true"
+    ></script>
+</footer>
+
+    </body>
+</html>

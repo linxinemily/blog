@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en-us">
+    
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="theme-color" content="dark">
+    <title>GraphQL Dataloader 在 Golang 當中的打開方法與原理解析（上） | Emmie&#39; s Workspace</title>
+    
+    <meta property="og:site_name" content="Emmie&#39; s Workspace" />
+    <meta property="og:title" content="GraphQL Dataloader 在 Golang 當中的打開方法與原理解析（上） | Emmie&#39; s Workspace"/>
+    <meta itemprop="name" content="GraphQL Dataloader 在 Golang 當中的打開方法與原理解析（上） | Emmie&#39; s Workspace" />
+    <meta name="twitter:title" content="GraphQL Dataloader 在 Golang 當中的打開方法與原理解析（上） | Emmie&#39; s Workspace" />
+    <meta name="application-name" content="GraphQL Dataloader 在 Golang 當中的打開方法與原理解析（上） | Emmie&#39; s Workspace" /><meta name="twitter:card" content="summary"/>
+
+    <meta name="description" content="介紹 GraphQL 的 Dataloader，以及在 Golang 當中的使用方法。" />
+    <meta name="twitter:description" content="介紹 GraphQL 的 Dataloader，以及在 Golang 當中的使用方法。 "/>
+    <meta itemprop="description" content=" 介紹 GraphQL 的 Dataloader，以及在 Golang 當中的使用方法。 "/>
+    <meta property="og:description" content=" 介紹 GraphQL 的 Dataloader，以及在 Golang 當中的使用方法。 " />
+
+    
+
+
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+    
+    <link rel="stylesheet" href="/sass/main.min.9606ece50dffeea1ff779aaa181ca0dd8f1e40cd70c1cdd128c568088ecf6f83.css">
+    
+</head>
+    
+    <script>
+        (function() {
+            const colorSchemeKey = 'ThemeColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'ThemeColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.userColorScheme = 'dark';
+        } else {
+            document.documentElement.dataset.userColorScheme = 'light';
+        }
+    })();
+</script>
+
+
+    <body class="dark">
+        <nav class="navbar">
+    <div class="container">
+        <div class="flex">
+            <div>
+                <a class="brand" href="/">
+                    
+                    
+                    Emmie&#39; s Workspace
+                    </a>
+            </div>
+            <div class="flex">
+                
+                <a href="/about/">About</a>
+                
+                <a href="/articles/">Articles</a>
+                
+                
+                    <button id="dark-mode-button">
+                    <svg class="light" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false" width="1em" height="1em" style="-ms-transform: rotate(360deg); -webkit-transform: rotate(360deg); transform: rotate(360deg);" preserveAspectRatio="xMidYMid meet" viewBox="0 0 36 36"><path fill="#FFD983" d="M30.312.776C32 19 20 32 .776 30.312c8.199 7.717 21.091 7.588 29.107-.429C37.9 21.867 38.03 8.975 30.312.776z"/><path d="M30.705 15.915a1.163 1.163 0 1 0 1.643 1.641a1.163 1.163 0 0 0-1.643-1.641zm-16.022 14.38a1.74 1.74 0 0 0 0 2.465a1.742 1.742 0 1 0 0-2.465zm13.968-2.147a2.904 2.904 0 0 1-4.108 0a2.902 2.902 0 0 1 0-4.107a2.902 2.902 0 0 1 4.108 0a2.902 2.902 0 0 1 0 4.107z" fill="#FFCC4D"/><rect x="0" y="0" width="36" height="36" fill="rgba(0, 0, 0, 0)" /></svg>
+                    <svg class="dark" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false" width="1em" height="1em" style="-ms-transform: rotate(360deg); -webkit-transform: rotate(360deg); transform: rotate(360deg);" preserveAspectRatio="xMidYMid meet" viewBox="0 0 36 36"><path fill="#FFD983" d="M16 2s0-2 2-2s2 2 2 2v2s0 2-2 2s-2-2-2-2V2zm18 14s2 0 2 2s-2 2-2 2h-2s-2 0-2-2s2-2 2-2h2zM4 16s2 0 2 2s-2 2-2 2H2s-2 0-2-2s2-2 2-2h2zm5.121-8.707s1.414 1.414 0 2.828s-2.828 0-2.828 0L4.878 8.708s-1.414-1.414 0-2.829c1.415-1.414 2.829 0 2.829 0l1.414 1.414zm21 21s1.414 1.414 0 2.828s-2.828 0-2.828 0l-1.414-1.414s-1.414-1.414 0-2.828s2.828 0 2.828 0l1.414 1.414zm-.413-18.172s-1.414 1.414-2.828 0s0-2.828 0-2.828l1.414-1.414s1.414-1.414 2.828 0s0 2.828 0 2.828l-1.414 1.414zm-21 21s-1.414 1.414-2.828 0s0-2.828 0-2.828l1.414-1.414s1.414-1.414 2.828 0s0 2.828 0 2.828l-1.414 1.414zM16 32s0-2 2-2s2 2 2 2v2s0 2-2 2s-2-2-2-2v-2z"/><circle fill="#FFD983" cx="18" cy="18" r="10"/><rect x="0" y="0" width="36" height="36" fill="rgba(0, 0, 0, 0)" /></svg>
+                    </button>
+                
+            </div>
+            </div>
+    </div>
+</nav>
+
+        <main>
+            
+<div class="container">
+    <article>
+        <header class="article-header">
+            <div class="thumb">
+                <div>
+                    <h1>GraphQL Dataloader 在 Golang 當中的打開方法與原理解析（上）</h1>
+                    <div class="post-meta">
+                        <div>
+                            
+                            
+                              
+                            
+                            By Emmie | <time>June 04, 2023</time>
+                            | 4 minutes
+                        </div>
+                        <div class="tags">
+                            
+                            <a href="/tags/graphql/">GraphQL</a>
+                            
+                            <a href="/tags/golang/">Golang</a>
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+    </article>
+
+    <div class="article-post">
+    <h2 id="the-problem">
+    <a href="#the-problem" class="anchor">
+        <svg class="icon" aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16">
+            <path fill-rule="evenodd"
+                d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z">
+            </path>
+        </svg>
+    </a>
+    The Problem
+</h2>
+<p>使用 GraphQL 時，遇到以下的查詢：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-graphql" data-lang="graphql"><span class="line"><span class="cl"><span class="kd">query</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nc">content</span><span class="p">(</span><span class="py">hotel_id</span><span class="p">:</span><span class="w"> </span><span class="nc">1</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="py">rooms</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="py">features</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="py">id</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="py">icon_url</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="py">text</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">          </span><span class="py">zh_tw</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">}</span><span class="w">
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>在資料的關聯上，content 底下有許多 rooms，每個 room 底下都有多個 features。但在資料表結構上，room 有一個 <code>content_id</code> 欄位，以及一個 <code>features</code> 欄位，裏面儲存了所有 features 的 id。</p>
+<p>而現在 Client 希望，當 query features 時如果夾帶了 <code>icon_url</code> 或 <code>text</code> 欄位，server 必須多回傳 feature 的這兩個欄位。也就是在 room.feature 的 resolver 的這兩個方法當中：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">func</span> <span class="p">(</span><span class="nx">r</span> <span class="o">*</span><span class="nx">roomFeatureResolver</span><span class="p">)</span> <span class="nf">IconURL</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">obj</span> <span class="o">*</span><span class="nx">model</span><span class="p">.</span><span class="nx">RoomFeature</span><span class="p">)</span> <span class="p">(</span><span class="o">*</span><span class="kt">string</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// maybe query feature data from DB by obj.id ...?  
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="k">return</span> <span class="nx">f</span><span class="p">.</span><span class="nx">IconUrl</span><span class="p">,</span> <span class="kc">nil</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="p">(</span><span class="nx">r</span> <span class="o">*</span><span class="nx">roomFeatureResolver</span><span class="p">)</span> <span class="nf">Text</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">obj</span> <span class="o">*</span><span class="nx">model</span><span class="p">.</span><span class="nx">RoomFeature</span><span class="p">)</span> <span class="p">(</span><span class="o">*</span><span class="nx">model</span><span class="p">.</span><span class="nx">I18nString</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// maybe query feature data from DB by obj.id ...?  
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="k">return</span> <span class="nx">f</span><span class="p">.</span><span class="nx">Text</span><span class="p">,</span> <span class="kc">nil</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>都需要向 DB 取得 feature 資料。</p>
+<p>但這麼一來，只要有 n 個 rooms，m 個 feature，就得 query <code>n * m * 2</code>(取得 icon_url 和 text 2 個欄位) 次，嗯..非常熟悉的 N+1 問題。
+要解決這個問題，GraphQL 官方有提供一個方法，那就是使用 DataLoader。</p>
+<h2 id="什麼是-dataloader">
+    <a href="#%e4%bb%80%e9%ba%bc%e6%98%af-dataloader" class="anchor">
+        <svg class="icon" aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16">
+            <path fill-rule="evenodd"
+                d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z">
+            </path>
+        </svg>
+    </a>
+    什麼是 Dataloader？
+</h2>
+<p>DataLoader 是 GraphQL 官方提供的一個<a href="https://github.com/graphql/DataLoader">套件</a>，主要用於解決資料載入時的效能問題。透過將多個請求收集到批次中，然後一次性獲取結果，從而減少重複的查詢或計算。
+具體而言，DataLoader 有以下特點：</p>
+<blockquote>
+<p><em>以下所提到的「請求」都是指在同一個 API Request 生命週期當中，對同一資料的讀取請求。</em></p>
+</blockquote>
+<ul>
+<li>
+<p>批次處理：DataLoader 會將一段時間內或一定數量的請求進行批次處理載入數據，以減少資料庫的查詢次數和計算成本。</p>
+</li>
+<li>
+<p>緩存：DataLoader 內部使用緩存機制，將已經載入的資料暫存在記憶體中。當下次請求需要相同的資料時，可以直接從緩存中返回，避免再次查詢資料庫。(但這些緩存數據只會存在於同一個 API Request 的生命週期當中，當 Request 結束後就會被清除)</p>
+</li>
+<li>
+<p>避免重複載入：DataLoader 會確保同一個資料只被載入一次，即使同一時間有多個請求要求載入相同的資料，也只會執行一次載入操作。</p>
+</li>
+</ul>
+<p>但因為官方套件只有 nodejs 版本，其他語言的話官方是表示留給開發者們自己去實現&hellip;</p>
+<blockquote>
+<p><em>&ldquo;DataLoader is provided so that it may be useful not just to build GraphQL services for Node.js but also as a publicly available reference implementation of this concept in the hopes that it can be ported to other languages.“</em></p>
+</blockquote>
+<p>當然使用 Golang 的我們很幸運地還是可以繼續站在巨人的肩膀上，在 gqlgen（一個提供快速搭建 GraphQL Server 的套件）的文件當中，就直接端出了這個 Golang 版本的套件：<a href="https://github.com/graph-gophers/DataLoader">graph-gophers/DataLoader</a>。所以下所討論的使用方法以及原始碼，都是會以這個套件的內容為主。</p>
+<h2 id="使用-dataloader">
+    <a href="#%e4%bd%bf%e7%94%a8-dataloader" class="anchor">
+        <svg class="icon" aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16">
+            <path fill-rule="evenodd"
+                d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z">
+            </path>
+        </svg>
+    </a>
+    使用 Dataloader
+</h2>
+<p>那麽就來透過 DataLoader 實現我們的需求吧！</p>
+<p>預期達到的效果是：<strong>將 Query 當中所有 rooms.features 的 id 都搜集起來，一次向資料庫發送查詢，取得所有 feature 資料後，將其暫存在記憶體，當需要特定 id 的 feature 資料時便從中取出回傳。</strong></p>
+<p>雖然使用方式在剛剛提到的 gqlgen <a href="https://gqlgen.com/reference/dataloaders/">官方文件所提供的範例</a>當中都已經寫得很清楚，但下面還是會完整呈現，補充當中幾個方法跟參數的關係，以便在後續的原始碼閱讀中可以更容易理解：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span><span class="lnt">58
+</span><span class="lnt">59
+</span><span class="lnt">60
+</span><span class="lnt">61
+</span><span class="lnt">62
+</span><span class="lnt">63
+</span><span class="lnt">64
+</span><span class="lnt">65
+</span><span class="lnt">66
+</span><span class="lnt">67
+</span><span class="lnt">68
+</span><span class="lnt">69
+</span><span class="lnt">70
+</span><span class="lnt">71
+</span><span class="lnt">72
+</span><span class="lnt">73
+</span><span class="lnt">74
+</span><span class="lnt">75
+</span><span class="lnt">76
+</span><span class="lnt">77
+</span><span class="lnt">78
+</span><span class="lnt">79
+</span><span class="lnt">80
+</span><span class="lnt">81
+</span><span class="lnt">82
+</span><span class="lnt">83
+</span><span class="lnt">84
+</span><span class="lnt">85
+</span><span class="lnt">86
+</span><span class="lnt">87
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="c1">// my_repo/graph/storage/storage.go
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kn">package</span> <span class="nx">storage</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">type</span> <span class="nx">ctxKey</span> <span class="kt">string</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">const</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">loadersKey</span> <span class="p">=</span> <span class="nf">ctxKey</span><span class="p">(</span><span class="s">&#34;dataloaders&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">type</span> <span class="nx">FeatureReader</span> <span class="kd">struct</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">featureRepo</span> <span class="nx">model</span><span class="p">.</span><span class="nx">FeatureRepository</span> <span class="c1">// 將向DB查詢的部分封裝到 Repository 當中
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// 實際上會被 dataloader 所呼叫，用來一次取得所有 features 的方法
+</span></span></span><span class="line"><span class="cl"><span class="c1">// 這邊的參數 keys 的來源是下方另一個同名的自定義方法當中，呼叫了 dataloader 的 Load 方法
+</span></span></span><span class="line"><span class="cl"><span class="c1">// 而 Load 方法都會接收一個 key 參數
+</span></span></span><span class="line"><span class="cl"><span class="c1">// 當搜集完成所有的 keys 後就會被傳進這邊來
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">func</span> <span class="p">(</span><span class="nx">u</span> <span class="o">*</span><span class="nx">FeatureReader</span><span class="p">)</span> <span class="nf">GetFeature</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">keys</span> <span class="nx">dataloader</span><span class="p">.</span><span class="nx">Keys</span><span class="p">)</span> <span class="p">[]</span><span class="o">*</span><span class="nx">dataloader</span><span class="p">.</span><span class="nx">Result</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">featuresIDs</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">([]</span><span class="kt">int</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="nx">keys</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">  <span class="k">for</span> <span class="nx">ix</span><span class="p">,</span> <span class="nx">key</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">keys</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">featureID</span><span class="p">,</span> <span class="nx">_</span> <span class="o">:=</span> <span class="nx">strconv</span><span class="p">.</span><span class="nf">Atoi</span><span class="p">(</span><span class="nx">key</span><span class="p">.</span><span class="nf">String</span><span class="p">())</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">featuresIDs</span><span class="p">[</span><span class="nx">ix</span><span class="p">]</span> <span class="p">=</span> <span class="nx">featureID</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">featuresById</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">u</span><span class="p">.</span><span class="nx">featureRepo</span><span class="p">.</span><span class="nf">GetFeaturesByIDs</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span> <span class="nx">featuresIDs</span><span class="p">)</span> <span class="c1">// 實際向DB取資料的方法
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="kc">nil</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="c1">// 必須將資料的順序按照 keys 的順序排列
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="nx">output</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">([]</span><span class="o">*</span><span class="nx">dataloader</span><span class="p">.</span><span class="nx">Result</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="nx">keys</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">  <span class="k">for</span> <span class="nx">index</span><span class="p">,</span> <span class="nx">featureKey</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">keys</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">feature</span><span class="p">,</span> <span class="nx">ok</span> <span class="o">:=</span> <span class="nx">featuresById</span><span class="p">[</span><span class="nx">featureKey</span><span class="p">.</span><span class="nf">String</span><span class="p">()]</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="nx">ok</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">output</span><span class="p">[</span><span class="nx">index</span><span class="p">]</span> <span class="p">=</span> <span class="o">&amp;</span><span class="nx">dataloader</span><span class="p">.</span><span class="nx">Result</span><span class="p">{</span><span class="nx">Data</span><span class="p">:</span> <span class="nx">feature</span><span class="p">,</span> <span class="nx">Error</span><span class="p">:</span> <span class="kc">nil</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">err</span> <span class="o">:=</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;feature not found %s&#34;</span><span class="p">,</span> <span class="nx">featureKey</span><span class="p">.</span><span class="nf">String</span><span class="p">())</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">output</span><span class="p">[</span><span class="nx">index</span><span class="p">]</span> <span class="p">=</span> <span class="o">&amp;</span><span class="nx">dataloader</span><span class="p">.</span><span class="nx">Result</span><span class="p">{</span><span class="nx">Data</span><span class="p">:</span> <span class="kc">nil</span><span class="p">,</span> <span class="nx">Error</span><span class="p">:</span> <span class="nx">err</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">output</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">type</span> <span class="nx">Loaders</span> <span class="kd">struct</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">FeatureLoader</span> <span class="o">*</span><span class="nx">dataloader</span><span class="p">.</span><span class="nx">Loader</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// 待會會在主程式裏面呼叫，實例化所有 loaders 以便傳入 middleware 當中
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">func</span> <span class="nf">NewLoaders</span><span class="p">(</span><span class="nx">MySqlFeatureRepository</span> <span class="nx">model</span><span class="p">.</span><span class="nx">FeatureRepository</span><span class="p">)</span> <span class="o">*</span><span class="nx">Loaders</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">featureReader</span> <span class="o">:=</span> <span class="o">&amp;</span><span class="nx">FeatureReader</span><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">featureRepo</span><span class="p">:</span> <span class="nx">MySqlFeatureRepository</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">loaders</span> <span class="o">:=</span> <span class="o">&amp;</span><span class="nx">Loaders</span><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">//新增一個 Loader 並傳入自定義的批次處理方法
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nx">FeatureLoader</span><span class="p">:</span> <span class="nx">dataloader</span><span class="p">.</span><span class="nf">NewBatchedLoader</span><span class="p">(</span><span class="nx">featureReader</span><span class="p">.</span><span class="nx">GetFeature</span><span class="p">),</span> 
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">loaders</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// 透過 middleware 將 loaders 注入到 context 裏面
+</span></span></span><span class="line"><span class="cl"><span class="c1">// 以利其他地方可以透過同一個 ctx 物件取得 loader（一個 API Request 當中會有一個 ctx 物件）
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">func</span> <span class="nf">Middleware</span><span class="p">(</span><span class="nx">loaders</span> <span class="o">*</span><span class="nx">Loaders</span><span class="p">,</span> <span class="nx">next</span> <span class="nx">http</span><span class="p">.</span><span class="nx">Handler</span><span class="p">)</span> <span class="nx">http</span><span class="p">.</span><span class="nx">Handler</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">http</span><span class="p">.</span><span class="nf">HandlerFunc</span><span class="p">(</span><span class="kd">func</span><span class="p">(</span><span class="nx">w</span> <span class="nx">http</span><span class="p">.</span><span class="nx">ResponseWriter</span><span class="p">,</span> <span class="nx">r</span> <span class="o">*</span><span class="nx">http</span><span class="p">.</span><span class="nx">Request</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">nextCtx</span> <span class="o">:=</span> <span class="nx">context</span><span class="p">.</span><span class="nf">WithValue</span><span class="p">(</span><span class="nx">r</span><span class="p">.</span><span class="nf">Context</span><span class="p">(),</span> <span class="nx">loadersKey</span><span class="p">,</span> <span class="nx">loaders</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">r</span> <span class="p">=</span> <span class="nx">r</span><span class="p">.</span><span class="nf">WithContext</span><span class="p">(</span><span class="nx">nextCtx</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">next</span><span class="p">.</span><span class="nf">ServeHTTP</span><span class="p">(</span><span class="nx">w</span><span class="p">,</span> <span class="nx">r</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="p">})</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// 將 loaders 從 context 當中取出的 helper method
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">func</span> <span class="nf">For</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">)</span> <span class="o">*</span><span class="nx">Loaders</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">ctx</span><span class="p">.</span><span class="nf">Value</span><span class="p">(</span><span class="nx">loadersKey</span><span class="p">).(</span><span class="o">*</span><span class="nx">Loaders</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// 會在 resolver 當中被呼叫，只要傳入 feature id 就會回傳在 dataloader 當中準備好的對應資料
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">func</span> <span class="nf">GetFeature</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">featureID</span> <span class="kt">int</span><span class="p">)</span> <span class="p">(</span><span class="o">*</span><span class="nx">model</span><span class="p">.</span><span class="nx">RoomFeatureWithData</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">loaders</span> <span class="o">:=</span> <span class="nf">For</span><span class="p">(</span><span class="nx">ctx</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// 這邊所傳入 Load 的第二個參數，也就是上面自定義方法 FeatureReader.GetFeature 註解當中所提到
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="c1">// 每個傳進 Load 的第二個參數，也就是 key
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="c1">// 都會被搜集下來，直到所有 keys 搜集完畢後，就會觸發 FeatureReader.GetFeature 方法
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="c1">// 並將所有搜集的 keys 傳入該方法
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="nx">thunk</span> <span class="o">:=</span> <span class="nx">loaders</span><span class="p">.</span><span class="nx">FeatureLoader</span><span class="p">.</span><span class="nf">Load</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span> <span class="nx">dataloader</span><span class="p">.</span><span class="nf">StringKey</span><span class="p">(</span><span class="nx">fmt</span><span class="p">.</span><span class="nf">Sprintf</span><span class="p">(</span><span class="s">&#34;%d&#34;</span><span class="p">,</span> <span class="nx">featureID</span><span class="p">)))</span> <span class="c1">// 留意 key 必須為字串類型
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="nx">result</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nf">thunk</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="kc">nil</span><span class="p">,</span> <span class="nx">err</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">result</span><span class="p">.(</span><span class="o">*</span><span class="nx">model</span><span class="p">.</span><span class="nx">RoomFeatureWithData</span><span class="p">),</span> <span class="kc">nil</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>接著，到 resolver 當中，將取得資料的邏輯改成呼叫 <code>stroage.GetFeature</code> 方法：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">func</span> <span class="p">(</span><span class="nx">r</span> <span class="o">*</span><span class="nx">roomFeatureResolver</span><span class="p">)</span> <span class="nf">IconURL</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">obj</span> <span class="o">*</span><span class="nx">model</span><span class="p">.</span><span class="nx">RoomFeature</span><span class="p">)</span> <span class="p">(</span><span class="o">*</span><span class="kt">string</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">f</span><span class="p">,</span> <span class="nx">_</span> <span class="o">:=</span> <span class="nx">storage</span><span class="p">.</span><span class="nf">GetFeature</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span> <span class="o">*</span><span class="nx">obj</span><span class="p">.</span><span class="nx">ID</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">f</span><span class="p">.</span><span class="nx">IconUrl</span><span class="p">,</span> <span class="kc">nil</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="p">(</span><span class="nx">r</span> <span class="o">*</span><span class="nx">roomFeatureResolver</span><span class="p">)</span> <span class="nf">Text</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">obj</span> <span class="o">*</span><span class="nx">model</span><span class="p">.</span><span class="nx">RoomFeature</span><span class="p">)</span> <span class="p">(</span><span class="o">*</span><span class="nx">model</span><span class="p">.</span><span class="nx">I18nString</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">f</span><span class="p">,</span> <span class="nx">_</span> <span class="o">:=</span> <span class="nx">storage</span><span class="p">.</span><span class="nf">GetFeature</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span> <span class="o">*</span><span class="nx">obj</span><span class="p">.</span><span class="nx">ID</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">f</span><span class="p">.</span><span class="nx">Text</span><span class="p">,</span> <span class="kc">nil</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>然後在主程式當中（或是定義路由的檔案），加上 middlerware：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="nx">router</span><span class="p">.</span><span class="nf">Use</span><span class="p">(</span><span class="kd">func</span><span class="p">(</span><span class="nx">next</span> <span class="nx">http</span><span class="p">.</span><span class="nx">Handler</span><span class="p">)</span> <span class="nx">http</span><span class="p">.</span><span class="nx">Handler</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// 每次 request 都有自己的 dataloader
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">return</span> <span class="nx">storage</span><span class="p">.</span><span class="nf">Middleware</span><span class="p">(</span><span class="nx">storage</span><span class="p">.</span><span class="nf">NewLoaders</span><span class="p">(</span><span class="nx">featureRepo</span><span class="p">),</span> <span class="nx">next</span><span class="p">)</span> 
+</span></span><span class="line"><span class="cl"><span class="p">})</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>至此，不管往後總共有幾個 features，都只會執行一次的資料庫查詢，解決了 N+1 問題。
+礙於篇幅有點太長，想說拆成上下兩篇比較好閱讀，所以分析 Dataloader 原始碼的部分，就留到<a href="//localhost:1313/posts/golang-graphql-dataloader-2/">下一篇</a>了～</p>
+
+    </div>
+</div>
+
+<div class="container">
+    
+    <nav class="flex container suggested">
+        
+        <a rel="prev" href="/posts/golang-database-testing-with-testcontainer/" title="Previous post (older)">
+            <span>Previous</span>
+            Golang 的資料庫(整合)測試 Part 2 - 使用 Testcontainers
+            </a>
+        
+        
+        
+        <a rel="next" href="/posts/golang-graphql-dataloader-2/" title="Next post (newer)">
+            <span>Next</span>
+            GraphQL Dataloader 在 Golang 當中的打開方法與原理解析（下）
+            </a> 
+        
+    </nav>
+    
+</div>
+ 
+<div class="container">
+    
+    <script src="https://utteranc.es/client.js" 
+        repo="linxinemily/hugo-emmie-blog-comments"
+        issue-term="pathname"
+        
+        crossorigin="anonymous"
+        async
+        >
+</script>
+
+<style>
+    .utterances {
+        max-width: unset;
+    }
+</style>
+
+<script>
+    function setUtterancesTheme(theme) {
+        let utterances = document.querySelector('.utterances iframe');
+        if (utterances) {
+            utterances.contentWindow.postMessage(
+                {
+                    type: 'set-theme',
+                    theme: `github-${theme}`
+                },
+                'https://utteranc.es'
+            );
+        }
+    }
+
+    addEventListener('message', event => {
+        if (event.origin !== 'https://utteranc.es') return;
+        setUtterancesTheme(document.documentElement.dataset.userColorScheme)
+    });
+
+    window.addEventListener('onColorSchemeChange', (e) => {
+        setUtterancesTheme(e.detail)
+    })
+</script>
+
+</div>
+
+</main>
+
+
+        </main>
+        <footer class="footer flex">
+    <section class="container">
+        <nav class="footer-links">
+            
+            <a href="/index.xml">RSS</a>
+            
+        </nav>
+
+        
+    </section>
+    <script defer src="/ts/features.0e4ad6a8cf3364ce36345e6c4b51eba6cc886aa2d8a4a63a617e906062690ffd.js" 
+    data-enable-footnotes="true"
+    ></script>
+</footer>
+
+    </body>
+</html>

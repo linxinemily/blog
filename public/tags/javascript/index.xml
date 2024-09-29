@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Javascript on Emmie&#39; s Workspace</title>
+    <link>//localhost:1313/tags/javascript/</link>
+    <description>Recent content in Javascript on Emmie&#39; s Workspace</description>
+    <generator>Hugo</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sun, 30 Jun 2019 14:48:12 +0000</lastBuildDate>
+    <atom:link href="//localhost:1313/tags/javascript/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Promise.all() 與 async/await</title>
+      <link>//localhost:1313/posts/promise-all%E8%88%87async-await%E5%92%8Caxios/</link>
+      <pubDate>Sun, 30 Jun 2019 14:48:12 +0000</pubDate>
+      <guid>//localhost:1313/posts/promise-all%E8%88%87async-await%E5%92%8Caxios/</guid>
+      <description>&lt;p&gt;本來一直都用迴圈去處理同時發多個 request（很好懂但有點難處理 Error），這次親自來試試 Promise.all() 總算體驗到平行處理非同步的威力（？）於是紀錄一下心得以及和 await + axios 連用時的一些眉角。&lt;/p&gt;&#xA;&lt;!-- more --&gt;&#xA;&lt;h2 id=&#34;promiseall-用法&#34;&gt;&#xA;    &lt;a href=&#34;#promiseall-%e7%94%a8%e6%b3%95&#34; class=&#34;anchor&#34;&gt;&#xA;        &lt;svg class=&#34;icon&#34; aria-hidden=&#34;true&#34; focusable=&#34;false&#34; height=&#34;16&#34; version=&#34;1.1&#34; viewBox=&#34;0 0 16 16&#34; width=&#34;16&#34;&gt;&#xA;            &lt;path fill-rule=&#34;evenodd&#34;&#xA;                d=&#34;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&#34;&gt;&#xA;            &lt;/path&gt;&#xA;        &lt;/svg&gt;&#xA;    &lt;/a&gt;&#xA;    Promise.all() 用法&#xA;&lt;/h2&gt;&#xA;&lt;p&gt;Promise.all (&lt;code&gt;iterable&lt;/code&gt;) 接受一個 iterable 物件（通常是陣列）作為參數，當裡面每個元素都是 Promise 物件時(也可以不是，待會會提到），它就會平行去處理這些 Promise。由於&lt;strong&gt;其本身會回傳一個 Promise 物件&lt;/strong&gt;，所以我們同樣可以用 then 或 await 去接他的 resolve/reject。&#xA;當所有的 Promise 都被 resolve 後才會回傳 resolve，其值會是全部的 Promise 處理完後所回傳的 resolve 值所組成的陣列。但若其中有一個 Promise 被 reject 就會直接拋出該 Promise 所回傳的錯誤。&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

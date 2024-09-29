@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="en-us">
+    
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="theme-color" content="dark">
+    <title>在 Laravel 當中使用 Redis 分布式鎖 避免 race condition 重複插入相同資料問題 | Emmie&#39; s Workspace</title>
+    
+    <meta property="og:site_name" content="Emmie&#39; s Workspace" />
+    <meta property="og:title" content="在 Laravel 當中使用 Redis 分布式鎖 避免 race condition 重複插入相同資料問題 | Emmie&#39; s Workspace"/>
+    <meta itemprop="name" content="在 Laravel 當中使用 Redis 分布式鎖 避免 race condition 重複插入相同資料問題 | Emmie&#39; s Workspace" />
+    <meta name="twitter:title" content="在 Laravel 當中使用 Redis 分布式鎖 避免 race condition 重複插入相同資料問題 | Emmie&#39; s Workspace" />
+    <meta name="application-name" content="在 Laravel 當中使用 Redis 分布式鎖 避免 race condition 重複插入相同資料問題 | Emmie&#39; s Workspace" /><meta name="twitter:card" content="summary"/>
+
+    <meta name="description" content="放一些筆記的地方" />
+    <meta name="twitter:description" content="放一些筆記的地方"/>
+    <meta itemprop="description" content="放一些筆記的地方"/>
+    <meta property="og:description" content="放一些筆記的地方" />
+
+    
+
+
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+    
+    <link rel="stylesheet" href="/sass/main.min.9606ece50dffeea1ff779aaa181ca0dd8f1e40cd70c1cdd128c568088ecf6f83.css">
+    
+</head>
+    
+    <script>
+        (function() {
+            const colorSchemeKey = 'ThemeColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'ThemeColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.userColorScheme = 'dark';
+        } else {
+            document.documentElement.dataset.userColorScheme = 'light';
+        }
+    })();
+</script>
+
+
+    <body class="dark">
+        <nav class="navbar">
+    <div class="container">
+        <div class="flex">
+            <div>
+                <a class="brand" href="/">
+                    
+                    
+                    Emmie&#39; s Workspace
+                    </a>
+            </div>
+            <div class="flex">
+                
+                <a href="/about/">About</a>
+                
+                <a href="/articles/">Articles</a>
+                
+                
+                    <button id="dark-mode-button">
+                    <svg class="light" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false" width="1em" height="1em" style="-ms-transform: rotate(360deg); -webkit-transform: rotate(360deg); transform: rotate(360deg);" preserveAspectRatio="xMidYMid meet" viewBox="0 0 36 36"><path fill="#FFD983" d="M30.312.776C32 19 20 32 .776 30.312c8.199 7.717 21.091 7.588 29.107-.429C37.9 21.867 38.03 8.975 30.312.776z"/><path d="M30.705 15.915a1.163 1.163 0 1 0 1.643 1.641a1.163 1.163 0 0 0-1.643-1.641zm-16.022 14.38a1.74 1.74 0 0 0 0 2.465a1.742 1.742 0 1 0 0-2.465zm13.968-2.147a2.904 2.904 0 0 1-4.108 0a2.902 2.902 0 0 1 0-4.107a2.902 2.902 0 0 1 4.108 0a2.902 2.902 0 0 1 0 4.107z" fill="#FFCC4D"/><rect x="0" y="0" width="36" height="36" fill="rgba(0, 0, 0, 0)" /></svg>
+                    <svg class="dark" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false" width="1em" height="1em" style="-ms-transform: rotate(360deg); -webkit-transform: rotate(360deg); transform: rotate(360deg);" preserveAspectRatio="xMidYMid meet" viewBox="0 0 36 36"><path fill="#FFD983" d="M16 2s0-2 2-2s2 2 2 2v2s0 2-2 2s-2-2-2-2V2zm18 14s2 0 2 2s-2 2-2 2h-2s-2 0-2-2s2-2 2-2h2zM4 16s2 0 2 2s-2 2-2 2H2s-2 0-2-2s2-2 2-2h2zm5.121-8.707s1.414 1.414 0 2.828s-2.828 0-2.828 0L4.878 8.708s-1.414-1.414 0-2.829c1.415-1.414 2.829 0 2.829 0l1.414 1.414zm21 21s1.414 1.414 0 2.828s-2.828 0-2.828 0l-1.414-1.414s-1.414-1.414 0-2.828s2.828 0 2.828 0l1.414 1.414zm-.413-18.172s-1.414 1.414-2.828 0s0-2.828 0-2.828l1.414-1.414s1.414-1.414 2.828 0s0 2.828 0 2.828l-1.414 1.414zm-21 21s-1.414 1.414-2.828 0s0-2.828 0-2.828l1.414-1.414s1.414-1.414 2.828 0s0 2.828 0 2.828l-1.414 1.414zM16 32s0-2 2-2s2 2 2 2v2s0 2-2 2s-2-2-2-2v-2z"/><circle fill="#FFD983" cx="18" cy="18" r="10"/><rect x="0" y="0" width="36" height="36" fill="rgba(0, 0, 0, 0)" /></svg>
+                    </button>
+                
+            </div>
+            </div>
+    </div>
+</nav>
+
+        <main>
+            
+<div class="container">
+    <article>
+        <header class="article-header">
+            <div class="thumb">
+                <div>
+                    <h1>在 Laravel 當中使用 Redis 分布式鎖 避免 race condition 重複插入相同資料問題</h1>
+                    <div class="post-meta">
+                        <div>
+                            
+                            
+                              
+                            
+                            By Emmie | <time>November 06, 2022</time>
+                            | 3 minutes
+                        </div>
+                        <div class="tags">
+                            
+                            <a href="/tags/laravel/">Laravel</a>
+                            
+                            <a href="/tags/redis/">Redis</a>
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+    </article>
+
+    <div class="article-post">
+    <p>前幾天遇到一個狀況，原本程式裡有一段邏輯是 <strong>「如果該筆資料不存在，就寫入新資料，但如果已存在，就直接回傳該筆已存在的資料」</strong>，程式碼大概長這樣：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl"><span class="nv">$snapshot</span> <span class="o">=</span> <span class="nx">OrderSnapshot</span><span class="o">::</span><span class="na">where</span><span class="p">(</span><span class="s1">&#39;order_id&#39;</span><span class="p">,</span> <span class="nv">$order</span><span class="o">-&gt;</span><span class="na">id</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">first</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="k">empty</span><span class="p">(</span><span class="nv">$snapshot</span><span class="p">))</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nv">$snapshot</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// do something...
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"><span class="k">return</span> <span class="nx">OrderSnapshot</span><span class="o">::</span><span class="na">create</span><span class="p">([</span><span class="s1">&#39;payload&#39;</span> <span class="o">=&gt;</span> <span class="nv">$order_array</span><span class="p">]);</span>
+</span></span><span class="line"><span class="cl"> 
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>上面程式碼其實也可以使用 Laravel 的 <code>firstOrCreate</code> 方法做簡化:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl"><span class="k">return</span> <span class="nx">OrderSnapshot</span><span class="o">::</span><span class="na">firstOrCreate</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">  <span class="p">[</span><span class="s1">&#39;order_id&#39;</span> <span class="o">=&gt;</span> <span class="nv">$order</span><span class="o">-&gt;</span><span class="na">id</span><span class="p">],</span>
+</span></span><span class="line"><span class="cl">  <span class="p">[</span><span class="s1">&#39;payload&#39;</span> <span class="o">=&gt;</span> <span class="nv">$order_array</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>這段邏輯看起來很簡單，在單一 process 的情況下，這段程式碼確實沒有任何問題，但如果今天同時有兩個 process 要執行這段程式的話，就可能會有非預期的結果出現。
+由於不論是上面的程式碼，或是簡化後的程式碼，如果沒有撈出資料的話（也就是資料不存在），都是要繼續往下執行新增資料的動作，而「撈出資料」和「新增資料」都是單獨的 Query，所以如果幾乎同時執行這段程式時，可能就會產生兩筆相同的資料：</p>
+<p><img loading="lazy" 
+    src="/images/laravel-redis-lock.png" 
+    alt="Untitled" 
+     
+    width=2651 
+    height="1250"  /></p>
+<p>而要解決這個問題，大概有以下幾種辦法：</p>
+<h4 id="1-避免多個-process-執行">
+    <a href="#1-%e9%81%bf%e5%85%8d%e5%a4%9a%e5%80%8b-process-%e5%9f%b7%e8%a1%8c" class="anchor">
+        <svg class="icon" aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16">
+            <path fill-rule="evenodd"
+                d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z">
+            </path>
+        </svg>
+    </a>
+    1. 避免多個 process 執行
+</h4>
+<p>如果是因為放在 job 裡面，同時有多個 queue worker 在消化這些 job，就保持 queue worker 的數量為 1。
+但我們這次遇到的情況並不適用，因為還可以透過 API Request realtime 執行這段程式。而且如果遇到真的很耗時的工作，也不可能為此只開一個 worker。</p>
+<h4 id="2-使用-insert-into--on-duplicate-key-語法">
+    <a href="#2-%e4%bd%bf%e7%94%a8-insert-into--on-duplicate-key-%e8%aa%9e%e6%b3%95" class="anchor">
+        <svg class="icon" aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16">
+            <path fill-rule="evenodd"
+                d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z">
+            </path>
+        </svg>
+    </a>
+    2. 使用 <code>INSERT INTO .. ON DUPLICATE KEY</code> 語法
+</h4>
+<p>也就是說將兩個 Query 合併成一個 Query，讓資料庫去判斷資料存不存在，不存在就新增，存在則改成更新。
+但這又不太符合我們的情境，因為如果已存在，並不需要對該筆資料做更新，直接取出即可。</p>
+<h4 id="3-利用外部服務實現分布式鎖機制">
+    <a href="#3-%e5%88%a9%e7%94%a8%e5%a4%96%e9%83%a8%e6%9c%8d%e5%8b%99%e5%af%a6%e7%8f%be%e5%88%86%e5%b8%83%e5%bc%8f%e9%8e%96%e6%a9%9f%e5%88%b6" class="anchor">
+        <svg class="icon" aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16">
+            <path fill-rule="evenodd"
+                d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z">
+            </path>
+        </svg>
+    </a>
+    3. 利用外部服務實現分布式鎖機制
+</h4>
+<p>由於 PHP 單執行緒的特性，本身沒有這種機制，所以只能藉由外部的服務來實現分布式鎖的功能， 像是 Redis 就是一個常被拿來做分布式鎖的工具，而 Laravel 本身有提供 Redis Lock 相關的 API，所以最後採用了這個解法。</p>
+<p>我們要達到的目的其實很簡單，也就是要把「撈出資料」和「新增資料」這兩個操作視為一個原子性的操作，如果第一個程序還沒執行完，第二個程序必須等待第一個做完後，才能接著做。利用分布式鎖的話就能夠實現這個行為：
+當某一個程序還在執行這些動作的時候（還拿著這個鎖），其他程序都必須等待它執行完（釋放鎖）之後才能接著執行（獲得鎖）。如此一來就不會發生產生相同資料的問題。</p>
+<p>在使用 Laravel Redis Lock 之前，先看一下在 Redis 當中是怎麼實現 Lock 機制的。</p>
+<h2 id="redis-lock-機制">
+    <a href="#redis-lock-%e6%a9%9f%e5%88%b6" class="anchor">
+        <svg class="icon" aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16">
+            <path fill-rule="evenodd"
+                d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z">
+            </path>
+        </svg>
+    </a>
+    Redis Lock 機制
+</h2>
+<p>首先，在 redis-cli 下一個指令取得鎖</p>
+<pre tabindex="0"><code>SET resource_name my_random_value NX PX 30000
+</code></pre><ul>
+<li>
+<p><code>resource_name</code>：鎖的 Key</p>
+</li>
+<li>
+<p><code>my_random_value</code>：鎖的 Value，實作上通常會設置一串 Random String，當作取得該鎖的 Client 識別符，在釋放鎖時需檢查 Key 所對應的 Value 是不是和取得鎖時所設置的 Value 相同，避免鎖被其他 Client 釋放</p>
+</li>
+<li>
+<p><code>NX</code>：只有當 <code>resource_name</code> 不存在才創建這個 Key</p>
+</li>
+<li>
+<p><code>PX 30000</code>： Key 的有效期間是 30000 毫秒，超過會自動失效</p>
+</li>
+</ul>
+<p>就這樣！而「釋放鎖」的實作，通常會寫成一個 LUA 腳本，給 Redis 來執行：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-lua" data-lang="lua"><span class="line"><span class="cl"><span class="kr">if</span> <span class="n">redis.call</span><span class="p">(</span><span class="s2">&#34;GET&#34;</span><span class="p">,</span><span class="n">KEYS</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">==</span> <span class="n">ARGV</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl"><span class="kr">then</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">return</span> <span class="n">redis.call</span><span class="p">(</span><span class="s2">&#34;DEL&#34;</span><span class="p">,</span><span class="n">KEYS</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl"><span class="kr">else</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">return</span> <span class="mi">0</span>
+</span></span><span class="line"><span class="cl"><span class="kr">end</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>接著我們可以回到 Laravel 當中去使用 Redis Lock 了！</p>
+<h2 id="laravel-redis-lock">
+    <a href="#laravel-redis-lock" class="anchor">
+        <svg class="icon" aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16">
+            <path fill-rule="evenodd"
+                d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z">
+            </path>
+        </svg>
+    </a>
+    Laravel Redis Lock
+</h2>
+<h3 id="建立並取得鎖">
+    <a href="#%e5%bb%ba%e7%ab%8b%e4%b8%a6%e5%8f%96%e5%be%97%e9%8e%96" class="anchor">
+        <svg class="icon" aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16">
+            <path fill-rule="evenodd"
+                d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z">
+            </path>
+        </svg>
+    </a>
+    建立並取得鎖
+</h3>
+<p>首先要建立一個鎖，要先 new 一個 <code>Illuminate\Cache\RedisLock</code></p>
+<blockquote>
+<p><code>Illuminate\Cache\RedisLock</code> 實作 <code>Illuminate\Contracts\Cache\Lock</code> interface，實現取得鎖、釋放鎖等功能，並繼承 <code>Illuminate\Cache\Lock</code> abstract class 共享分布式鎖的相同功能。</p>
+</blockquote>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl"><span class="k">use</span> <span class="nx">Illuminate\Cache\RedisLock</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="k">use</span> <span class="nx">Illuminate\Support\Facades\Redis</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nv">$lock</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">RedisLock</span><span class="p">(</span><span class="nx">Redis</span><span class="o">::</span><span class="na">connection</span><span class="p">(),</span> <span class="s2">&#34;creating:snapshot:</span><span class="si">$order-&gt;id</span><span class="s2">&#34;</span><span class="p">,</span> <span class="mi">15</span><span class="p">);</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>來看一下 <code>Illuminate\Cache\RedisLock</code> 的建構子寫了什麼</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl"><span class="c1">// vendor/laravel/framework/src/Illuminate/Cache/RedisLock.php
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"><span class="sd">/**
+</span></span></span><span class="line"><span class="cl"><span class="sd"> * Create a new lock instance.
+</span></span></span><span class="line"><span class="cl"><span class="sd"> *
+</span></span></span><span class="line"><span class="cl"><span class="sd"> * @param  \Illuminate\Redis\Connections\Connection  $redis
+</span></span></span><span class="line"><span class="cl"><span class="sd"> * @param  string  $name
+</span></span></span><span class="line"><span class="cl"><span class="sd"> * @param  int  $seconds
+</span></span></span><span class="line"><span class="cl"><span class="sd"> * @param  string|null  $owner
+</span></span></span><span class="line"><span class="cl"><span class="sd"> * @return void
+</span></span></span><span class="line"><span class="cl"><span class="sd"> */</span>
+</span></span><span class="line"><span class="cl"><span class="k">public</span> <span class="k">function</span> <span class="fm">__construct</span><span class="p">(</span><span class="nv">$redis</span><span class="p">,</span> <span class="nv">$name</span><span class="p">,</span> <span class="nv">$seconds</span><span class="p">,</span> <span class="nv">$owner</span> <span class="o">=</span> <span class="k">null</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl"> <span class="k">parent</span><span class="o">::</span><span class="na">__construct</span><span class="p">(</span><span class="nv">$name</span><span class="p">,</span> <span class="nv">$seconds</span><span class="p">,</span> <span class="nv">$owner</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">redis</span> <span class="o">=</span> <span class="nv">$redis</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>
+<p><code>$name</code> ：鎖的 Key。在我們的例子當中，Key 值應該會是 OrderSnapshot 的 order_id，因為我們就是為了避免相同 order_id 的 OrderSnapshot 被建立，所以要處理特定 order_id 時，應該要取得一個鎖，避免其他執行序也對相同 order_id 做處理。</p>
+</li>
+<li>
+<p><code>$seconds</code>：Key 的有效期間</p>
+</li>
+<li>
+<p><code>$owner</code>： 鎖的 Value。如果不帶該參數，Laravel 會幫我們產生一串亂數當成 Value。在 <code>Illuminate\Cache\Lock</code> 的建構子當中：</p>
+</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl"><span class="c1">// vendor/laravel/framework/src/Illuminate/Cache/Lock.php
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">public</span> <span class="k">function</span> <span class="fm">__construct</span><span class="p">(</span><span class="nv">$name</span><span class="p">,</span> <span class="nv">$seconds</span><span class="p">,</span> <span class="nv">$owner</span> <span class="o">=</span> <span class="k">null</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl"> <span class="k">if</span> <span class="p">(</span><span class="nx">is_null</span><span class="p">(</span><span class="nv">$owner</span><span class="p">))</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">   <span class="nv">$owner</span> <span class="o">=</span> <span class="nx">Str</span><span class="o">::</span><span class="na">random</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl"> <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">name</span> <span class="o">=</span> <span class="nv">$name</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">owner</span> <span class="o">=</span> <span class="nv">$owner</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">seconds</span> <span class="o">=</span> <span class="nv">$seconds</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>然後呼叫 <code>acquire</code> 方法時，才會真的向 Redis 下指令建立鎖</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl"><span class="c1">// vendor/laravel/framework/src/Illuminate/Cache/RedisLock.php
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"><span class="sd">/**
+</span></span></span><span class="line"><span class="cl"><span class="sd">* Attempt to acquire the lock.
+</span></span></span><span class="line"><span class="cl"><span class="sd">*
+</span></span></span><span class="line"><span class="cl"><span class="sd">* @return bool
+</span></span></span><span class="line"><span class="cl"><span class="sd">*/</span>
+</span></span><span class="line"><span class="cl"><span class="k">public</span> <span class="k">function</span> <span class="nf">acquire</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl"> <span class="k">if</span> <span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">seconds</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">   <span class="k">return</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">redis</span><span class="o">-&gt;</span><span class="na">set</span><span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">name</span><span class="p">,</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">owner</span><span class="p">,</span> <span class="s1">&#39;EX&#39;</span><span class="p">,</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">seconds</span><span class="p">,</span> <span class="s1">&#39;NX&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="k">true</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"> <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">   <span class="k">return</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">redis</span><span class="o">-&gt;</span><span class="na">setnx</span><span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">name</span><span class="p">,</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">owner</span><span class="p">)</span> <span class="o">===</span> <span class="mi">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"> <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="釋放鎖">
+    <a href="#%e9%87%8b%e6%94%be%e9%8e%96" class="anchor">
+        <svg class="icon" aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16">
+            <path fill-rule="evenodd"
+                d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z">
+            </path>
+        </svg>
+    </a>
+    釋放鎖
+</h3>
+<p>同樣定義在 <code>RedisLock</code> 的實作裡，使用了剛剛提到的 Lua 腳本，傳給 Redis 去執行，腳本內容就是同樣的內容，這邊就不貼了</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl"><span class="c1">// vendor/laravel/framework/src/Illuminate/Cache/RedisLock.php
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"><span class="sd">/**
+</span></span></span><span class="line"><span class="cl"><span class="sd"> * Release the lock.
+</span></span></span><span class="line"><span class="cl"><span class="sd"> *
+</span></span></span><span class="line"><span class="cl"><span class="sd"> * @return bool
+</span></span></span><span class="line"><span class="cl"><span class="sd"> */</span>
+</span></span><span class="line"><span class="cl"><span class="k">public</span> <span class="k">function</span> <span class="nf">release</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">(</span><span class="nx">bool</span><span class="p">)</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">redis</span><span class="o">-&gt;</span><span class="na">eval</span><span class="p">(</span><span class="nx">LuaScripts</span><span class="o">::</span><span class="na">releaseLock</span><span class="p">(),</span> <span class="mi">1</span><span class="p">,</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">name</span><span class="p">,</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">owner</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>取得鎖和釋放鎖的流程應該會類似這樣(偽代碼)：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl"><span class="k">while</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"> <span class="k">if</span> <span class="p">(</span><span class="nv">$lock</span><span class="o">-&gt;</span><span class="na">acquire</span><span class="p">())</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// 處理業務邏輯
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl">  <span class="nv">$lock</span><span class="o">-&gt;</span><span class="na">release</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">break</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"> <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"> <span class="c1">//maybe wait for seconds?
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span> <span class="nx">sleep</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>而 <code>RedisLock</code> 當中有一個 <code>block</code> 方法可以使用，已經幫我們處理了流程控制的部分，還能額外設置等待釋放鎖的超時時間（超過會拋出異常）：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">public</span> <span class="k">function</span> <span class="nf">block</span><span class="p">(</span><span class="nv">$seconds</span><span class="p">,</span> <span class="nv">$callback</span> <span class="o">=</span> <span class="k">null</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl"> <span class="nv">$starting</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">currentTime</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"> <span class="k">while</span> <span class="p">(</span><span class="o">!</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">acquire</span><span class="p">())</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">   <span class="c1">//  - 7.x 之後的 laravel 會有 sleepMilliseconds 參數，預設為 250 毫秒
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>   <span class="c1">//  - 7.x 以前的直接寫死 250 毫秒
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>   <span class="nx">usleep</span><span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">sleepMilliseconds</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">);</span> 
+</span></span><span class="line"><span class="cl">   
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">   <span class="k">if</span> <span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">currentTime</span><span class="p">()</span> <span class="o">-</span> <span class="nv">$seconds</span> <span class="o">&gt;=</span> <span class="nv">$starting</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">     <span class="k">throw</span> <span class="k">new</span> <span class="nx">LockTimeoutException</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">   <span class="p">}</span>
+</span></span><span class="line"><span class="cl"> <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"> <span class="c1">// 取得鎖之後執行 callback 並釋放鎖
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span> <span class="k">if</span> <span class="p">(</span><span class="nx">is_callable</span><span class="p">(</span><span class="nv">$callback</span><span class="p">))</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">   <span class="k">try</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">     <span class="k">return</span> <span class="nv">$callback</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">   <span class="p">}</span> <span class="k">finally</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">     <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">release</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">   <span class="p">}</span>
+</span></span><span class="line"><span class="cl"> <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"> <span class="k">return</span> <span class="k">true</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>最後使用 <code>block</code> 方法，改寫我們一開始的程式碼：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl"><span class="nv">$lock</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">RedisLock</span><span class="p">(</span><span class="nx">Redis</span><span class="o">::</span><span class="na">connection</span><span class="p">(),</span> <span class="s2">&#34;creating:snapshot:</span><span class="si">$order-&gt;id</span><span class="s2">&#34;</span><span class="p">,</span> <span class="mi">15</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">return</span> <span class="nv">$lock</span><span class="o">-&gt;</span><span class="na">block</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="k">function</span> <span class="p">()</span> <span class="k">use</span> <span class="p">(</span><span class="nv">$order</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="nv">$snapshot</span> <span class="o">=</span> <span class="nx">OrderSnapshot</span><span class="o">::</span><span class="na">where</span><span class="p">(</span><span class="s1">&#39;order_id&#39;</span><span class="p">,</span> <span class="nv">$order</span><span class="o">-&gt;</span><span class="na">id</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">first</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">  
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="k">empty</span><span class="p">(</span><span class="nv">$snapshot</span><span class="p">))</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="nv">$snapshot</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="c1">// do something...
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">OrderSnapshot</span><span class="o">::</span><span class="na">create</span><span class="p">([</span><span class="s1">&#39;payload&#39;</span> <span class="o">=&gt;</span> <span class="nv">$order_array</span><span class="p">]);</span>
+</span></span><span class="line"><span class="cl"><span class="p">});</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div>
+    </div>
+</div>
+
+<div class="container">
+    
+    <nav class="flex container suggested">
+        
+        <a rel="prev" href="/posts/laravel-9-factory-recycle-method-%E7%94%A8%E6%B3%95%E8%88%87%E5%8E%9F%E7%90%86%E5%88%86%E6%9E%90/" title="Previous post (older)">
+            <span>Previous</span>
+            Laravel 9 factory recycle method 用法與原理分析
+            </a>
+        
+        
+        
+        <a rel="next" href="/posts/laravel-prevent-lazy-loading/" title="Next post (newer)">
+            <span>Next</span>
+            Laravel Prevent Lazy Loading 踩坑心得及原理分析
+            </a> 
+        
+    </nav>
+    
+</div>
+ 
+<div class="container">
+    
+    <script src="https://utteranc.es/client.js" 
+        repo="linxinemily/hugo-emmie-blog-comments"
+        issue-term="pathname"
+        
+        crossorigin="anonymous"
+        async
+        >
+</script>
+
+<style>
+    .utterances {
+        max-width: unset;
+    }
+</style>
+
+<script>
+    function setUtterancesTheme(theme) {
+        let utterances = document.querySelector('.utterances iframe');
+        if (utterances) {
+            utterances.contentWindow.postMessage(
+                {
+                    type: 'set-theme',
+                    theme: `github-${theme}`
+                },
+                'https://utteranc.es'
+            );
+        }
+    }
+
+    addEventListener('message', event => {
+        if (event.origin !== 'https://utteranc.es') return;
+        setUtterancesTheme(document.documentElement.dataset.userColorScheme)
+    });
+
+    window.addEventListener('onColorSchemeChange', (e) => {
+        setUtterancesTheme(e.detail)
+    })
+</script>
+
+</div>
+
+</main>
+
+
+        </main>
+        <footer class="footer flex">
+    <section class="container">
+        <nav class="footer-links">
+            
+            <a href="/index.xml">RSS</a>
+            
+        </nav>
+
+        
+    </section>
+    <script defer src="/ts/features.0e4ad6a8cf3364ce36345e6c4b51eba6cc886aa2d8a4a63a617e906062690ffd.js" 
+    data-enable-footnotes="true"
+    ></script>
+</footer>
+
+    </body>
+</html>

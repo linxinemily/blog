@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="en-us">
+    
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="theme-color" content="dark">
+    <title>讓架在 Netlify 上的網站發文同時向 Google 要求為新頁面建立索引! - 使用 Netlify Functions 串接 Google Indexing API | Emmie&#39; s Workspace</title>
+    
+    <meta property="og:site_name" content="Emmie&#39; s Workspace" />
+    <meta property="og:title" content="讓架在 Netlify 上的網站發文同時向 Google 要求為新頁面建立索引! - 使用 Netlify Functions 串接 Google Indexing API | Emmie&#39; s Workspace"/>
+    <meta itemprop="name" content="讓架在 Netlify 上的網站發文同時向 Google 要求為新頁面建立索引! - 使用 Netlify Functions 串接 Google Indexing API | Emmie&#39; s Workspace" />
+    <meta name="twitter:title" content="讓架在 Netlify 上的網站發文同時向 Google 要求為新頁面建立索引! - 使用 Netlify Functions 串接 Google Indexing API | Emmie&#39; s Workspace" />
+    <meta name="application-name" content="讓架在 Netlify 上的網站發文同時向 Google 要求為新頁面建立索引! - 使用 Netlify Functions 串接 Google Indexing API | Emmie&#39; s Workspace" /><meta name="twitter:card" content="summary"/>
+
+    <meta name="description" content="放一些筆記的地方" />
+    <meta name="twitter:description" content="放一些筆記的地方"/>
+    <meta itemprop="description" content="放一些筆記的地方"/>
+    <meta property="og:description" content="放一些筆記的地方" />
+
+    
+
+
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+    
+    <link rel="stylesheet" href="/sass/main.min.9606ece50dffeea1ff779aaa181ca0dd8f1e40cd70c1cdd128c568088ecf6f83.css">
+    
+</head>
+    
+    <script>
+        (function() {
+            const colorSchemeKey = 'ThemeColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'ThemeColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.userColorScheme = 'dark';
+        } else {
+            document.documentElement.dataset.userColorScheme = 'light';
+        }
+    })();
+</script>
+
+
+    <body class="dark">
+        <nav class="navbar">
+    <div class="container">
+        <div class="flex">
+            <div>
+                <a class="brand" href="/">
+                    
+                    
+                    Emmie&#39; s Workspace
+                    </a>
+            </div>
+            <div class="flex">
+                
+                <a href="/about/">About</a>
+                
+                <a href="/articles/">Articles</a>
+                
+                
+                    <button id="dark-mode-button">
+                    <svg class="light" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false" width="1em" height="1em" style="-ms-transform: rotate(360deg); -webkit-transform: rotate(360deg); transform: rotate(360deg);" preserveAspectRatio="xMidYMid meet" viewBox="0 0 36 36"><path fill="#FFD983" d="M30.312.776C32 19 20 32 .776 30.312c8.199 7.717 21.091 7.588 29.107-.429C37.9 21.867 38.03 8.975 30.312.776z"/><path d="M30.705 15.915a1.163 1.163 0 1 0 1.643 1.641a1.163 1.163 0 0 0-1.643-1.641zm-16.022 14.38a1.74 1.74 0 0 0 0 2.465a1.742 1.742 0 1 0 0-2.465zm13.968-2.147a2.904 2.904 0 0 1-4.108 0a2.902 2.902 0 0 1 0-4.107a2.902 2.902 0 0 1 4.108 0a2.902 2.902 0 0 1 0 4.107z" fill="#FFCC4D"/><rect x="0" y="0" width="36" height="36" fill="rgba(0, 0, 0, 0)" /></svg>
+                    <svg class="dark" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false" width="1em" height="1em" style="-ms-transform: rotate(360deg); -webkit-transform: rotate(360deg); transform: rotate(360deg);" preserveAspectRatio="xMidYMid meet" viewBox="0 0 36 36"><path fill="#FFD983" d="M16 2s0-2 2-2s2 2 2 2v2s0 2-2 2s-2-2-2-2V2zm18 14s2 0 2 2s-2 2-2 2h-2s-2 0-2-2s2-2 2-2h2zM4 16s2 0 2 2s-2 2-2 2H2s-2 0-2-2s2-2 2-2h2zm5.121-8.707s1.414 1.414 0 2.828s-2.828 0-2.828 0L4.878 8.708s-1.414-1.414 0-2.829c1.415-1.414 2.829 0 2.829 0l1.414 1.414zm21 21s1.414 1.414 0 2.828s-2.828 0-2.828 0l-1.414-1.414s-1.414-1.414 0-2.828s2.828 0 2.828 0l1.414 1.414zm-.413-18.172s-1.414 1.414-2.828 0s0-2.828 0-2.828l1.414-1.414s1.414-1.414 2.828 0s0 2.828 0 2.828l-1.414 1.414zm-21 21s-1.414 1.414-2.828 0s0-2.828 0-2.828l1.414-1.414s1.414-1.414 2.828 0s0 2.828 0 2.828l-1.414 1.414zM16 32s0-2 2-2s2 2 2 2v2s0 2-2 2s-2-2-2-2v-2z"/><circle fill="#FFD983" cx="18" cy="18" r="10"/><rect x="0" y="0" width="36" height="36" fill="rgba(0, 0, 0, 0)" /></svg>
+                    </button>
+                
+            </div>
+            </div>
+    </div>
+</nav>
+
+        <main>
+            
+<div class="container">
+    <article>
+        <header class="article-header">
+            <div class="thumb">
+                <div>
+                    <h1>讓架在 Netlify 上的網站發文同時向 Google 要求為新頁面建立索引! - 使用 Netlify Functions 串接 Google Indexing API</h1>
+                    <div class="post-meta">
+                        <div>
+                            
+                            
+                              
+                            
+                            By Emmie | <time>February 27, 2023</time>
+                            | 4 minutes
+                        </div>
+                        <div class="tags">
+                            
+                            <a href="/tags/golang/">Golang</a>
+                            
+                            <a href="/tags/third-party-integration/">Third-Party Integration</a>
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+    </article>
+
+    <div class="article-post">
+    <h2 id="前言">
+    <a href="#%e5%89%8d%e8%a8%80" class="anchor">
+        <svg class="icon" aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16">
+            <path fill-rule="evenodd"
+                d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z">
+            </path>
+        </svg>
+    </a>
+    前言
+</h2>
+<p>自從從 Medium 換過來自架部落格後，SEO 的事情也都得自己處理。但雖然說是「處理」，也只是做一些基本的設定而已，例如裝個 Search Console、提交 sitemap（但其實使用的靜態網站生產器 Hexo 就已經有做到自動生產、更新 sitemap）。唯一的手動作業就是每次發表新文章後，為了加快 Google 索引到新文章頁面的速度，我都還是會進到 Search Console 後台，手動輸入頁面網址要求建立索引（網址審查&gt;測試線上網址&gt;建立索引)。</p>
+<p>身為一個能夠自動就不手動的懶人，突然想到之前曾在公司專案中使用過 Google Indexing API 提交要加入索引的網址，那我應該也可以來幫我的部落格串看看吧？</p>
+<p>在尋找方法的過程中，雖然原本就是使用 Netlify 架站，但一年前的記憶有點模糊(<del>可能也是複製貼上的關係</del>)，裡面很多功能其實也沒碰過，中途不少次因為遇到某種限制而又改變原本的做/解法，覺得這個過程也是學習到了不少，或是有機會為其他人避坑(?)，因此有了這篇文章。</p>
+<h2 id="實作">
+    <a href="#%e5%af%a6%e4%bd%9c" class="anchor">
+        <svg class="icon" aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16">
+            <path fill-rule="evenodd"
+                d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z">
+            </path>
+        </svg>
+    </a>
+    實作
+</h2>
+<h3 id="初步規劃">
+    <a href="#%e5%88%9d%e6%ad%a5%e8%a6%8f%e5%8a%83" class="anchor">
+        <svg class="icon" aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16">
+            <path fill-rule="evenodd"
+                d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z">
+            </path>
+        </svg>
+    </a>
+    初步規劃
+</h3>
+<p>這個功能的流程其實非常簡單，就是——發表文章後（deploy 成功）馬上觸發打 Google Indexing API 的程式。</p>
+<p>首先需要思考的問題是，<strong>要如何接收 deploy 完成的訊息？</strong> 以及 <strong>「打 Google Indexing API 的程式」要在哪裡執行？</strong></p>
+<p>第一個想法是：看看 Netlify 在 deploy 成功後，有沒有什麼事件可以監聽。</p>
+<p>於是搜尋到了官方文件關於 <a href="https://docs.netlify.com/site-deploys/notifications/">Deploy notifications</a> 的說明，有支援多種接收通知的方式，Slack、email、webhook 等等。看起來比較適合的方式可能是透過 webhook，另外起一個 http server 並註冊一個 endpoint，server 一接收到 request 就立刻打 Google Indexing API。
+但這麼一來，就還得另外 run 一個 http server，為了完成這個小任務還得再額外開一個服務，總覺得哪裏怪怪的。所以後來又找了一下有沒有其他更適合的做法，結果就看到了 Netlify Functions。</p>
+<h3 id="什麼是-netlify-functions">
+    <a href="#%e4%bb%80%e9%ba%bc%e6%98%af-netlify-functions" class="anchor">
+        <svg class="icon" aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16">
+            <path fill-rule="evenodd"
+                d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z">
+            </path>
+        </svg>
+    </a>
+    什麼是 Netlify Functions
+</h3>
+<p><a href="https://docs.netlify.com/functions/overview/">Netlify Functions</a> 是 Netlify 提供的一個類似 aws lamda 的功能(實際上也是基於 aws lamda 去實現的)，可以輕易地部署 serverless 的服務。</p>
+<p>然而 functions 都是基於專案(也就是透過 Netlify 所構建的網站)，一個專案底下可以有多個 functions，這些 functions 需要被放在特定資料夾下面才會一同跟著專案被部署。（預設的資料夾位置在 <code>YOUR_BASE_DIRECTORY/netlify/functions/</code>，可以自行透過設定更改)</p>
+<p>而這些部署在線上的 functions，都可以藉由特定的路由去觸發執行。
+例如，一個用 JavaScript 寫的 functions 檔案名為 <code>hello.js</code>，被放在 <code>netlify/functions/</code> 底下，完整路徑是：</p>
+<pre tabindex="0"><code>YOUR_BASE_DIRECTORY/netlify/functions/hello.js
+</code></pre><p>對應的路由就是：</p>
+<pre tabindex="0"><code>BASE_URL_OF_YOUR_SITE/.netlify/functions/hello
+</code></pre><p>只要戳這個 endpoint，隨便一種 Http Method 都可以，就能觸發這個 function。</p>
+<blockquote>
+<p>📝 Note: 目前 functions 支援的程式語言只有 Typescript、JavaScript 以及 Golang 。</p>
+</blockquote>
+<p>但接著又想到一件事，既然 functions 都是在專案底下，那他是否能透過某種方式監聽到專案的部署成功事件，只要專案一部署成功，就自動 call 這個 function，也不需要設定 webhook url 了？答案是可以的，<a href="https://docs.netlify.com/functions/trigger-on-events/">Netlify 提供了一系列的 triggers</a>，只要將 functions 按照事件名稱命名，就會在該事件發生時，直接執行同名 function。事件當中當然也包括部署成功事件 <code>deploy-succeeded</code> ，所以只要將 function 命名為 <code>deploy-succeeded</code>，function 就會在專案部署完成時被執行。</p>
+<h3 id="使用-netlify-functions">
+    <a href="#%e4%bd%bf%e7%94%a8-netlify-functions" class="anchor">
+        <svg class="icon" aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16">
+            <path fill-rule="evenodd"
+                d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z">
+            </path>
+        </svg>
+    </a>
+    使用 Netlify Functions
+</h3>
+<p>總算進入到實作的環節啦!在這邊會使用 Golang 進行實作。
+首先，在專案底下新建檔案 <code>netlify/functions/deploy-succeeded/deploy-succeeded.go</code></p>
+<blockquote>
+<p>📝 Note: 由於使用 Golang，一個 function 會視作為一個 Go module，裡面包含一個有 main function 的檔案，所以需要用資料夾來分層。但如果使用 JS 就不需要資料夾分層，一個檔案就是一個 function。</p>
+</blockquote>
+<p>以下是官方文件提供的 function 範本：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-Go" data-lang="Go"><span class="line"><span class="cl"><span class="c1">// ./netlify/functions/deploy-succeeded/deploy-succeeded.go
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kn">package</span> <span class="nx">main</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">  <span class="s">&#34;github.com/aws/aws-lambda-go/events&#34;</span>
+</span></span><span class="line"><span class="cl">  <span class="s">&#34;github.com/aws/aws-lambda-go/lambda&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">handler</span><span class="p">(</span><span class="nx">request</span> <span class="nx">events</span><span class="p">.</span><span class="nx">APIGatewayProxyRequest</span><span class="p">)</span> <span class="p">(</span><span class="o">*</span><span class="nx">events</span><span class="p">.</span><span class="nx">APIGatewayProxyResponse</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// 這邊是 function 的邏輯
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// 這塊不需要動
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="nx">lambda</span><span class="p">.</span><span class="nf">Start</span><span class="p">(</span><span class="nx">handler</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>想要先測試看看，是否這個 function 真的會在每次部署完成後被觸發執行，也順便看看收到的 request payload 會是什麼，所以在 <code>handler</code> 方法裡面加上：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-Go" data-lang="Go"><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">handler</span><span class="p">(</span><span class="nx">request</span> <span class="nx">events</span><span class="p">.</span><span class="nx">APIGatewayProxyRequest</span><span class="p">)</span> <span class="p">(</span><span class="o">*</span><span class="nx">events</span><span class="p">.</span><span class="nx">APIGatewayProxyResponse</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// 試著把 request.Body 印出來
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nx">request</span><span class="p">.</span><span class="nx">Body</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>結果發現真的有被執行，我們可以到 Netlify 後台去看 function 的 log。進入 <a href="https://app.netlify.com/sites/%7Byour_site%7D/functions">https://app.netlify.com/sites/{your_site}/functions</a>
+，點選剛剛 deploy 的 function：
+<img loading="lazy" 
+    src="/images/netifly-functions-02.png" 
+    alt="Untitled" 
+     
+    width=1263 
+    height="735"  /></p>
+<p>就可以進到該 function 的頁面瀏覽 log：
+<img loading="lazy" 
+    src="/images/netifly-functions-03.png" 
+    alt="Untitled" 
+     
+    width=1268 
+    height="667"  /></p>
+<p>log 印出來的內容大概長這樣，但因爲資料有點太多，這邊就沒貼完整內容：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span><span class="lnt">58
+</span><span class="lnt">59
+</span><span class="lnt">60
+</span><span class="lnt">61
+</span><span class="lnt">62
+</span><span class="lnt">63
+</span><span class="lnt">64
+</span><span class="lnt">65
+</span><span class="lnt">66
+</span><span class="lnt">67
+</span><span class="lnt">68
+</span><span class="lnt">69
+</span><span class="lnt">70
+</span><span class="lnt">71
+</span><span class="lnt">72
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="c1">// 敏感資訊有用*號遮罩
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;payload&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;id&#34;</span><span class="p">:</span> <span class="s2">&#34;63f9e14********6916d&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;site_id&#34;</span><span class="p">:</span> <span class="s2">&#34;********-6b6d-4df7-a413-********&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;build_id&#34;</span><span class="p">:</span> <span class="s2">&#34;63f9e144bb8728000846916b&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;state&#34;</span><span class="p">:</span> <span class="s2">&#34;ready&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;name&#34;</span><span class="p">:</span> <span class="s2">&#34;emmielin&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;url&#34;</span><span class="p">:</span> <span class="s2">&#34;https://emmie.work&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;ssl_url&#34;</span><span class="p">:</span> <span class="s2">&#34;https://emmie.work&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;admin_url&#34;</span><span class="p">:</span> <span class="s2">&#34;https://app.netlify.com/sites/emmielin&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;deploy_url&#34;</span><span class="p">:</span> <span class="s2">&#34;http://main--emmielin.netlify.app&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;deploy_ssl_url&#34;</span><span class="p">:</span> <span class="s2">&#34;https://main--emmielin.netlify.app&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;created_at&#34;</span><span class="p">:</span> <span class="s2">&#34;2023-02-25T10:21:56.064Z&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;updated_at&#34;</span><span class="p">:</span> <span class="s2">&#34;2023-02-25T10:22:11.735Z&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;user_id&#34;</span><span class="p">:</span> <span class="s2">&#34;************************&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;error_message&#34;</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;required&#34;</span><span class="p">:</span> <span class="p">[],</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;required_functions&#34;</span><span class="p">:</span> <span class="p">[],</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;commit_ref&#34;</span><span class="p">:</span> <span class="s2">&#34;f3fb856c951b6979f22********90&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;review_id&#34;</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;branch&#34;</span><span class="p">:</span> <span class="s2">&#34;main&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;commit_url&#34;</span><span class="p">:</span> <span class="s2">&#34;https://github.com/linxinemily/hugo-emmie-blog/commit/f3fb856c951b6979f22ffad191843dc831164690&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;skipped&#34;</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;locked&#34;</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;log_access_attributes&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="nt">&#34;type&#34;</span><span class="p">:</span> <span class="s2">&#34;firebase&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">            <span class="nt">&#34;url&#34;</span><span class="p">:</span> <span class="s2">&#34;https://netlify-builds9.firebaseio.com/builds/63f9e144bb8728000846916b/log&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">            <span class="nt">&#34;database&#34;</span><span class="p">:</span> <span class="s2">&#34;netlify-builds9&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">            <span class="nt">&#34;endpoint&#34;</span><span class="p">:</span> <span class="s2">&#34;https://netlify-builds9.firebaseio.com&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">            <span class="nt">&#34;path&#34;</span><span class="p">:</span> <span class="s2">&#34;/builds/63f9e144bb8728000846916b/log&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">            <span class="nt">&#34;token&#34;</span><span class="p">:</span> <span class="s2">&#34;************************&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="p">},</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;title&#34;</span><span class="p">:</span> <span class="s2">&#34;commit msg&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// more info...
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;site&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;id&#34;</span><span class="p">:</span> <span class="s2">&#34;********-6b6d-4df7-a413-********&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;site_id&#34;</span><span class="p">:</span> <span class="s2">&#34;********-6b6d-4df7-a413-********&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;plan&#34;</span><span class="p">:</span> <span class="s2">&#34;nf_team_dev&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;ssl_plan&#34;</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;premium&#34;</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;claimed&#34;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;name&#34;</span><span class="p">:</span> <span class="s2">&#34;emmielin&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;custom_domain&#34;</span><span class="p">:</span> <span class="s2">&#34;emmie.work&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;domain_suffix_branch&#34;</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;domain_suffix_deploy_preview&#34;</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;domain_aliases&#34;</span><span class="p">:</span> <span class="p">[],</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;password&#34;</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;password_hash&#34;</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;sso_login&#34;</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;sso_login_context&#34;</span><span class="p">:</span> <span class="s2">&#34;all&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;notification_email&#34;</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;url&#34;</span><span class="p">:</span> <span class="s2">&#34;https://emmie.work&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;admin_url&#34;</span><span class="p">:</span> <span class="s2">&#34;https://app.netlify.com/sites/emmielin&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;deploy_id&#34;</span><span class="p">:</span> <span class="s2">&#34;63f9e14********6916d&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;build_id&#34;</span><span class="p">:</span> <span class="s2">&#34;&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;deploy_url&#34;</span><span class="p">:</span> <span class="s2">&#34;http://main--emmielin.netlify.app&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;state&#34;</span><span class="p">:</span> <span class="s2">&#34;current&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;screenshot_url&#34;</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;created_at&#34;</span><span class="p">:</span> <span class="s2">&#34;2022-07-18T16:18:18.628Z&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;updated_at&#34;</span><span class="p">:</span> <span class="s2">&#34;2023-02-25T10:22:11.738Z&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;user_id&#34;</span><span class="p">:</span> <span class="s2">&#34;************************&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;error_message&#34;</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;ssl&#34;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;ssl_url&#34;</span><span class="p">:</span> <span class="s2">&#34;https://emmie.work&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;force_ssl&#34;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;ssl_status&#34;</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;max_domain_aliases&#34;</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// more info...
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>如果要在 local 開發 function 的話，可以<a href="https://docs.netlify.com/cli/get-started/#installation">安裝 Netlify CLI</a>，在專案底下跑：</p>
+<pre tabindex="0"><code>$ netlify functions:serve
+</code></pre><p>成功跑起來的話預設會在 9999 port：
+<img loading="lazy" 
+    src="/images/netifly-functions-04.png" 
+    alt="Untitled" 
+     
+    width=1422 
+    height="160"  /></p>
+<p>然後就可以用 Postman 打 function 的 endpoint：
+<img loading="lazy" 
+    src="/images/netifly-functions-05.png" 
+    alt="Untitled" 
+     
+    width=2026 
+    height="858"  /></p>
+<h3 id="如何取得新文章-url">
+    <a href="#%e5%a6%82%e4%bd%95%e5%8f%96%e5%be%97%e6%96%b0%e6%96%87%e7%ab%a0-url" class="anchor">
+        <svg class="icon" aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16">
+            <path fill-rule="evenodd"
+                d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z">
+            </path>
+        </svg>
+    </a>
+    如何取得新文章 URL
+</h3>
+<p>確定 Netlify Functions 可以達成我們的需求後，在串接 Indexing API 前，總得知道該怎麼把新文章的網址推送給 Indexing API 吧！</p>
+<p>原本的想法是，由於 Hugo 每次 build 的時候都會自動幫我們更新 sitemap 檔案，因此或許可以透過新舊 sitemap 的比對檢查是否有新增的 page url，如果有的話就把這些 url 推送給 Google Indexing API。但問題就來了，要有舊檔案可以拿出來比較，那就得在每次執行這個 function 完存下當前的 sitemap 檔案，這樣才能在下一次執行 function 時，取得上次存下的 sitemap 檔案與新的做比對。然而，<strong>在 functions 當中無法對專案進行檔案的讀寫</strong>，(<a href="https://answers.netlify.com/t/is-it-possible-to-use-a-filesystem-like-node-fs-with-netlify-functions-answered/77409">有人發問被官方回覆在此</a>)，這麼一來還得另外找一個外部空間例如 AWS S3 之類的去存放這個檔案，覺得有點太麻煩了，而且這個功能應該也不需要做到這麼自動化(畢竟暫時只有我要用)。</p>
+<p>所以後來發現 payload 當中有一個欄位 <code>payload.title</code> 是每次 commit 的訊息，因爲 Netlify 的設定是一 push commit 就會觸發 deploy，所以每次 deploy 一定都會有一個 commit msg。於是想到可以直接利用 commit msg 帶入新文章的 slug，在 payload 中取得 <code>payload.title</code> 解析出 slug 字串後組出新文章的網址。雖然好像有點土法煉鋼，不過感覺還挺可行的。</p>
+<h3 id="串接-google-indexing-api">
+    <a href="#%e4%b8%b2%e6%8e%a5-google-indexing-api" class="anchor">
+        <svg class="icon" aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16">
+            <path fill-rule="evenodd"
+                d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z">
+            </path>
+        </svg>
+    </a>
+    串接 Google Indexing API
+</h3>
+<p>確定資料的取得都沒問題後，接下來就是進入串接 Indexing API 的部分了。完成<a href="https://developers.google.com/search/apis/indexing-api/v3/prereqs?hl=zh-tw">官方文件事前準備</a>的步驟「為用戶端建立專案」、「建立服務帳戶」、「將服務帳戶新增為網站擁有者」之後，就可以<a href="https://developers.google.com/search/apis/indexing-api/v3/libraries?hl=zh-tw#go">根據要使用的程式語言安裝 google api sdk 程式</a>，這邊選擇使用 <a href="https://github.com/googleapis/google-api-go-client">Golang 的 sdk</a>。</p>
+<p>剛剛第二個步驟「建立服務帳戶」時，下載了一個金鑰檔案(按照建議檔案類型選擇JSON)存在本地電腦裡，使用這個金鑰的方式很簡單，本地端開發的話，只要在命令列宣告個環境變數：<a href="https://cloud.google.com/docs/authentication/provide-credentials-adc#wlif-key">Ref</a></p>
+<pre tabindex="0"><code>$ export GOOGLE_APPLICATION_CREDENTIALS=&#34;KEY_PATH&#34; //KEY_PATH 取代為剛剛下載的金鑰檔案路徑
+</code></pre><p>先測試一下串接有沒有成功，帶個測試網址發送看看：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-Go" data-lang="Go"><span class="line"><span class="cl"><span class="c1">// ./netlify/functions/deploy-succeeded/deploy-succeeded.go
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kn">package</span> <span class="nx">main</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl"> <span class="s">&#34;context&#34;</span>
+</span></span><span class="line"><span class="cl"> <span class="s">&#34;fmt&#34;</span>
+</span></span><span class="line"><span class="cl"> <span class="s">&#34;log&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"> <span class="s">&#34;github.com/aws/aws-lambda-go/events&#34;</span>
+</span></span><span class="line"><span class="cl"> <span class="s">&#34;github.com/aws/aws-lambda-go/lambda&#34;</span>
+</span></span><span class="line"><span class="cl"> <span class="s">&#34;google.golang.org/api/indexing/v3&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">handler</span><span class="p">(</span><span class="nx">request</span> <span class="nx">events</span><span class="p">.</span><span class="nx">APIGatewayProxyRequest</span><span class="p">)</span> <span class="p">(</span><span class="o">*</span><span class="nx">events</span><span class="p">.</span><span class="nx">APIGatewayProxyResponse</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl"> <span class="nx">ctx</span> <span class="o">:=</span> <span class="nx">context</span><span class="p">.</span><span class="nf">Background</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"> <span class="nx">indexingService</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">indexing</span><span class="p">.</span><span class="nf">NewService</span><span class="p">(</span><span class="nx">ctx</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"> <span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">log</span><span class="p">.</span><span class="nf">Fatalln</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"> <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"> <span class="nx">fullUrl</span> <span class="o">:=</span> <span class="s">&#34;https://emmie.work/posts/test&#34;</span> <span class="c1">//先寫死一個測試網址
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span> <span class="nx">notification</span> <span class="o">:=</span> <span class="o">&amp;</span><span class="nx">indexing</span><span class="p">.</span><span class="nx">UrlNotification</span><span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">Url</span><span class="p">:</span>  <span class="nx">fullUrl</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">Type</span><span class="p">:</span> <span class="s">&#34;URL_UPDATED&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"> <span class="p">}</span>
+</span></span><span class="line"><span class="cl"> <span class="nx">res</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">indexingService</span><span class="p">.</span><span class="nx">UrlNotifications</span><span class="p">.</span><span class="nf">Publish</span><span class="p">(</span><span class="nx">notification</span><span class="p">).</span><span class="nf">Do</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"> <span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">log</span><span class="p">.</span><span class="nf">Fatalln</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"> <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"> <span class="nx">log</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nx">res</span><span class="p">.</span><span class="nx">ServerResponse</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"> <span class="k">return</span> <span class="o">&amp;</span><span class="nx">events</span><span class="p">.</span><span class="nx">APIGatewayProxyResponse</span><span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">StatusCode</span><span class="p">:</span> <span class="mi">200</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">Body</span><span class="p">:</span>       <span class="nx">fmt</span><span class="p">.</span><span class="nf">Sprintf</span><span class="p">(</span><span class="s">&#34;Success send request to notify Google of new article, url: %s&#34;</span><span class="p">,</span> <span class="nx">fullUrl</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl"> <span class="p">},</span> <span class="kc">nil</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl"> <span class="nx">lambda</span><span class="p">.</span><span class="nf">Start</span><span class="p">(</span><span class="nx">handler</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>在同個命令列 session 下剛剛的 <code>netlify functions:serve</code> 指令，看起來是 work 的。
+<img loading="lazy" 
+    src="/images/netifly-functions-06.png" 
+    alt="Untitled" 
+     
+    width=2028 
+    height="574"  /></p>
+<p>OK，問題又來了，當這段程式要放在 Netlify 上面跑時，難不成要把這個金鑰檔案也連同上傳到 github repo 嗎，聽起來有點不太安全，而且還記得剛剛提到 function 裡面無法存取專案當中的檔案，所以這條路也不可行。那該怎辦呢？後來看到有網友也有類似問題（但我突然找不到原發問連結），總之最後採用的方法是將環境變數的值改成金鑰 JSON 檔內容，然後在程式裡面取得環境變數的值後，透過 option 設定金鑰的值：</p>
+<pre tabindex="0"><code>$ export GOOGLE_APPLICATION_CREDENTIALS=&#39;{
+  &#34;type&#34;: &#34;service_account&#34;,
+  &#34;project_id&#34;: &#34;emmie-hugo-blog&#34;,
+  &#34;private_key_id&#34;:&#34;xxxxxx&#34;,
+  //...
+ }&#39;
+</code></pre><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-Go" data-lang="Go"><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">handler</span><span class="p">(</span><span class="nx">request</span> <span class="nx">events</span><span class="p">.</span><span class="nx">APIGatewayProxyRequest</span><span class="p">)</span> <span class="p">(</span><span class="o">*</span><span class="nx">events</span><span class="p">.</span><span class="nx">APIGatewayProxyResponse</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl"> <span class="c1">//...
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span> <span class="nx">credentialJsonStr</span> <span class="o">:=</span> <span class="nx">os</span><span class="p">.</span><span class="nf">Getenv</span><span class="p">(</span><span class="s">&#34;GOOGLE_APPLICATION_CREDENTIALS&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"> <span class="nx">indexingService</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">indexing</span><span class="p">.</span><span class="nf">NewService</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span> <span class="nx">option</span><span class="p">.</span><span class="nf">WithCredentialsJSON</span><span class="p">([]</span><span class="nb">byte</span><span class="p">(</span><span class="nx">credentialJsonStr</span><span class="p">)))</span>
+</span></span><span class="line"><span class="cl"> <span class="c1">//...
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>這樣一來，就能夠單純透過設定環境變數的值取代需要存取檔案的方式。但要在部署時加上這個變數，我們還得再做兩個動作，一是在 <code>./netlify.toml</code> 檔案，設定環境變數的 KEY：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-toml" data-lang="toml"><span class="line"><span class="cl"><span class="c"># ./netlify.toml</span>
+</span></span><span class="line"><span class="cl"><span class="p">[</span><span class="nx">context</span><span class="p">.</span><span class="nx">production</span><span class="p">.</span><span class="nx">environment</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">   <span class="nx">HUGO_ENV</span> <span class="p">=</span> <span class="s2">&#34;production&#34;</span>
+</span></span><span class="line"><span class="cl">   <span class="nx">GOOGLE_APPLICATION_CREDENTIALS</span> <span class="p">=</span> <span class="s2">&#34;$GOOGLE_APPLICATION_CREDENTIALS&#34;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>二是到 <a href="https://app.netlify.com/sites/emmielin/settings/env">Netlify 後台</a>設定環境變數的值：
+<img loading="lazy" 
+    src="/images/netifly-functions-07.png" 
+    alt="Untitled" 
+     
+    width=945 
+    height="707"  /></p>
+<p>然後就大功告成了！！</p>
+<p>這邊直接附上最後完成的 code： <a href="https://github.com/linxinemily/google-indexing-netlify-function/blob/main/deploy-succeeded.go">https://github.com/linxinemily/google-indexing-netlify-function/blob/main/deploy-succeeded.go</a></p>
+<p>再來測試看看發一個 commit 然後 push:</p>
+<pre tabindex="0"><code>git commit -m &#34;new article: netlify-function-google-indexing-api&#34; &amp;&amp; git push
+</code></pre><p>驗證一下是否有成功提交索引，到後台看 function 有沒有 log，有顯示代表成功：
+<img loading="lazy" 
+    src="/images/netifly-functions-08.png" 
+    alt="Untitled" 
+     
+    width=1222 
+    height="253"  /></p>
+<h2 id="後記">
+    <a href="#%e5%be%8c%e8%a8%98" class="anchor">
+        <svg class="icon" aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16">
+            <path fill-rule="evenodd"
+                d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z">
+            </path>
+        </svg>
+    </a>
+    後記
+</h2>
+<p>以上，大概就完成了 90% 的人工作業（剩下 10％ 是要自己打 commit msg 的部分），不過也已經心滿意足了！比較大的收穫就是發掘了 Netlify Functions 這個不錯用的功能，以及重溫一下串 Google API 的回憶。
+現在能想到唯一的缺陷是，當一次推多個 commit 時，由於 deploy 的 payload 只會有最新一個 commit 的相關資訊，所以如果這幾個 commit 都包含有一篇新文章，那就只有最後發的那個 commit 的文章會被提交索引，不過我寫文頻率沒有高成那樣所以應該是不太可能會遇到這種情況，所以就先略過了。剩下的部分就看未來有沒有遇到什麼使用上的困難再來優化吧！</p>
+
+    </div>
+</div>
+
+<div class="container">
+    
+    <nav class="flex container suggested">
+        
+        <a rel="prev" href="/posts/golang-using-reference-to-loop-iterator-variable/" title="Previous post (older)">
+            <span>Previous</span>
+            Golang 常見錯誤 - 在迴圈當中引用迭代變數(iterator variable)
+            </a>
+        
+        
+        
+        <a rel="next" href="/posts/resolve-oapi-codegen-error/" title="Next post (newer)">
+            <span>Next</span>
+            解決使用 oapi-codegen 時報錯 unexpected reference depth
+            </a> 
+        
+    </nav>
+    
+</div>
+ 
+<div class="container">
+    
+    <script src="https://utteranc.es/client.js" 
+        repo="linxinemily/hugo-emmie-blog-comments"
+        issue-term="pathname"
+        
+        crossorigin="anonymous"
+        async
+        >
+</script>
+
+<style>
+    .utterances {
+        max-width: unset;
+    }
+</style>
+
+<script>
+    function setUtterancesTheme(theme) {
+        let utterances = document.querySelector('.utterances iframe');
+        if (utterances) {
+            utterances.contentWindow.postMessage(
+                {
+                    type: 'set-theme',
+                    theme: `github-${theme}`
+                },
+                'https://utteranc.es'
+            );
+        }
+    }
+
+    addEventListener('message', event => {
+        if (event.origin !== 'https://utteranc.es') return;
+        setUtterancesTheme(document.documentElement.dataset.userColorScheme)
+    });
+
+    window.addEventListener('onColorSchemeChange', (e) => {
+        setUtterancesTheme(e.detail)
+    })
+</script>
+
+</div>
+
+</main>
+
+
+        </main>
+        <footer class="footer flex">
+    <section class="container">
+        <nav class="footer-links">
+            
+            <a href="/index.xml">RSS</a>
+            
+        </nav>
+
+        
+    </section>
+    <script defer src="/ts/features.0e4ad6a8cf3364ce36345e6c4b51eba6cc886aa2d8a4a63a617e906062690ffd.js" 
+    data-enable-footnotes="true"
+    ></script>
+</footer>
+
+    </body>
+</html>
