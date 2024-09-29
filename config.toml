@@ -29,9 +29,6 @@ googleAnalytics = 'G-H540WMJ59Q'
 [[menu.header]]
   name = "Articles"
   url = "/articles/"
-[[menu.header]]
-  name = "About"
-  url = "/about/"
 [[menu.footer]]
     name = "RSS"
     url = "/index.xml"
