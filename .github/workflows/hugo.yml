@@ -73,6 +73,11 @@ jobs:
           name: github-pages
           path: ./public
 
+      - name: Clear GitHub Pages cache
+        run: |
+          rm -rf public
+          rm -rf .gh-pages
+      
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
