@@ -1,4 +1,4 @@
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Emmie' s Workspace</title><link>/</link><description>Recent content on Emmie' s Workspace</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Sun, 19 May 2024 00:00:00 +0000</lastBuildDate><atom:link href="/index.xml" rel="self" type="application/rss+xml"/><item><title>Validate Facebook Limited Login JWT Token in Golang</title><link>/posts/validate-facebook-limited-login-jwt-token/</link><pubDate>Sun, 19 May 2024 00:00:00 +0000</pubDate><guid>/posts/validate-facebook-limited-login-jwt-token/</guid><description>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Emmie' s Workspace</title><link>https://linxinemily.github.io/</link><description>Recent content on Emmie' s Workspace</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Sun, 19 May 2024 00:00:00 +0000</lastBuildDate><atom:link href="https://linxinemily.github.io/index.xml" rel="self" type="application/rss+xml"/><item><title>Validate Facebook Limited Login JWT Token in Golang</title><link>https://linxinemily.github.io/posts/validate-facebook-limited-login-jwt-token/</link><pubDate>Sun, 19 May 2024 00:00:00 +0000</pubDate><guid>https://linxinemily.github.io/posts/validate-facebook-limited-login-jwt-token/</guid><description>
 &lt;h2 id="前提">
 &lt;a href="#%e5%89%8d%e6%8f%90" class="anchor">
 &lt;svg class="icon" aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16">
@@ -347,7 +347,7 @@ d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.
 &lt;/a>
 碎碎念
 &lt;/h2>
-&lt;p>猜測是因為後端語言太多，各語言也都有自己的 jwt 套件，所以官方才沒有放驗證 Token 的實作範例，但像上面提到的 kid、issuer 應該可以說明更清楚一點。不過也算是藉機學習了，&lt;del>感謝 Facebook。（？）&lt;/del>&lt;/p></description></item><item><title>培養軟體架構思維，拒絕過度設計——軟體設計模式精通之旅心得</title><link>/posts/design-pattern-by-waterballsa-learning-experience/</link><pubDate>Wed, 16 Aug 2023 23:56:54 +0800</pubDate><guid>/posts/design-pattern-by-waterballsa-learning-experience/</guid><description>
+&lt;p>猜測是因為後端語言太多，各語言也都有自己的 jwt 套件，所以官方才沒有放驗證 Token 的實作範例，但像上面提到的 kid、issuer 應該可以說明更清楚一點。不過也算是藉機學習了，&lt;del>感謝 Facebook。（？）&lt;/del>&lt;/p></description></item><item><title>培養軟體架構思維，拒絕過度設計——軟體設計模式精通之旅心得</title><link>https://linxinemily.github.io/posts/design-pattern-by-waterballsa-learning-experience/</link><pubDate>Wed, 16 Aug 2023 23:56:54 +0800</pubDate><guid>https://linxinemily.github.io/posts/design-pattern-by-waterballsa-learning-experience/</guid><description>
 &lt;h2 id="前言">
 &lt;a href="#%e5%89%8d%e8%a8%80" class="anchor">
 &lt;svg class="icon" aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16">
@@ -440,7 +440,7 @@ d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.
 &lt;/h3>
 &lt;p>這門課雖然稱之為「設計模式精通之旅」，但並沒有像一般大部分書籍或教學劈頭就把 GoF 的 23 個設計模式全部丟給我們，反倒是從重新認識物件導向開始，以及重新釐清「物件」和「類別」的概念，還有「類別」之間的關係。而這一切，都是為了要先打好基本功，也就是在做設計之前的第一步，先建立出「領域模型」，將 UML 類別圖畫出來，捕捉各個物件/類別的屬性和行為，並且標示他們之間的關聯，而這階段也稱之為 OOA(Object-Oriented Analysis)/物件導向分析。&lt;/p>
 &lt;p>&lt;img loading="lazy"
-src="/images/ooa.png"
+src="https://linxinemily.github.io/images/ooa.png"
 alt="進行 OOA 繪製 UML 類別圖，將各個物件/類別的屬性和行為定義出來，並且標示他們之間的關聯"
 width=1792
 height="1034" />
@@ -461,7 +461,7 @@ OOD 設計要點：覺察 Forces，得出 Problem，找到 Pattern(Solution)
 &lt;p>這裡所指的 Forces，舉例來說像是「未來可能會繼續擴充新的行為」、「對程式碼維護性的要求」、「須滿足特定的商業邏輯」，每一項都是一道 Force，而多道 Forces 若同時存在又彼此互相衝突，就會令工程師感受到滿滿的壓抑感。&lt;/p>
 &lt;/blockquote>
 &lt;p>&lt;img loading="lazy"
-src="/images/ood.png"
+src="https://linxinemily.github.io/images/ood.png"
 alt="OOD：以為 OOA 基礎，察覺彼此衝突的 Forces 之後定義出 Problem，並找到 Problem 對應的 Solution，套用 Pattern 後的 Resultinng Context"
 width=1984
 height="902" />&lt;/p>
@@ -491,7 +491,7 @@ d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.
 掌握軟體設計精髓，避免過度設計
 &lt;/h3>
 &lt;p>我想 OOAD 的部分，正是軟體設計的精髓所在，這也是我在過往開發經歷中幾乎沒有培養過的能力，畢竟自己平常工作上大多是 CRUD，手邊大概 80% 以上的工作都是運用框架或工具即可處理的業務需求，如果當初要叫我寫一個 Domain Logic 非常豐富的卡牌遊戲，我可能根本寫不出來。而旅程當中已經寫過了比大小、大老二和 RPG 遊戲，未來還會繼續挑戰到 IoC 容器框架、Web Framework 等等難度更進階的題目，雖然不確定自己能否走到最後一關（但願），不過從現回頭看，自己的軟體設計技能已經成長了不少。&lt;/p>
-&lt;p>一開始的我純粹只是想學習如何使用設計模式，卻完全忽略了「爲什麼要學習/使用設計模式」，直接在旅程的一開始就被點出了自己從未思考過，卻非常核心的問題。要是沒有參加旅程，我可能就會繼續用以往的思維，只是因為熟悉某些設計模式或單純為了炫技而套模式。而就以一個平常大多數使用框架和工具就能完成日常 80% 工作的人來說，設計模式確實很少機會派得上用上（大多數會使用模式的部分，框架或工具都幫我們做掉了），但我認為這趟旅程所帶來最大的收穫就是對於 OOAD 的掌握能力，同時培養了軟體架構思維，懂得如何避免過度設計，光這一點就讓我覺得非常值得了。&lt;/p></description></item><item><title>[leetcode 筆記] 160. Intersection of Two Linked Lists</title><link>/posts/leetcode-160-intersection-of-two-linked-lists/</link><pubDate>Mon, 31 Jul 2023 23:54:43 +0800</pubDate><guid>/posts/leetcode-160-intersection-of-two-linked-lists/</guid><description>
+&lt;p>一開始的我純粹只是想學習如何使用設計模式，卻完全忽略了「爲什麼要學習/使用設計模式」，直接在旅程的一開始就被點出了自己從未思考過，卻非常核心的問題。要是沒有參加旅程，我可能就會繼續用以往的思維，只是因為熟悉某些設計模式或單純為了炫技而套模式。而就以一個平常大多數使用框架和工具就能完成日常 80% 工作的人來說，設計模式確實很少機會派得上用上（大多數會使用模式的部分，框架或工具都幫我們做掉了），但我認為這趟旅程所帶來最大的收穫就是對於 OOAD 的掌握能力，同時培養了軟體架構思維，懂得如何避免過度設計，光這一點就讓我覺得非常值得了。&lt;/p></description></item><item><title>[leetcode 筆記] 160. Intersection of Two Linked Lists</title><link>https://linxinemily.github.io/posts/leetcode-160-intersection-of-two-linked-lists/</link><pubDate>Mon, 31 Jul 2023 23:54:43 +0800</pubDate><guid>https://linxinemily.github.io/posts/leetcode-160-intersection-of-two-linked-lists/</guid><description>
 &lt;h2 id="題目概述">
 &lt;a href="#%e9%a1%8c%e7%9b%ae%e6%a6%82%e8%bf%b0" class="anchor">
 &lt;svg class="icon" aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16">
@@ -504,7 +504,7 @@ d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.
 &lt;/h2>
 &lt;p>給定兩個單向 Linked List 的第一個節點 (head)，兩個 List 可能會在某個節點會合成為一個 List，要求找出會合節點並回傳。若兩個 List 並無會合，則回傳 null。&lt;/p>
 &lt;p>&lt;img loading="lazy"
-src="/images/leetcode-160-intersection-of-two-linked-lists.png"
+src="https://linxinemily.github.io/images/leetcode-160-intersection-of-two-linked-lists.png"
 alt="160. Intersection of Two Linked Lists"
 width=742
 height="241" />&lt;/p>
@@ -581,7 +581,7 @@ d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.
 &lt;p>配置兩個指針，都各自從 List A 和 List B 的 head 開始，指針1 將 List A 走到底後接著走 List B，同時，指針2 將 List B 走到底後接著走 List A。短的 List 會被先走完就會換到長的 List 去，而長的 List 走完也會換到短 List 去走，最終兩個指針就會走到交會的節點上。&lt;/p>
 &lt;p>做了個簡單的動畫，直接看比較清楚：&lt;/p>
 &lt;p>&lt;img loading="lazy"
-src="/images/leetcode-160-intersection-of-two-linked-lists.gif"
+src="https://linxinemily.github.io/images/leetcode-160-intersection-of-two-linked-lists.gif"
 alt="Intersection of Two Linked Lists 雙指針解法動畫"
 width=1516
 height="838" />&lt;/p>
@@ -637,8 +637,8 @@ Reference
 &lt;ul>
 &lt;li>&lt;a href="https://leetcode.com/problems/intersection-of-two-linked-lists/solutions/49785/java-solution-without-knowing-the-difference-in-len/">Java solution without knowing the difference in len!&lt;/a>：
 這篇 Solution 底下有一個 BryanBoCao 大大的（應該是第一個）留言，當中有詳細的圖解說明，非常有助於理解。&lt;/li>
-&lt;/ul></description></item><item><title>GraphQL Dataloader 在 Golang 當中的打開方法與原理解析（下）</title><link>/posts/golang-graphql-dataloader-2/</link><pubDate>Sun, 04 Jun 2023 17:44:11 +0800</pubDate><guid>/posts/golang-graphql-dataloader-2/</guid><description>
-&lt;p>接續上一篇文章：&lt;a href="/posts/golang-graphql-dataloader-1/">GraphQL Dataloader 在 Golang 當中的打開方法與原理解析（上）&lt;/a>。&lt;/p>
+&lt;/ul></description></item><item><title>GraphQL Dataloader 在 Golang 當中的打開方法與原理解析（下）</title><link>https://linxinemily.github.io/posts/golang-graphql-dataloader-2/</link><pubDate>Sun, 04 Jun 2023 17:44:11 +0800</pubDate><guid>https://linxinemily.github.io/posts/golang-graphql-dataloader-2/</guid><description>
+&lt;p>接續上一篇文章：&lt;a href="https://linxinemily.github.io/posts/golang-graphql-dataloader-1/">GraphQL Dataloader 在 Golang 當中的打開方法與原理解析（上）&lt;/a>。&lt;/p>
 &lt;p>在進入原始碼之前，先複習一下 use case。首先從 resolver 開始看起：&lt;/p>
 &lt;div class="highlight">&lt;div class="chroma">
 &lt;table class="lntable">&lt;tr>&lt;td class="lntd">
@@ -1095,7 +1095,7 @@ d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.
 &lt;li>loader 的 input channel 會等待一段時間（預設為 16ms），時間一到就關閉接收 request。（如果有設定接收 request 的最大數量，也有可能提前關閉）&lt;/li>
 &lt;li>input channel 關閉後，就會將所有搜集到的 request keys 傳給自訂批次處理方法，取得所有資料（為 key - value 形式）。&lt;/li>
 &lt;li>資料載入完成後，將這些資料依照 key 推進對應的 request channel，接收到該 channel 回傳值的匿名函數就會停止阻塞，將結果緩存後，回傳給 client。&lt;/li>
-&lt;/ul></description></item><item><title>GraphQL Dataloader 在 Golang 當中的打開方法與原理解析（上）</title><link>/posts/golang-graphql-dataloader-1/</link><pubDate>Sun, 04 Jun 2023 17:43:11 +0800</pubDate><guid>/posts/golang-graphql-dataloader-1/</guid><description>
+&lt;/ul></description></item><item><title>GraphQL Dataloader 在 Golang 當中的打開方法與原理解析（上）</title><link>https://linxinemily.github.io/posts/golang-graphql-dataloader-1/</link><pubDate>Sun, 04 Jun 2023 17:43:11 +0800</pubDate><guid>https://linxinemily.github.io/posts/golang-graphql-dataloader-1/</guid><description>
 &lt;h2 id="the-problem">
 &lt;a href="#the-problem" class="anchor">
 &lt;svg class="icon" aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16">
@@ -1433,7 +1433,7 @@ d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
 &lt;/div>
 &lt;/div>&lt;p>至此，不管往後總共有幾個 features，都只會執行一次的資料庫查詢，解決了 N+1 問題。
-礙於篇幅有點太長，想說拆成上下兩篇比較好閱讀，所以分析 Dataloader 原始碼的部分，就留到&lt;a href="/posts/golang-graphql-dataloader-2/">下一篇&lt;/a>了～&lt;/p></description></item><item><title>Golang 的資料庫(整合)測試 Part 2 - 使用 Testcontainers</title><link>/posts/golang-database-testing-with-testcontainer/</link><pubDate>Wed, 17 May 2023 15:43:34 +0800</pubDate><guid>/posts/golang-database-testing-with-testcontainer/</guid><description>
+礙於篇幅有點太長，想說拆成上下兩篇比較好閱讀，所以分析 Dataloader 原始碼的部分，就留到&lt;a href="https://linxinemily.github.io/posts/golang-graphql-dataloader-2/">下一篇&lt;/a>了～&lt;/p></description></item><item><title>Golang 的資料庫(整合)測試 Part 2 - 使用 Testcontainers</title><link>https://linxinemily.github.io/posts/golang-database-testing-with-testcontainer/</link><pubDate>Wed, 17 May 2023 15:43:34 +0800</pubDate><guid>https://linxinemily.github.io/posts/golang-database-testing-with-testcontainer/</guid><description>
 &lt;h2 id="前言">
 &lt;a href="#%e5%89%8d%e8%a8%80" class="anchor">
 &lt;svg class="icon" aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16">
@@ -1444,7 +1444,7 @@ d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.
 &lt;/a>
 前言
 &lt;/h2>
-&lt;p>上一篇文章 &lt;a href="/posts/golang-database-testing/">Golang 資料庫(整合)測試&lt;/a> 當中提到了在使用真實資料庫作為測試資料庫時，還可以使用 &lt;a href="https://golang.testcontainers.org/">testcontainers&lt;/a> 讓我們能夠在測試當中直接操作 Docker Container，去建立測試時需要的資料庫環境。這樣一來，也不用像一開始那樣，得另外手動配置一個專門拿來跑測試用的資料庫，將測試整合到 CI/CD 流程上時也比較方便。&lt;/p>
+&lt;p>上一篇文章 &lt;a href="https://linxinemily.github.io/posts/golang-database-testing/">Golang 資料庫(整合)測試&lt;/a> 當中提到了在使用真實資料庫作為測試資料庫時，還可以使用 &lt;a href="https://golang.testcontainers.org/">testcontainers&lt;/a> 讓我們能夠在測試當中直接操作 Docker Container，去建立測試時需要的資料庫環境。這樣一來，也不用像一開始那樣，得另外手動配置一個專門拿來跑測試用的資料庫，將測試整合到 CI/CD 流程上時也比較方便。&lt;/p>
 &lt;p>&lt;small> 然後應該是不會有 Part 3 啦。 &lt;/small>&lt;/p>
 &lt;h2 id="testcontainers-簡介">
 &lt;a href="#testcontainers-%e7%b0%a1%e4%bb%8b" class="anchor">
@@ -1708,7 +1708,7 @@ d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.
 &lt;/div>&lt;p>最後就可以來跑看看測試了：&lt;/p>
 &lt;pre tabindex="0">&lt;code>go test
 &lt;/code>&lt;/pre>&lt;p>&lt;img loading="lazy"
-src="/images/testcontainer-go.png"
+src="https://linxinemily.github.io/images/testcontainer-go.png"
 alt="database-testing-in-golang"
 width=1474
 height="656" />
@@ -1725,9 +1725,9 @@ d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.
 &lt;/h2>
 &lt;p>其實使用的方式滿簡易的，概念上也不難，就是在 setup 當中最一開始多一個「啟動資料庫 Server 的 Docker Container」以及最後 teardown 時「關閉 container」的步驟而已，後面就可以繼續原本的流程(重置資料庫、開啟連線&amp;hellip;等等)，但比較會遇到問題的部分可能會是在環境配置以及 API 的使用，因為官方文件的範例都沒有到很完整，使用時會需要摸索一陣子，因此才特別寫一篇筆記記錄。&lt;/p>
 &lt;p>最後附上完整的程式碼範例：
-&lt;a href="https://gist.github.com/linxinemily/276905e0145218538cb0be3a79a36153">https://gist.github.com/linxinemily/276905e0145218538cb0be3a79a36153&lt;/a>&lt;/p></description></item><item><title>Golang 的資料庫(整合)測試</title><link>/posts/golang-database-testing/</link><pubDate>Sun, 23 Apr 2023 00:00:00 +0000</pubDate><guid>/posts/golang-database-testing/</guid><description>
+&lt;a href="https://gist.github.com/linxinemily/276905e0145218538cb0be3a79a36153">https://gist.github.com/linxinemily/276905e0145218538cb0be3a79a36153&lt;/a>&lt;/p></description></item><item><title>Golang 的資料庫(整合)測試</title><link>https://linxinemily.github.io/posts/golang-database-testing/</link><pubDate>Sun, 23 Apr 2023 00:00:00 +0000</pubDate><guid>https://linxinemily.github.io/posts/golang-database-testing/</guid><description>
 &lt;p>&lt;img loading="lazy"
-src="/images/golang-database-testing-1.png"
+src="https://linxinemily.github.io/images/golang-database-testing-1.png"
 alt="database-testing-in-golang"
 width=1243
 height="654" />&lt;/p>
@@ -1873,7 +1873,7 @@ d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.
 &lt;/h3>
 &lt;p>一個實際運行在主機或容器上的資料庫，通常專門 for 測試用。&lt;/p>
 &lt;blockquote>
-&lt;p>有網友補充，還可以使用像是 &lt;a href="https://github.com/testcontainers/testcontainers-go">testcontainers-go&lt;/a> 這種工具，讓開發者可以透過呼叫其 API 來管理和使用 Docker 容器，進行測試和集成測試。能夠在測試當中更方便地管理資料庫依賴。介紹與用法可參考&lt;a href="/posts/golang-database-testing-with-testcontainer/">下一篇筆記&lt;/a>。&lt;/p>
+&lt;p>有網友補充，還可以使用像是 &lt;a href="https://github.com/testcontainers/testcontainers-go">testcontainers-go&lt;/a> 這種工具，讓開發者可以透過呼叫其 API 來管理和使用 Docker 容器，進行測試和集成測試。能夠在測試當中更方便地管理資料庫依賴。介紹與用法可參考&lt;a href="https://linxinemily.github.io/posts/golang-database-testing-with-testcontainer/">下一篇筆記&lt;/a>。&lt;/p>
 &lt;/blockquote>
 &lt;ul>
 &lt;li>優點：
@@ -1945,7 +1945,7 @@ d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.
 &lt;/li>
 &lt;/ul>
 &lt;p>&lt;img loading="lazy"
-src="/images/golang-database-testing.png"
+src="https://linxinemily.github.io/images/golang-database-testing.png"
 alt="suite 有點類似測試方法的集合(組)，SetupSuite() / TearDownSuite() 為整組測試前/後的處理、 SetupTest() / TearDownTest() 為組內每個單獨測試/前後的處理"
 width=1205
 height="594" />&lt;/p>
@@ -2173,7 +2173,7 @@ d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.
 &lt;/ol>
 &lt;p>如此一來，DB 連線和資料都不會互相干擾，也可以平行跑測試。&lt;/p>
 &lt;/li>
-&lt;/ul></description></item><item><title>Golang struct 轉 JSON 遇到欄位沒有值的問題</title><link>/posts/golang-struct-to-json-and-empty-data/</link><pubDate>Mon, 27 Mar 2023 00:00:00 +0000</pubDate><guid>/posts/golang-struct-to-json-and-empty-data/</guid><description>
+&lt;/ul></description></item><item><title>Golang struct 轉 JSON 遇到欄位沒有值的問題</title><link>https://linxinemily.github.io/posts/golang-struct-to-json-and-empty-data/</link><pubDate>Mon, 27 Mar 2023 00:00:00 +0000</pubDate><guid>https://linxinemily.github.io/posts/golang-struct-to-json-and-empty-data/</guid><description>
 &lt;p>要將 Go 的 struct 轉成 JSON 格式時，通常都會藉由官方提供的標準函式庫 &lt;code>encoding/json&lt;/code> 去實現，也會借助在 struct 當中為特定欄位定義 &lt;code>json&lt;/code> tag 去標示輸出成 JSON 格式時的命名和規則。在欄位值存在的情況下基本上不會有什麼問題，但如果欄位沒有值，就有可能會輸出非預期結果（簡稱：踩坑）。&lt;/p>
 &lt;p>首先必須先釐清一件事，所謂的「沒有值」準確來說是指什麼？nil？空陣列？還是空字串？我們都知道在 Golang 當中，不同類型的資料有著不同的「零值(Zero Value)」，比如 string 的零值是空字串、int 的零值是 0。然而「沒有值」比較偏向一個籠統的說法，也不管程式語言的定義，反正就是沒有資料的意思。&lt;em>又或者說以使用者角度來看，因為不管欄位資料裡面是空字串或是 NULL，對他們來說就都是沒資料&lt;/em>。&lt;/p>
 &lt;p>以下會以這個 struct 為範例，分別來看這兩種不同類型(reference v.s. value type)的資料欄位，在面臨沒有資料時會輸出什麼結果。&lt;/p>
@@ -2463,7 +2463,7 @@ d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.
 &lt;li>然而在相同類型中，輸出的 JSON 值也有不同的可能性。例如剛剛提到的 slice 類型，初始化後的空 slice 會輸出空陣列，而未初始化為零值的 nil slice 會輸出 null。&lt;/li>
 &lt;li>&lt;code>omitempty&lt;/code> tag 會影響 key 值的存留。&lt;/li>
 &lt;/ul>
-&lt;p>只要注意這幾點，就可以避免在輸出 JSON 時得到非預期的資料類型/結構。&lt;/p></description></item><item><title>解決使用 oapi-codegen 時報錯 unexpected reference depth</title><link>/posts/resolve-oapi-codegen-error/</link><pubDate>Fri, 17 Mar 2023 00:00:00 +0000</pubDate><guid>/posts/resolve-oapi-codegen-error/</guid><description>
+&lt;p>只要注意這幾點，就可以避免在輸出 JSON 時得到非預期的資料類型/結構。&lt;/p></description></item><item><title>解決使用 oapi-codegen 時報錯 unexpected reference depth</title><link>https://linxinemily.github.io/posts/resolve-oapi-codegen-error/</link><pubDate>Fri, 17 Mar 2023 00:00:00 +0000</pubDate><guid>https://linxinemily.github.io/posts/resolve-oapi-codegen-error/</guid><description>
 &lt;p>最近在研究 &lt;a href="https://github.com/deepmap/oapi-codegen">oapi-codegen&lt;/a> 這套基於 OpenAPI 3.0 自動生成 Go boilerplate 程式的工具，能幫助開發者省下很多撰寫實現 HTTP Server 端口、marshalling 和 unmarshalling 的重複程式碼的時間。當進行系統重構或使用像是文件先行(Documentation-Driven Development)的開發方法時也很適用。
 在此紀錄一下餵入 OpenAPI 檔案時遇到的問題。&lt;/p>
 &lt;h2 id="問題概述">
@@ -2753,7 +2753,7 @@ d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
 &lt;/div>
 &lt;/div>&lt;p>&lt;img loading="lazy"
-src="/images/oapi-codegen-2.png"
+src="https://linxinemily.github.io/images/oapi-codegen-2.png"
 alt="Untitled"
 width=886
 height="182" />&lt;/p>
@@ -2778,7 +2778,7 @@ d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
 &lt;/div>
 &lt;/div>&lt;p>&lt;img loading="lazy"
-src="/images/oapi-codegen-1.png"
+src="https://linxinemily.github.io/images/oapi-codegen-1.png"
 alt="Untitled"
 width=948
 height="76" />&lt;/p>
@@ -2827,7 +2827,7 @@ Note
 &lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">$ oapi-codegen -package ports -generate types openapi_0317.yaml &amp;gt; openapi_types.gen.go
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
 &lt;/div>
-&lt;/div></description></item><item><title>讓架在 Netlify 上的網站發文同時向 Google 要求為新頁面建立索引! - 使用 Netlify Functions 串接 Google Indexing API</title><link>/posts/netlify-function-google-indexing-api/</link><pubDate>Mon, 27 Feb 2023 00:00:00 +0000</pubDate><guid>/posts/netlify-function-google-indexing-api/</guid><description>
+&lt;/div></description></item><item><title>讓架在 Netlify 上的網站發文同時向 Google 要求為新頁面建立索引! - 使用 Netlify Functions 串接 Google Indexing API</title><link>https://linxinemily.github.io/posts/netlify-function-google-indexing-api/</link><pubDate>Mon, 27 Feb 2023 00:00:00 +0000</pubDate><guid>https://linxinemily.github.io/posts/netlify-function-google-indexing-api/</guid><description>
 &lt;h2 id="前言">
 &lt;a href="#%e5%89%8d%e8%a8%80" class="anchor">
 &lt;svg class="icon" aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16">
@@ -2960,13 +2960,13 @@ d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.
 &lt;/div>&lt;p>結果發現真的有被執行，我們可以到 Netlify 後台去看 function 的 log。進入 &lt;a href="https://app.netlify.com/sites/%7Byour_site%7D/functions">https://app.netlify.com/sites/{your_site}/functions&lt;/a>
 ，點選剛剛 deploy 的 function：
 &lt;img loading="lazy"
-src="/images/netifly-functions-02.png"
+src="https://linxinemily.github.io/images/netifly-functions-02.png"
 alt="Untitled"
 width=1263
 height="735" />&lt;/p>
 &lt;p>就可以進到該 function 的頁面瀏覽 log：
 &lt;img loading="lazy"
-src="/images/netifly-functions-03.png"
+src="https://linxinemily.github.io/images/netifly-functions-03.png"
 alt="Untitled"
 width=1268
 height="667" />&lt;/p>
@@ -3125,13 +3125,13 @@ height="667" />&lt;/p>
 &lt;pre tabindex="0">&lt;code>$ netlify functions:serve
 &lt;/code>&lt;/pre>&lt;p>成功跑起來的話預設會在 9999 port：
 &lt;img loading="lazy"
-src="/images/netifly-functions-04.png"
+src="https://linxinemily.github.io/images/netifly-functions-04.png"
 alt="Untitled"
 width=1422
 height="160" />&lt;/p>
 &lt;p>然後就可以用 Postman 打 function 的 endpoint：
 &lt;img loading="lazy"
-src="/images/netifly-functions-05.png"
+src="https://linxinemily.github.io/images/netifly-functions-05.png"
 alt="Untitled"
 width=2026
 height="858" />&lt;/p>
@@ -3256,7 +3256,7 @@ d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.
 &lt;/div>
 &lt;/div>&lt;p>在同個命令列 session 下剛剛的 &lt;code>netlify functions:serve&lt;/code> 指令，看起來是 work 的。
 &lt;img loading="lazy"
-src="/images/netifly-functions-06.png"
+src="https://linxinemily.github.io/images/netifly-functions-06.png"
 alt="Untitled"
 width=2028
 height="574" />&lt;/p>
@@ -3302,7 +3302,7 @@ height="574" />&lt;/p>
 &lt;/div>
 &lt;/div>&lt;p>二是到 &lt;a href="https://app.netlify.com/sites/emmielin/settings/env">Netlify 後台&lt;/a>設定環境變數的值：
 &lt;img loading="lazy"
-src="/images/netifly-functions-07.png"
+src="https://linxinemily.github.io/images/netifly-functions-07.png"
 alt="Untitled"
 width=945
 height="707" />&lt;/p>
@@ -3312,7 +3312,7 @@ height="707" />&lt;/p>
 &lt;pre tabindex="0">&lt;code>git commit -m &amp;#34;new article: netlify-function-google-indexing-api&amp;#34; &amp;amp;&amp;amp; git push
 &lt;/code>&lt;/pre>&lt;p>驗證一下是否有成功提交索引，到後台看 function 有沒有 log，有顯示代表成功：
 &lt;img loading="lazy"
-src="/images/netifly-functions-08.png"
+src="https://linxinemily.github.io/images/netifly-functions-08.png"
 alt="Untitled"
 width=1222
 height="253" />&lt;/p>
@@ -3327,7 +3327,7 @@ d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.
 後記
 &lt;/h2>
 &lt;p>以上，大概就完成了 90% 的人工作業（剩下 10％ 是要自己打 commit msg 的部分），不過也已經心滿意足了！比較大的收穫就是發掘了 Netlify Functions 這個不錯用的功能，以及重溫一下串 Google API 的回憶。
-現在能想到唯一的缺陷是，當一次推多個 commit 時，由於 deploy 的 payload 只會有最新一個 commit 的相關資訊，所以如果這幾個 commit 都包含有一篇新文章，那就只有最後發的那個 commit 的文章會被提交索引，不過我寫文頻率沒有高成那樣所以應該是不太可能會遇到這種情況，所以就先略過了。剩下的部分就看未來有沒有遇到什麼使用上的困難再來優化吧！&lt;/p></description></item><item><title>Golang 常見錯誤 - 在迴圈當中引用迭代變數(iterator variable)</title><link>/posts/golang-using-reference-to-loop-iterator-variable/</link><pubDate>Tue, 21 Feb 2023 00:00:00 +0000</pubDate><guid>/posts/golang-using-reference-to-loop-iterator-variable/</guid><description>
+現在能想到唯一的缺陷是，當一次推多個 commit 時，由於 deploy 的 payload 只會有最新一個 commit 的相關資訊，所以如果這幾個 commit 都包含有一篇新文章，那就只有最後發的那個 commit 的文章會被提交索引，不過我寫文頻率沒有高成那樣所以應該是不太可能會遇到這種情況，所以就先略過了。剩下的部分就看未來有沒有遇到什麼使用上的困難再來優化吧！&lt;/p></description></item><item><title>Golang 常見錯誤 - 在迴圈當中引用迭代變數(iterator variable)</title><link>https://linxinemily.github.io/posts/golang-using-reference-to-loop-iterator-variable/</link><pubDate>Tue, 21 Feb 2023 00:00:00 +0000</pubDate><guid>https://linxinemily.github.io/posts/golang-using-reference-to-loop-iterator-variable/</guid><description>
 &lt;p>前幾天閱讀到&lt;a href="https://github.com/golang/go/wiki/CommonMistakes">這篇官方 wiki&lt;/a> ，其中的 &lt;a href="https://github.com/golang/go/wiki/CommonMistakes#using-reference-to-loop-iterator-variable">Using reference to loop iterator variable&lt;/a>，也就是關於在迴圈當中引用迭代變數常犯的錯誤。當中有個範例一開始讓我不是很理解，後來終於搞懂，所以才想說筆記下來，也順便釐清一下思路。&lt;/p>
 &lt;p>首先，第一個範例滿好理解的：&lt;/p>
 &lt;div class="highlight">&lt;div class="chroma">
@@ -3476,7 +3476,7 @@ References
 &lt;/h2>
 &lt;p>&lt;a href="https://github.com/golang/go/wiki/CommonMistakes">CommonMistakes&lt;/a>&lt;/p>
 &lt;p>&lt;a href="https://research.swtch.com/godata">research!rsc: Go Data Structures&lt;/a>&lt;/p>
-&lt;p>&lt;a href="https://go.dev/blog/slices">Arrays, slices (and strings): The mechanics of &amp;lsquo;append&amp;rsquo; - The Go Programming Language&lt;/a>&lt;/p></description></item><item><title>將資料從 MariaDB 遷移至 AWS DynamoDB 過程紀錄</title><link>/posts/migrate-data-from-mariadb-to-dynamodb/</link><pubDate>Wed, 08 Feb 2023 00:00:00 +0000</pubDate><guid>/posts/migrate-data-from-mariadb-to-dynamodb/</guid><description>
+&lt;p>&lt;a href="https://go.dev/blog/slices">Arrays, slices (and strings): The mechanics of &amp;lsquo;append&amp;rsquo; - The Go Programming Language&lt;/a>&lt;/p></description></item><item><title>將資料從 MariaDB 遷移至 AWS DynamoDB 過程紀錄</title><link>https://linxinemily.github.io/posts/migrate-data-from-mariadb-to-dynamodb/</link><pubDate>Wed, 08 Feb 2023 00:00:00 +0000</pubDate><guid>https://linxinemily.github.io/posts/migrate-data-from-mariadb-to-dynamodb/</guid><description>
 &lt;h2 id="前情提要">
 &lt;a href="#%e5%89%8d%e6%83%85%e6%8f%90%e8%a6%81" class="anchor">
 &lt;svg class="icon" aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16">
@@ -3533,14 +3533,14 @@ Migrate 時遇到的問題與解法
 &lt;/h2>
 &lt;p>我們打算要 migrate 最近三個月的資料，先前已經有準備好一隻將 MariaDB 資料 migrate 到 DynamoDB 的程式。照原本計劃在上版前要先跑 migrate，總共有 600 多萬筆資料，估計至少要一個小時以上才跑得完，但舊資料有可能會在這段期間內被更新（已讀狀態），導致新舊資料不同步的問題：&lt;/p>
 &lt;p>&lt;img loading="lazy"
-src="/images/migrate-1.png"
+src="https://linxinemily.github.io/images/migrate-1.png"
 alt="migrate 過程中，舊資料可能會被更新，新資料卻沒有被更新，導致資料不同步。"
 width=1320
 height="482" />&lt;/p>
 &lt;p>migrate 過程中，舊資料可能會被更新，新資料卻沒有被更新，導致資料不同步。&lt;/p>
 &lt;p>解決這個問題的方法其實顯而易見，就是 &lt;strong>在更新舊 DB 資料的同時，也連同更新在新 DB 的同一筆資料。&lt;/strong> 同樣地，為了相容性（前端 web/APP 也要更換成打 v2 API 的版本，但 web 會先更新、APP 尚未準備好），&lt;strong>更新新 DB 資料時也要連同更新在舊 DB 的同一筆資料&lt;/strong>，這樣就算前端換成打 v2 後 APP 仍在打 v1，兩邊的資料也都會是同步的。如此一來， migrate 也就不需要在上版前做，而是在上版之後還能夠很有餘裕地慢慢跑。&lt;/p>
 &lt;p>&lt;img loading="lazy"
-src="/images/migrate-2.png"
+src="https://linxinemily.github.io/images/migrate-2.png"
 alt="Untitled"
 width=2941
 height="905" />&lt;/p>
@@ -3551,7 +3551,7 @@ height="905" />&lt;/p>
 &lt;li>migrate 完成後，前端/APP 再上版 （改成打 v2 API 的版本）&lt;/li>
 &lt;/ol>
 &lt;p>其實更無縫的方法是直接把 v1 API 背後都改成串接新服務，並提供相同的回傳資料格式，如此的話前端也無需替換接口。但由於在「讀取列表」API 的分頁參數有做改動（原本 v1 是使用頁數去取不同分頁的資料，但在 DynamoDB 取資料時無法用指定頁數的方式，&lt;em>不支持像是 SQL 的 offset 語法的用法或可以達到類似效果的方法&lt;/em>，而是要指定從哪筆資料開始往下取幾筆的方式，類似 Cursor 的概念），前端必定得進行相對應的修改，無法直接抽換。&lt;/p>
-&lt;p>不過透過以上的做法，已經能夠在不讓使用者覺察的前提下，將資料庫進行抽換並完成資料的搬移。後續就只需要持續追蹤 Log，如果 v1 API 都沒有再被呼叫的話，就可以直接把 v1 都拔掉，也無需再同步將資料寫入舊 DB、更新舊 DB 的資料 。&lt;/p></description></item><item><title>Laravel Prevent Lazy Loading 踩坑心得及原理分析</title><link>/posts/laravel-prevent-lazy-loading/</link><pubDate>Thu, 29 Dec 2022 00:00:00 +0000</pubDate><guid>/posts/laravel-prevent-lazy-loading/</guid><description>
+&lt;p>不過透過以上的做法，已經能夠在不讓使用者覺察的前提下，將資料庫進行抽換並完成資料的搬移。後續就只需要持續追蹤 Log，如果 v1 API 都沒有再被呼叫的話，就可以直接把 v1 都拔掉，也無需再同步將資料寫入舊 DB、更新舊 DB 的資料 。&lt;/p></description></item><item><title>Laravel Prevent Lazy Loading 踩坑心得及原理分析</title><link>https://linxinemily.github.io/posts/laravel-prevent-lazy-loading/</link><pubDate>Thu, 29 Dec 2022 00:00:00 +0000</pubDate><guid>https://linxinemily.github.io/posts/laravel-prevent-lazy-loading/</guid><description>
 &lt;p>在 Laravel 當中，我們可以透過「&lt;a href="https://laravel.com/docs/9.x/eloquent-relationships#relationship-methods-vs-dynamic-properties">動態關聯屬性(Dynamic relationship properties)&lt;/a>」直接取得 Model 的關聯資料，而該行為被官方稱為 「Lazy Loading」，當取值時就會自動將關聯資料載入，非常方便。但使用上一不小心就很有可能會造成 N+1 問題。&lt;/p>
 &lt;blockquote>
 &lt;p>N+1 問題通常是指，在得到一個 Models of Collection/Array 後，又在遍歷每個 Model 時，透過 Lazy Loading 取得其關聯資料，會導致 有 N 個 Model 就會執行 N+1 次 Query。過多的 DB Query 次數可能會對效能造成嚴重影響。&lt;/p>
@@ -3595,20 +3595,20 @@ height="905" />&lt;/p>
 &lt;/div>&lt;p>所以如果加上 &lt;code>Model::preventLazyLoading()&lt;/code> ，執行上面範例時應該就會拋出 &lt;code>Illuminate\Database\LazyLoadingViolationException&lt;/code> 阻止我們透過 Lazy Loading 得到 posts。&lt;/p>
 &lt;p>於是打開專案來試試，卻發現一切正常，沒有例外拋出&amp;hellip;&lt;/p>
 &lt;p>&lt;img loading="lazy"
-src="/images/laravel-lazy-loading-1.png"
+src="https://linxinemily.github.io/images/laravel-lazy-loading-1.png"
 alt="Untitled"
 width=2840
 height="1644" />&lt;/p>
 &lt;p>但如果換一個方法試試：&lt;/p>
 &lt;p>&lt;img loading="lazy"
-src="/images/laravel-lazy-loading-2.png"
+src="https://linxinemily.github.io/images/laravel-lazy-loading-2.png"
 alt="Untitled"
 width=2142
 height="958" />&lt;/p>
 &lt;p>這時候才會如預期拋出例外。&lt;/p>
 &lt;p>另外，如果當 DB 裡只有一筆 user 資料，就算像上面這樣取 &lt;code>all()&lt;/code>，也不會拋出例外。&lt;/p>
 &lt;p>&lt;img loading="lazy"
-src="/images/laravel-lazy-loading-3.png"
+src="https://linxinemily.github.io/images/laravel-lazy-loading-3.png"
 alt="Untitled"
 width=2848
 height="1644" />&lt;/p>
@@ -3808,7 +3808,7 @@ d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.
 &lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span>&lt;span class="nv">$users&lt;/span>&lt;span class="p">[&lt;/span>&lt;span class="mi">0&lt;/span>&lt;span class="p">]&lt;/span>&lt;span class="o">-&amp;gt;&lt;/span>&lt;span class="na">posts&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="c1">// no exception
 &lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
 &lt;/div>
-&lt;/div>&lt;p>其實按照常理，大概能夠理解爲什麼會有這種效果，因為只有一個 Model 的時候，取得其底下關聯，應該不能算是 N+1 問題。（不過該網站的例子為什麼這樣舉就不得而知，算是小踩坑了下）&lt;/p></description></item><item><title>在 Laravel 當中使用 Redis 分布式鎖 避免 race condition 重複插入相同資料問題</title><link>/posts/%E5%9C%A8-laravel-%E7%95%B6%E4%B8%AD%E4%BD%BF%E7%94%A8-redis-%E5%88%86%E5%B8%83%E5%BC%8F%E9%8E%96-%E9%81%BF%E5%85%8D-race-condition-%E9%87%8D%E8%A4%87%E6%8F%92%E5%85%A5%E7%9B%B8%E5%90%8C%E8%B3%87%E6%96%99%E5%95%8F%E9%A1%8C/</link><pubDate>Sun, 06 Nov 2022 00:00:00 +0000</pubDate><guid>/posts/%E5%9C%A8-laravel-%E7%95%B6%E4%B8%AD%E4%BD%BF%E7%94%A8-redis-%E5%88%86%E5%B8%83%E5%BC%8F%E9%8E%96-%E9%81%BF%E5%85%8D-race-condition-%E9%87%8D%E8%A4%87%E6%8F%92%E5%85%A5%E7%9B%B8%E5%90%8C%E8%B3%87%E6%96%99%E5%95%8F%E9%A1%8C/</guid><description>
+&lt;/div>&lt;p>其實按照常理，大概能夠理解爲什麼會有這種效果，因為只有一個 Model 的時候，取得其底下關聯，應該不能算是 N+1 問題。（不過該網站的例子為什麼這樣舉就不得而知，算是小踩坑了下）&lt;/p></description></item><item><title>在 Laravel 當中使用 Redis 分布式鎖 避免 race condition 重複插入相同資料問題</title><link>https://linxinemily.github.io/posts/%E5%9C%A8-laravel-%E7%95%B6%E4%B8%AD%E4%BD%BF%E7%94%A8-redis-%E5%88%86%E5%B8%83%E5%BC%8F%E9%8E%96-%E9%81%BF%E5%85%8D-race-condition-%E9%87%8D%E8%A4%87%E6%8F%92%E5%85%A5%E7%9B%B8%E5%90%8C%E8%B3%87%E6%96%99%E5%95%8F%E9%A1%8C/</link><pubDate>Sun, 06 Nov 2022 00:00:00 +0000</pubDate><guid>https://linxinemily.github.io/posts/%E5%9C%A8-laravel-%E7%95%B6%E4%B8%AD%E4%BD%BF%E7%94%A8-redis-%E5%88%86%E5%B8%83%E5%BC%8F%E9%8E%96-%E9%81%BF%E5%85%8D-race-condition-%E9%87%8D%E8%A4%87%E6%8F%92%E5%85%A5%E7%9B%B8%E5%90%8C%E8%B3%87%E6%96%99%E5%95%8F%E9%A1%8C/</guid><description>
 &lt;p>前幾天遇到一個狀況，原本程式裡有一段邏輯是 &lt;strong>「如果該筆資料不存在，就寫入新資料，但如果已存在，就直接回傳該筆已存在的資料」&lt;/strong>，程式碼大概長這樣：&lt;/p>
 &lt;div class="highlight">&lt;div class="chroma">
 &lt;table class="lntable">&lt;tr>&lt;td class="lntd">
@@ -3852,7 +3852,7 @@ d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.
 &lt;/div>&lt;p>這段邏輯看起來很簡單，在單一 process 的情況下，這段程式碼確實沒有任何問題，但如果今天同時有兩個 process 要執行這段程式的話，就可能會有非預期的結果出現。
 由於不論是上面的程式碼，或是簡化後的程式碼，如果沒有撈出資料的話（也就是資料不存在），都是要繼續往下執行新增資料的動作，而「撈出資料」和「新增資料」都是單獨的 Query，所以如果幾乎同時執行這段程式時，可能就會產生兩筆相同的資料：&lt;/p>
 &lt;p>&lt;img loading="lazy"
-src="/images/laravel-redis-lock.png"
+src="https://linxinemily.github.io/images/laravel-redis-lock.png"
 alt="Untitled"
 width=2651
 height="1250" />&lt;/p>
@@ -4268,7 +4268,7 @@ d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">});&lt;/span>
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
 &lt;/div>
-&lt;/div></description></item><item><title>Laravel 9 factory recycle method 用法與原理分析</title><link>/posts/laravel-9-factory-recycle-method-%E7%94%A8%E6%B3%95%E8%88%87%E5%8E%9F%E7%90%86%E5%88%86%E6%9E%90/</link><pubDate>Wed, 05 Oct 2022 00:00:00 +0000</pubDate><guid>/posts/laravel-9-factory-recycle-method-%E7%94%A8%E6%B3%95%E8%88%87%E5%8E%9F%E7%90%86%E5%88%86%E6%9E%90/</guid><description>
+&lt;/div></description></item><item><title>Laravel 9 factory recycle method 用法與原理分析</title><link>https://linxinemily.github.io/posts/laravel-9-factory-recycle-method-%E7%94%A8%E6%B3%95%E8%88%87%E5%8E%9F%E7%90%86%E5%88%86%E6%9E%90/</link><pubDate>Wed, 05 Oct 2022 00:00:00 +0000</pubDate><guid>https://linxinemily.github.io/posts/laravel-9-factory-recycle-method-%E7%94%A8%E6%B3%95%E8%88%87%E5%8E%9F%E7%90%86%E5%88%86%E6%9E%90/</guid><description>
 &lt;h2 id="recycle-方法的使用情境及欲解決之問題">
 &lt;a href="#recycle-%e6%96%b9%e6%b3%95%e7%9a%84%e4%bd%bf%e7%94%a8%e6%83%85%e5%a2%83%e5%8f%8a%e6%ac%b2%e8%a7%a3%e6%b1%ba%e4%b9%8b%e5%95%8f%e9%a1%8c" class="anchor">
 &lt;svg class="icon" aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16">
@@ -4286,7 +4286,7 @@ For example, imagine you have &lt;strong>&lt;code>Airline&lt;/code>&lt;/strong>
 &lt;/blockquote>
 &lt;p>大致上是說在遇到以下類型的關聯時&lt;/p>
 &lt;p>&lt;img loading="lazy"
-src="/images/factory-recycle-method.png"
+src="https://linxinemily.github.io/images/factory-recycle-method.png"
 alt="Untitled"
 width=703
 height="351" />&lt;/p>
@@ -4876,7 +4876,7 @@ d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.
 &lt;/h2>
 &lt;p>之所以會有 &lt;code>recycle&lt;/code> 這個方法，主要是為了可以使用同一個實例作為關聯且不需巢狀呼叫 &lt;code>for&lt;/code> 方法。
 重點在於 &lt;strong>需事先在 Model Factory 當中將 &lt;code>{model}_id&lt;/code>指定為對應的 Factory (&lt;code>{model}::factory()&lt;/code>)&lt;/strong> ，要達到這點 &lt;code>recycle&lt;/code> 才會有作用。&lt;/p>
-&lt;p>個人是覺得文件沒有寫得非常清楚，花了一番力氣才真正理解它的用法，但也剛好可以理解一下原理啦。&lt;/p></description></item><item><title>Golang Slice Assignment 與 append 方法</title><link>/posts/golang-slice-assignment-%E8%88%87-append-%E6%96%B9%E6%B3%95/</link><pubDate>Tue, 16 Aug 2022 00:00:00 +0000</pubDate><guid>/posts/golang-slice-assignment-%E8%88%87-append-%E6%96%B9%E6%B3%95/</guid><description>
+&lt;p>個人是覺得文件沒有寫得非常清楚，花了一番力氣才真正理解它的用法，但也剛好可以理解一下原理啦。&lt;/p></description></item><item><title>Golang Slice Assignment 與 append 方法</title><link>https://linxinemily.github.io/posts/golang-slice-assignment-%E8%88%87-append-%E6%96%B9%E6%B3%95/</link><pubDate>Tue, 16 Aug 2022 00:00:00 +0000</pubDate><guid>https://linxinemily.github.io/posts/golang-slice-assignment-%E8%88%87-append-%E6%96%B9%E6%B3%95/</guid><description>
 &lt;h2 id="slice-資料結構">
 &lt;a href="#slice-%e8%b3%87%e6%96%99%e7%b5%90%e6%a7%8b" class="anchor">
 &lt;svg class="icon" aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16">
@@ -4960,7 +4960,7 @@ Slice Assignment
 &lt;/div>&lt;p>等同新建一個大小為 10 的陣列，並在陣列填入 &lt;code>5&lt;/code> 個 &lt;code>int&lt;/code> 類型的 zero value，再把 slice 的 len 設為 5， cap 設為 10，並且紀錄陣列第一個元素的指標。&lt;/p>
 &lt;p>用圖示表示：&lt;/p>
 &lt;p>&lt;img loading="lazy"
-src="/images/go-slice-1.png"
+src="https://linxinemily.github.io/images/go-slice-1.png"
 alt="Untitled"
 width=1478
 height="758" />&lt;/p>
@@ -5042,13 +5042,13 @@ Slice Assignment + append 方法的非預期行為
 &lt;/div>&lt;p>如果覺得意外的話，我們就一個個來看究竟發生什麼事吧。&lt;/p>
 &lt;p>首先，在建立 &lt;code>newNums&lt;/code> 之前， &lt;code>nums&lt;/code> 跟底層陣列長這樣：&lt;/p>
 &lt;p>&lt;img loading="lazy"
-src="/images/go-slice-2.png"
+src="https://linxinemily.github.io/images/go-slice-2.png"
 alt="Untitled"
 width=1246
 height="754" />&lt;/p>
 &lt;p>接著到了 &lt;code>newNums := append(nums, 6)&lt;/code> 這行，建立新的 slice 並且加了一個新的元素 6 到陣列：&lt;/p>
 &lt;p>&lt;img loading="lazy"
-src="/images/go-slice-3.png"
+src="https://linxinemily.github.io/images/go-slice-3.png"
 alt="Untitled"
 width=1246
 height="1193" />&lt;/p>
@@ -5056,13 +5056,13 @@ height="1193" />&lt;/p>
 &lt;p>&lt;strong>但其實動到的是底層陣列而不是 &lt;code>num&lt;/code> 這個 slice&lt;/strong>，因為 &lt;code>nums&lt;/code> 本身的 &lt;code>len&lt;/code> 並沒有改變（改變的是 &lt;code>newNums&lt;/code>的 &lt;code>len&lt;/code> ），剛剛前面有提到，當要取超過 slice 長度(len)的元素，會拋出例外。也就是說，在 &lt;code>nums&lt;/code> 這個 slice 雖然本身底層陣列已經遭到改動了，但&lt;strong>因爲我們都是透過 slice 去對底層陣列取值的 ，而 &lt;code>nums&lt;/code> 的 &lt;code>len&lt;/code> 還是 5，根本無法 reach 到 index 為 5 的元素&lt;/strong>。&lt;/p>
 &lt;p>繼續往下到 &lt;code>newNums = append(newNums, 7)&lt;/code> 這一行，底層陣列又多了一個 7：&lt;/p>
 &lt;p>&lt;img loading="lazy"
-src="/images/go-slice-4.png"
+src="https://linxinemily.github.io/images/go-slice-4.png"
 alt="Untitled"
 width=1257
 height="1193" />&lt;/p>
 &lt;p>接著到 &lt;code>nums = append(nums, 7)&lt;/code> 這行，由於 &lt;code>nums&lt;/code> slice 最後一個元素的 index 等於 4，所以 append 方法是會將陣列 index 4+1=5 的位置放入 7 這個值，所以就造成 index 5 原本的值被取代：&lt;/p>
 &lt;p>&lt;img loading="lazy"
-src="/images/go-slice-5.png"
+src="https://linxinemily.github.io/images/go-slice-5.png"
 alt="Untitled"
 width=1257
 height="1193" />&lt;/p>
@@ -5097,7 +5097,7 @@ height="1193" />&lt;/p>
 &lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span>&lt;span class="nx">fmt&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">Println&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">newNums&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="c1">// [1 2 3 4 5 7 7] -&amp;gt; index 5 的值已被覆蓋
 &lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
 &lt;/div>
-&lt;/div>&lt;p>總結，slice 可以視作在陣列之上的一層“片段資訊”，藉由這個片段，我們可以對底層陣列取值、增刪改元素，同時也允許多個片段向同個陣列操作，不同片段取的索引範圍可能也不同。但也是因此必須非常小心，因為只要底層陣列一被改動，所有參考該陣列的 slice 都可能會受到影響。&lt;/p></description></item><item><title>Mock Dynamodb Client(use aws SDK for golang) with testify/mock</title><link>/posts/mock-dynamodb-clientuse-aws-sdk-for-golang-with-testify-mock/</link><pubDate>Thu, 04 Aug 2022 00:00:00 +0000</pubDate><guid>/posts/mock-dynamodb-clientuse-aws-sdk-for-golang-with-testify-mock/</guid><description>
+&lt;/div>&lt;p>總結，slice 可以視作在陣列之上的一層“片段資訊”，藉由這個片段，我們可以對底層陣列取值、增刪改元素，同時也允許多個片段向同個陣列操作，不同片段取的索引範圍可能也不同。但也是因此必須非常小心，因為只要底層陣列一被改動，所有參考該陣列的 slice 都可能會受到影響。&lt;/p></description></item><item><title>Mock Dynamodb Client(use aws SDK for golang) with testify/mock</title><link>https://linxinemily.github.io/posts/mock-dynamodb-clientuse-aws-sdk-for-golang-with-testify-mock/</link><pubDate>Thu, 04 Aug 2022 00:00:00 +0000</pubDate><guid>https://linxinemily.github.io/posts/mock-dynamodb-clientuse-aws-sdk-for-golang-with-testify-mock/</guid><description>
 &lt;p>測試時若涉及第三方服務，往往會需要運用到 Mock （測試替身）的概念，將外部模組代換成一個假的物件，並模擬其行為與回傳值，讓我們能專注於業務邏輯的單元測試。&lt;/p>
 &lt;p>當前的情境為，在 Repository 裡使用 &lt;a href="https://github.com/aws/aws-sdk-go">aws SDK for go&lt;/a> 當中的 dynamodb client 來建立與 dynamodb 的連線以及後續相關對資料庫的操作。但在進行測試時，為了避免每次跑測試都要真的戳資料庫（因在單元測試中，我們只想要確定與 dynamodb client 的互動有&lt;strong>確實呼叫預期的方法、傳入相應的參數&lt;/strong>，而不在乎資料庫到底有沒有寫入資料這種事），會需要將這個 client 替換成 Mock 物件。&lt;/p>
 &lt;p>而 &lt;a href="https://github.com/aws/aws-sdk-go">aws SDK for go&lt;/a> 就提供了一個方便開發者進行 mocking 的 interface：&lt;a href="https://docs.aws.amazon.com/sdk-for-go/api/service/dynamodb/dynamodbiface/">dynamodb interface&lt;/a>&lt;/p>
@@ -5302,7 +5302,7 @@ Ref：&lt;a href="https://stackoverflow.com/a/24546029/10943670">https://stackov
 &lt;li>再來將 Mock client 物件注入 &lt;code>NewDynamondbUserNotificationRepository&lt;/code>&lt;/li>
 &lt;li>呼叫 &lt;code>repo.Store(context.TODO(), mockedInput, batch)&lt;/code> 時，裡面將會呼叫 Mock client 的 &lt;code>PutItem&lt;/code> 方法&lt;/li>
 &lt;/ol>
-&lt;p>以上就是結合 &lt;a href="https://github.com/aws/aws-sdk-go">aws SDK for go&lt;/a> 所提供的 &lt;a href="https://docs.aws.amazon.com/sdk-for-go/api/service/dynamodb/dynamodbiface/">dynamodb interface&lt;/a> 搭配 testify/mock 進行單元測試的方法～&lt;/p></description></item><item><title>Laravel IoC Container 如何解析 Controller method 當中的依賴(DI)</title><link>/posts/laravel-ioc-container-%E5%A6%82%E4%BD%95%E8%A7%A3%E6%9E%90-controller-method-%E7%95%B6%E4%B8%AD%E7%9A%84%E4%BE%9D%E8%B3%B4/</link><pubDate>Mon, 18 Jul 2022 00:00:00 +0000</pubDate><guid>/posts/laravel-ioc-container-%E5%A6%82%E4%BD%95%E8%A7%A3%E6%9E%90-controller-method-%E7%95%B6%E4%B8%AD%E7%9A%84%E4%BE%9D%E8%B3%B4/</guid><description>
+&lt;p>以上就是結合 &lt;a href="https://github.com/aws/aws-sdk-go">aws SDK for go&lt;/a> 所提供的 &lt;a href="https://docs.aws.amazon.com/sdk-for-go/api/service/dynamodb/dynamodbiface/">dynamodb interface&lt;/a> 搭配 testify/mock 進行單元測試的方法～&lt;/p></description></item><item><title>Laravel IoC Container 如何解析 Controller method 當中的依賴(DI)</title><link>https://linxinemily.github.io/posts/laravel-ioc-container-%E5%A6%82%E4%BD%95%E8%A7%A3%E6%9E%90-controller-method-%E7%95%B6%E4%B8%AD%E7%9A%84%E4%BE%9D%E8%B3%B4/</link><pubDate>Mon, 18 Jul 2022 00:00:00 +0000</pubDate><guid>https://linxinemily.github.io/posts/laravel-ioc-container-%E5%A6%82%E4%BD%95%E8%A7%A3%E6%9E%90-controller-method-%E7%95%B6%E4%B8%AD%E7%9A%84%E4%BE%9D%E8%B3%B4/</guid><description>
 &lt;blockquote>
 &lt;p>由於以下所分析的原始碼是舊版(5.5)的 laravel，但因為本文主要探討 IoC 在特定 method 的依賴解析，核心概念是不變的，但可能不同版本在部分程式碼上面會有些許差異。&lt;/p>
 &lt;/blockquote>
@@ -5858,7 +5858,7 @@ d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.
 &lt;ul>
 &lt;li>Laravel: Up &amp;amp; Running (Book) CHAPTER 11. The The Container&lt;/li>
 &lt;li>&lt;a href="https://www.php.net/manual/en/class.reflectionmethod.php">https://www.php.net/manual/en/class.reflectionmethod.php&lt;/a>&lt;/li>
-&lt;/ul></description></item><item><title>Promise.all() 與 async/await</title><link>/posts/promise-all%E8%88%87async-await%E5%92%8Caxios/</link><pubDate>Sun, 30 Jun 2019 14:48:12 +0000</pubDate><guid>/posts/promise-all%E8%88%87async-await%E5%92%8Caxios/</guid><description>
+&lt;/ul></description></item><item><title>Promise.all() 與 async/await</title><link>https://linxinemily.github.io/posts/promise-all%E8%88%87async-await%E5%92%8Caxios/</link><pubDate>Sun, 30 Jun 2019 14:48:12 +0000</pubDate><guid>https://linxinemily.github.io/posts/promise-all%E8%88%87async-await%E5%92%8Caxios/</guid><description>
 &lt;p>本來一直都用迴圈去處理同時發多個 request（很好懂但有點難處理 Error），這次親自來試試 Promise.all() 總算體驗到平行處理非同步的威力（？）於是紀錄一下心得以及和 await + axios 連用時的一些眉角。&lt;/p>
 &lt;!-- more -->
 &lt;h2 id="promiseall-用法">
@@ -5976,7 +5976,7 @@ Promise.all() + axios
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}&lt;/span>
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
 &lt;/div>
-&lt;/div></description></item><item><title>Vue $attrs/$listeners 爺孫組件資料傳遞</title><link>/posts/vue%E7%88%BA%E5%AD%AB%E7%B5%84%E4%BB%B6%E8%B3%87%E6%96%99%E5%82%B3%E9%81%9E/</link><pubDate>Sun, 23 Jun 2019 22:38:02 +0000</pubDate><guid>/posts/vue%E7%88%BA%E5%AD%AB%E7%B5%84%E4%BB%B6%E8%B3%87%E6%96%99%E5%82%B3%E9%81%9E/</guid><description>
+&lt;/div></description></item><item><title>Vue $attrs/$listeners 爺孫組件資料傳遞</title><link>https://linxinemily.github.io/posts/vue%E7%88%BA%E5%AD%AB%E7%B5%84%E4%BB%B6%E8%B3%87%E6%96%99%E5%82%B3%E9%81%9E/</link><pubDate>Sun, 23 Jun 2019 22:38:02 +0000</pubDate><guid>https://linxinemily.github.io/posts/vue%E7%88%BA%E5%AD%AB%E7%B5%84%E4%BB%B6%E8%B3%87%E6%96%99%E5%82%B3%E9%81%9E/</guid><description>
 &lt;p>平常在實作 Vue 組件之間的資料傳遞大部分都是透過 &lt;code>props&lt;/code> 及 &lt;code>$emit&lt;/code>，或是直接經由 Vuex 進行狀態管理，而除了這兩種方法，還有另外一種做法是透過 &lt;code>$attrs&lt;/code> 及 &lt;code>$listenter&lt;/code>。&lt;/p>
 &lt;!-- more -->
 &lt;p>本身也是因為之前偶然在查資料的時候看到這兩個 API，但當時看過別人寫的文章後卻只是似懂非懂，頂多知道有這個東西但不知道如何使用或該用在什麼場合，一直到實作時才真正理解它的用法，但多看多讀總是好的，有一天或許派得上用場。&lt;/p>
@@ -6135,7 +6135,7 @@ d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.
 &lt;/h2>
 &lt;p>所以當多重組件之間需要溝通傳遞，但不想用 Vuex 時，可以嘗試採用這兩種方法：
 * &lt;code>$attrs&lt;/code>：孫組件取得爺組件的資料
-* &lt;code>$listeners&lt;/code>：爺組件直接觸發孫組件的事件&lt;/p></description></item><item><title>使用 vue-echarts 踩的坑</title><link>/posts/%E4%BD%BF%E7%94%A8vue-echarts%E8%B8%A9%E7%9A%84%E5%9D%91/</link><pubDate>Tue, 11 Jun 2019 00:00:00 +0000</pubDate><guid>/posts/%E4%BD%BF%E7%94%A8vue-echarts%E8%B8%A9%E7%9A%84%E5%9D%91/</guid><description>
+* &lt;code>$listeners&lt;/code>：爺組件直接觸發孫組件的事件&lt;/p></description></item><item><title>使用 vue-echarts 踩的坑</title><link>https://linxinemily.github.io/posts/%E4%BD%BF%E7%94%A8vue-echarts%E8%B8%A9%E7%9A%84%E5%9D%91/</link><pubDate>Tue, 11 Jun 2019 00:00:00 +0000</pubDate><guid>https://linxinemily.github.io/posts/%E4%BD%BF%E7%94%A8vue-echarts%E8%B8%A9%E7%9A%84%E5%9D%91/</guid><description>
 &lt;p>第一次使用 Echarts 這套圖形 library，在 vue 中使用 Echarts 可以直接裝 vue-echart，官方文件推薦兩個都裝：&lt;/p>
 &lt;pre tabindex="0">&lt;code>$ npm install echarts vue-echarts
 &lt;/code>&lt;/pre>&lt;p>預料之中的踩了不少坑，在此紀錄一些重點。&lt;/p>

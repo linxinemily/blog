@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Golang on Emmie' s Workspace</title><link>/tags/golang/</link><description>Recent content in Golang on Emmie' s Workspace</description><generator>Hugo</generator><language>en-us</language><lastBuildDate>Sun, 19 May 2024 00:00:00 +0000</lastBuildDate><atom:link href="/tags/golang/index.xml" rel="self" type="application/rss+xml"/><item><title>Validate Facebook Limited Login JWT Token in Golang</title><link>/posts/validate-facebook-limited-login-jwt-token/</link><pubDate>Sun, 19 May 2024 00:00:00 +0000</pubDate><guid>/posts/validate-facebook-limited-login-jwt-token/</guid><description>&lt;h2 id="前提">
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Golang on Emmie' s Workspace</title><link>https://linxinemily.github.io/tags/golang/</link><description>Recent content in Golang on Emmie' s Workspace</description><generator>Hugo</generator><language>en-us</language><lastBuildDate>Sun, 19 May 2024 00:00:00 +0000</lastBuildDate><atom:link href="https://linxinemily.github.io/tags/golang/index.xml" rel="self" type="application/rss+xml"/><item><title>Validate Facebook Limited Login JWT Token in Golang</title><link>https://linxinemily.github.io/posts/validate-facebook-limited-login-jwt-token/</link><pubDate>Sun, 19 May 2024 00:00:00 +0000</pubDate><guid>https://linxinemily.github.io/posts/validate-facebook-limited-login-jwt-token/</guid><description>&lt;h2 id="前提">
  &lt;a href="#%e5%89%8d%e6%8f%90" class="anchor">
  &lt;svg class="icon" aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16">
  &lt;path fill-rule="evenodd"
@@ -8,7 +8,7 @@
  &lt;/a>
  前提
 &lt;/h2>
-&lt;p>Facebook ios sdk 在 17.0.0 版本後，要求必須實作 Limited Login，並使用 JWT token 進行驗證，否則在某些情況下會有非預期錯誤(&lt;a href="https://github.com/facebook/facebook-ios-sdk/issues/2365">ref&lt;/a>)。&lt;/p></description></item><item><title>GraphQL Dataloader 在 Golang 當中的打開方法與原理解析（下）</title><link>/posts/golang-graphql-dataloader-2/</link><pubDate>Sun, 04 Jun 2023 17:44:11 +0800</pubDate><guid>/posts/golang-graphql-dataloader-2/</guid><description>&lt;p>接續上一篇文章：&lt;a href="/posts/golang-graphql-dataloader-1/">GraphQL Dataloader 在 Golang 當中的打開方法與原理解析（上）&lt;/a>。&lt;/p>
+&lt;p>Facebook ios sdk 在 17.0.0 版本後，要求必須實作 Limited Login，並使用 JWT token 進行驗證，否則在某些情況下會有非預期錯誤(&lt;a href="https://github.com/facebook/facebook-ios-sdk/issues/2365">ref&lt;/a>)。&lt;/p></description></item><item><title>GraphQL Dataloader 在 Golang 當中的打開方法與原理解析（下）</title><link>https://linxinemily.github.io/posts/golang-graphql-dataloader-2/</link><pubDate>Sun, 04 Jun 2023 17:44:11 +0800</pubDate><guid>https://linxinemily.github.io/posts/golang-graphql-dataloader-2/</guid><description>&lt;p>接續上一篇文章：&lt;a href="https://linxinemily.github.io/posts/golang-graphql-dataloader-1/">GraphQL Dataloader 在 Golang 當中的打開方法與原理解析（上）&lt;/a>。&lt;/p>
 &lt;p>在進入原始碼之前，先複習一下 use case。首先從 resolver 開始看起：&lt;/p>
 &lt;div class="highlight">&lt;div class="chroma">
 &lt;table class="lntable">&lt;tr>&lt;td class="lntd">
@@ -79,7 +79,7 @@
 &lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="p">}&lt;/span>&lt;span class="w">
 &lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
 &lt;/div>
-&lt;/div>&lt;p>如果有 n 個 rooms，每個 room 有 m 個 features，總共會執行 n * m 次 &lt;code>IconURL&lt;/code> 來取得每個 feature 的 icon URL，也就是執行 m * n 次 &lt;code>GetFeature&lt;/code>。而在每個 &lt;code>GetFeature&lt;/code> 方法當中又呼叫了 &lt;code>loaders.FeatureLoader.Load&lt;/code> 方法，透過回傳的函數取得 feature 資料。&lt;/p></description></item><item><title>GraphQL Dataloader 在 Golang 當中的打開方法與原理解析（上）</title><link>/posts/golang-graphql-dataloader-1/</link><pubDate>Sun, 04 Jun 2023 17:43:11 +0800</pubDate><guid>/posts/golang-graphql-dataloader-1/</guid><description>&lt;h2 id="the-problem">
+&lt;/div>&lt;p>如果有 n 個 rooms，每個 room 有 m 個 features，總共會執行 n * m 次 &lt;code>IconURL&lt;/code> 來取得每個 feature 的 icon URL，也就是執行 m * n 次 &lt;code>GetFeature&lt;/code>。而在每個 &lt;code>GetFeature&lt;/code> 方法當中又呼叫了 &lt;code>loaders.FeatureLoader.Load&lt;/code> 方法，透過回傳的函數取得 feature 資料。&lt;/p></description></item><item><title>GraphQL Dataloader 在 Golang 當中的打開方法與原理解析（上）</title><link>https://linxinemily.github.io/posts/golang-graphql-dataloader-1/</link><pubDate>Sun, 04 Jun 2023 17:43:11 +0800</pubDate><guid>https://linxinemily.github.io/posts/golang-graphql-dataloader-1/</guid><description>&lt;h2 id="the-problem">
  &lt;a href="#the-problem" class="anchor">
  &lt;svg class="icon" aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16">
  &lt;path fill-rule="evenodd"
@@ -122,7 +122,7 @@
 &lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="p">}&lt;/span>&lt;span class="w">
 &lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
 &lt;/div>
-&lt;/div>&lt;p>在資料的關聯上，content 底下有許多 rooms，每個 room 底下都有多個 features。但在資料表結構上，room 有一個 &lt;code>content_id&lt;/code> 欄位，以及一個 &lt;code>features&lt;/code> 欄位，裏面儲存了所有 features 的 id。&lt;/p></description></item><item><title>Golang 的資料庫(整合)測試 Part 2 - 使用 Testcontainers</title><link>/posts/golang-database-testing-with-testcontainer/</link><pubDate>Wed, 17 May 2023 15:43:34 +0800</pubDate><guid>/posts/golang-database-testing-with-testcontainer/</guid><description>&lt;h2 id="前言">
+&lt;/div>&lt;p>在資料的關聯上，content 底下有許多 rooms，每個 room 底下都有多個 features。但在資料表結構上，room 有一個 &lt;code>content_id&lt;/code> 欄位，以及一個 &lt;code>features&lt;/code> 欄位，裏面儲存了所有 features 的 id。&lt;/p></description></item><item><title>Golang 的資料庫(整合)測試 Part 2 - 使用 Testcontainers</title><link>https://linxinemily.github.io/posts/golang-database-testing-with-testcontainer/</link><pubDate>Wed, 17 May 2023 15:43:34 +0800</pubDate><guid>https://linxinemily.github.io/posts/golang-database-testing-with-testcontainer/</guid><description>&lt;h2 id="前言">
  &lt;a href="#%e5%89%8d%e8%a8%80" class="anchor">
  &lt;svg class="icon" aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16">
  &lt;path fill-rule="evenodd"
@@ -132,9 +132,9 @@
  &lt;/a>
  前言
 &lt;/h2>
-&lt;p>上一篇文章 &lt;a href="/posts/golang-database-testing/">Golang 資料庫(整合)測試&lt;/a> 當中提到了在使用真實資料庫作為測試資料庫時，還可以使用 &lt;a href="https://golang.testcontainers.org/">testcontainers&lt;/a> 讓我們能夠在測試當中直接操作 Docker Container，去建立測試時需要的資料庫環境。這樣一來，也不用像一開始那樣，得另外手動配置一個專門拿來跑測試用的資料庫，將測試整合到 CI/CD 流程上時也比較方便。&lt;/p>
-&lt;p>&lt;small> 然後應該是不會有 Part 3 啦。 &lt;/small>&lt;/p></description></item><item><title>Golang 的資料庫(整合)測試</title><link>/posts/golang-database-testing/</link><pubDate>Sun, 23 Apr 2023 00:00:00 +0000</pubDate><guid>/posts/golang-database-testing/</guid><description>&lt;p>&lt;img loading="lazy" 
- src="/images/golang-database-testing-1.png" 
+&lt;p>上一篇文章 &lt;a href="https://linxinemily.github.io/posts/golang-database-testing/">Golang 資料庫(整合)測試&lt;/a> 當中提到了在使用真實資料庫作為測試資料庫時，還可以使用 &lt;a href="https://golang.testcontainers.org/">testcontainers&lt;/a> 讓我們能夠在測試當中直接操作 Docker Container，去建立測試時需要的資料庫環境。這樣一來，也不用像一開始那樣，得另外手動配置一個專門拿來跑測試用的資料庫，將測試整合到 CI/CD 流程上時也比較方便。&lt;/p>
+&lt;p>&lt;small> 然後應該是不會有 Part 3 啦。 &lt;/small>&lt;/p></description></item><item><title>Golang 的資料庫(整合)測試</title><link>https://linxinemily.github.io/posts/golang-database-testing/</link><pubDate>Sun, 23 Apr 2023 00:00:00 +0000</pubDate><guid>https://linxinemily.github.io/posts/golang-database-testing/</guid><description>&lt;p>&lt;img loading="lazy" 
+ src="https://linxinemily.github.io/images/golang-database-testing-1.png" 
  alt="database-testing-in-golang" 
  
  width=1243 
@@ -165,7 +165,7 @@
  &lt;/a>
  前言
 &lt;/h2>
-&lt;p>有經驗的工程師都知道寫測試對於軟體開發的重要性，而當中最基本的就是單元測試。狹義或者說比較嚴格定義的單元測試，如果以 Clean Architechture 的觀點來看，通常是針對 Domain Layer 以及 Application(Use Case) Layer ，也就是不涉及外部服務或套件/架等等的測試。但對於一些小型專案來說，Domain 邏輯通常不多，大部分都是對資料庫的 CRUD 操作，又或者使用的框架原本就把 ORM 跟 Model 綁死在一起，框架提供的測試集成 API 也是直接預設好對真實資料庫的連接，整個專案可能幾乎沒有幾個狹義的單元測試了。&lt;/p></description></item><item><title>Golang struct 轉 JSON 遇到欄位沒有值的問題</title><link>/posts/golang-struct-to-json-and-empty-data/</link><pubDate>Mon, 27 Mar 2023 00:00:00 +0000</pubDate><guid>/posts/golang-struct-to-json-and-empty-data/</guid><description>&lt;p>要將 Go 的 struct 轉成 JSON 格式時，通常都會藉由官方提供的標準函式庫 &lt;code>encoding/json&lt;/code> 去實現，也會借助在 struct 當中為特定欄位定義 &lt;code>json&lt;/code> tag 去標示輸出成 JSON 格式時的命名和規則。在欄位值存在的情況下基本上不會有什麼問題，但如果欄位沒有值，就有可能會輸出非預期結果（簡稱：踩坑）。&lt;/p>
+&lt;p>有經驗的工程師都知道寫測試對於軟體開發的重要性，而當中最基本的就是單元測試。狹義或者說比較嚴格定義的單元測試，如果以 Clean Architechture 的觀點來看，通常是針對 Domain Layer 以及 Application(Use Case) Layer ，也就是不涉及外部服務或套件/架等等的測試。但對於一些小型專案來說，Domain 邏輯通常不多，大部分都是對資料庫的 CRUD 操作，又或者使用的框架原本就把 ORM 跟 Model 綁死在一起，框架提供的測試集成 API 也是直接預設好對真實資料庫的連接，整個專案可能幾乎沒有幾個狹義的單元測試了。&lt;/p></description></item><item><title>Golang struct 轉 JSON 遇到欄位沒有值的問題</title><link>https://linxinemily.github.io/posts/golang-struct-to-json-and-empty-data/</link><pubDate>Mon, 27 Mar 2023 00:00:00 +0000</pubDate><guid>https://linxinemily.github.io/posts/golang-struct-to-json-and-empty-data/</guid><description>&lt;p>要將 Go 的 struct 轉成 JSON 格式時，通常都會藉由官方提供的標準函式庫 &lt;code>encoding/json&lt;/code> 去實現，也會借助在 struct 當中為特定欄位定義 &lt;code>json&lt;/code> tag 去標示輸出成 JSON 格式時的命名和規則。在欄位值存在的情況下基本上不會有什麼問題，但如果欄位沒有值，就有可能會輸出非預期結果（簡稱：踩坑）。&lt;/p>
 &lt;p>首先必須先釐清一件事，所謂的「沒有值」準確來說是指什麼？nil？空陣列？還是空字串？我們都知道在 Golang 當中，不同類型的資料有著不同的「零值(Zero Value)」，比如 string 的零值是空字串、int 的零值是 0。然而「沒有值」比較偏向一個籠統的說法，也不管程式語言的定義，反正就是沒有資料的意思。&lt;em>又或者說以使用者角度來看，因為不管欄位資料裡面是空字串或是 NULL，對他們來說就都是沒資料&lt;/em>。&lt;/p>
 &lt;p>以下會以這個 struct 為範例，分別來看這兩種不同類型(reference v.s. value type)的資料欄位，在面臨沒有資料時會輸出什麼結果。&lt;/p>
 &lt;div class="highlight">&lt;div class="chroma">
@@ -192,7 +192,7 @@
  &lt;/a>
  Reference Type - Slice
 &lt;/h2>
-&lt;p>當欄位類型為 slice 的時候，在不同情況下的「沒有值」，轉換出來的結果也會有所不同。&lt;/p></description></item><item><title>解決使用 oapi-codegen 時報錯 unexpected reference depth</title><link>/posts/resolve-oapi-codegen-error/</link><pubDate>Fri, 17 Mar 2023 00:00:00 +0000</pubDate><guid>/posts/resolve-oapi-codegen-error/</guid><description>&lt;p>最近在研究 &lt;a href="https://github.com/deepmap/oapi-codegen">oapi-codegen&lt;/a> 這套基於 OpenAPI 3.0 自動生成 Go boilerplate 程式的工具，能幫助開發者省下很多撰寫實現 HTTP Server 端口、marshalling 和 unmarshalling 的重複程式碼的時間。當進行系統重構或使用像是文件先行(Documentation-Driven Development)的開發方法時也很適用。
+&lt;p>當欄位類型為 slice 的時候，在不同情況下的「沒有值」，轉換出來的結果也會有所不同。&lt;/p></description></item><item><title>解決使用 oapi-codegen 時報錯 unexpected reference depth</title><link>https://linxinemily.github.io/posts/resolve-oapi-codegen-error/</link><pubDate>Fri, 17 Mar 2023 00:00:00 +0000</pubDate><guid>https://linxinemily.github.io/posts/resolve-oapi-codegen-error/</guid><description>&lt;p>最近在研究 &lt;a href="https://github.com/deepmap/oapi-codegen">oapi-codegen&lt;/a> 這套基於 OpenAPI 3.0 自動生成 Go boilerplate 程式的工具，能幫助開發者省下很多撰寫實現 HTTP Server 端口、marshalling 和 unmarshalling 的重複程式碼的時間。當進行系統重構或使用像是文件先行(Documentation-Driven Development)的開發方法時也很適用。
 在此紀錄一下餵入 OpenAPI 檔案時遇到的問題。&lt;/p>
 &lt;h2 id="問題概述">
  &lt;a href="#%e5%95%8f%e9%a1%8c%e6%a6%82%e8%bf%b0" class="anchor">
@@ -204,7 +204,7 @@
  &lt;/a>
  問題概述
 &lt;/h2>
-&lt;p>使用以下 OpenAPI yaml 檔（擷取片段）&lt;/p></description></item><item><title>讓架在 Netlify 上的網站發文同時向 Google 要求為新頁面建立索引! - 使用 Netlify Functions 串接 Google Indexing API</title><link>/posts/netlify-function-google-indexing-api/</link><pubDate>Mon, 27 Feb 2023 00:00:00 +0000</pubDate><guid>/posts/netlify-function-google-indexing-api/</guid><description>&lt;h2 id="前言">
+&lt;p>使用以下 OpenAPI yaml 檔（擷取片段）&lt;/p></description></item><item><title>讓架在 Netlify 上的網站發文同時向 Google 要求為新頁面建立索引! - 使用 Netlify Functions 串接 Google Indexing API</title><link>https://linxinemily.github.io/posts/netlify-function-google-indexing-api/</link><pubDate>Mon, 27 Feb 2023 00:00:00 +0000</pubDate><guid>https://linxinemily.github.io/posts/netlify-function-google-indexing-api/</guid><description>&lt;h2 id="前言">
  &lt;a href="#%e5%89%8d%e8%a8%80" class="anchor">
  &lt;svg class="icon" aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16">
  &lt;path fill-rule="evenodd"
@@ -214,7 +214,7 @@
  &lt;/a>
  前言
 &lt;/h2>
-&lt;p>自從從 Medium 換過來自架部落格後，SEO 的事情也都得自己處理。但雖然說是「處理」，也只是做一些基本的設定而已，例如裝個 Search Console、提交 sitemap（但其實使用的靜態網站生產器 Hexo 就已經有做到自動生產、更新 sitemap）。唯一的手動作業就是每次發表新文章後，為了加快 Google 索引到新文章頁面的速度，我都還是會進到 Search Console 後台，手動輸入頁面網址要求建立索引（網址審查&amp;gt;測試線上網址&amp;gt;建立索引)。&lt;/p></description></item><item><title>Golang 常見錯誤 - 在迴圈當中引用迭代變數(iterator variable)</title><link>/posts/golang-using-reference-to-loop-iterator-variable/</link><pubDate>Tue, 21 Feb 2023 00:00:00 +0000</pubDate><guid>/posts/golang-using-reference-to-loop-iterator-variable/</guid><description>&lt;p>前幾天閱讀到&lt;a href="https://github.com/golang/go/wiki/CommonMistakes">這篇官方 wiki&lt;/a> ，其中的 &lt;a href="https://github.com/golang/go/wiki/CommonMistakes#using-reference-to-loop-iterator-variable">Using reference to loop iterator variable&lt;/a>，也就是關於在迴圈當中引用迭代變數常犯的錯誤。當中有個範例一開始讓我不是很理解，後來終於搞懂，所以才想說筆記下來，也順便釐清一下思路。&lt;/p>
+&lt;p>自從從 Medium 換過來自架部落格後，SEO 的事情也都得自己處理。但雖然說是「處理」，也只是做一些基本的設定而已，例如裝個 Search Console、提交 sitemap（但其實使用的靜態網站生產器 Hexo 就已經有做到自動生產、更新 sitemap）。唯一的手動作業就是每次發表新文章後，為了加快 Google 索引到新文章頁面的速度，我都還是會進到 Search Console 後台，手動輸入頁面網址要求建立索引（網址審查&amp;gt;測試線上網址&amp;gt;建立索引)。&lt;/p></description></item><item><title>Golang 常見錯誤 - 在迴圈當中引用迭代變數(iterator variable)</title><link>https://linxinemily.github.io/posts/golang-using-reference-to-loop-iterator-variable/</link><pubDate>Tue, 21 Feb 2023 00:00:00 +0000</pubDate><guid>https://linxinemily.github.io/posts/golang-using-reference-to-loop-iterator-variable/</guid><description>&lt;p>前幾天閱讀到&lt;a href="https://github.com/golang/go/wiki/CommonMistakes">這篇官方 wiki&lt;/a> ，其中的 &lt;a href="https://github.com/golang/go/wiki/CommonMistakes#using-reference-to-loop-iterator-variable">Using reference to loop iterator variable&lt;/a>，也就是關於在迴圈當中引用迭代變數常犯的錯誤。當中有個範例一開始讓我不是很理解，後來終於搞懂，所以才想說筆記下來，也順便釐清一下思路。&lt;/p>
 &lt;p>首先，第一個範例滿好理解的：&lt;/p>
 &lt;div class="highlight">&lt;div class="chroma">
 &lt;table class="lntable">&lt;tr>&lt;td class="lntd">
@@ -257,7 +257,7 @@ Addresses: 0x40e020 0x40e020 0x40e020
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
 &lt;/div>
-&lt;/div>&lt;p>這樣一來， 就能保證每次迭代當中的 &lt;code>&amp;amp;i&lt;/code> 就是當前迭代所創造的新變數的指標，不會導致非預期的結果，也讓原本只能存活在 for scope 當中的變數 &lt;code>i&lt;/code> 能夠在迴圈之外被引用，不會在迴圈結束後就被回收。&lt;/p></description></item><item><title>Golang Slice Assignment 與 append 方法</title><link>/posts/golang-slice-assignment-%E8%88%87-append-%E6%96%B9%E6%B3%95/</link><pubDate>Tue, 16 Aug 2022 00:00:00 +0000</pubDate><guid>/posts/golang-slice-assignment-%E8%88%87-append-%E6%96%B9%E6%B3%95/</guid><description>&lt;h2 id="slice-資料結構">
+&lt;/div>&lt;p>這樣一來， 就能保證每次迭代當中的 &lt;code>&amp;amp;i&lt;/code> 就是當前迭代所創造的新變數的指標，不會導致非預期的結果，也讓原本只能存活在 for scope 當中的變數 &lt;code>i&lt;/code> 能夠在迴圈之外被引用，不會在迴圈結束後就被回收。&lt;/p></description></item><item><title>Golang Slice Assignment 與 append 方法</title><link>https://linxinemily.github.io/posts/golang-slice-assignment-%E8%88%87-append-%E6%96%B9%E6%B3%95/</link><pubDate>Tue, 16 Aug 2022 00:00:00 +0000</pubDate><guid>https://linxinemily.github.io/posts/golang-slice-assignment-%E8%88%87-append-%E6%96%B9%E6%B3%95/</guid><description>&lt;h2 id="slice-資料結構">
  &lt;a href="#slice-%e8%b3%87%e6%96%99%e7%b5%90%e6%a7%8b" class="anchor">
  &lt;svg class="icon" aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16">
  &lt;path fill-rule="evenodd"
@@ -284,7 +284,7 @@ Addresses: 0x40e020 0x40e020 0x40e020
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}&lt;/span>
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
 &lt;/div>
-&lt;/div>&lt;p>對應一個 slice 具備的三個屬性：&lt;/p></description></item><item><title>Mock Dynamodb Client(use aws SDK for golang) with testify/mock</title><link>/posts/mock-dynamodb-clientuse-aws-sdk-for-golang-with-testify-mock/</link><pubDate>Thu, 04 Aug 2022 00:00:00 +0000</pubDate><guid>/posts/mock-dynamodb-clientuse-aws-sdk-for-golang-with-testify-mock/</guid><description>&lt;p>測試時若涉及第三方服務，往往會需要運用到 Mock （測試替身）的概念，將外部模組代換成一個假的物件，並模擬其行為與回傳值，讓我們能專注於業務邏輯的單元測試。&lt;/p>
+&lt;/div>&lt;p>對應一個 slice 具備的三個屬性：&lt;/p></description></item><item><title>Mock Dynamodb Client(use aws SDK for golang) with testify/mock</title><link>https://linxinemily.github.io/posts/mock-dynamodb-clientuse-aws-sdk-for-golang-with-testify-mock/</link><pubDate>Thu, 04 Aug 2022 00:00:00 +0000</pubDate><guid>https://linxinemily.github.io/posts/mock-dynamodb-clientuse-aws-sdk-for-golang-with-testify-mock/</guid><description>&lt;p>測試時若涉及第三方服務，往往會需要運用到 Mock （測試替身）的概念，將外部模組代換成一個假的物件，並模擬其行為與回傳值，讓我們能專注於業務邏輯的單元測試。&lt;/p>
 &lt;p>當前的情境為，在 Repository 裡使用 &lt;a href="https://github.com/aws/aws-sdk-go">aws SDK for go&lt;/a> 當中的 dynamodb client 來建立與 dynamodb 的連線以及後續相關對資料庫的操作。但在進行測試時，為了避免每次跑測試都要真的戳資料庫（因在單元測試中，我們只想要確定與 dynamodb client 的互動有&lt;strong>確實呼叫預期的方法、傳入相應的參數&lt;/strong>，而不在乎資料庫到底有沒有寫入資料這種事），會需要將這個 client 替換成 Mock 物件。&lt;/p>
 &lt;p>而 &lt;a href="https://github.com/aws/aws-sdk-go">aws SDK for go&lt;/a> 就提供了一個方便開發者進行 mocking 的 interface：&lt;a href="https://docs.aws.amazon.com/sdk-for-go/api/service/dynamodb/dynamodbiface/">dynamodb interface&lt;/a>&lt;/p>
 &lt;p>我們可以直接使用 &lt;a href="https://docs.aws.amazon.com/sdk-for-go/api/service/dynamodb/dynamodbiface/">dynamodb interface&lt;/a> 作為依賴的類型，也就是說如果要放一個 dynamodb client 在 struct 裡面，原本可能會直接使用 &lt;code>*dynamodb.DynamoDB&lt;/code> 類型：&lt;/p>
