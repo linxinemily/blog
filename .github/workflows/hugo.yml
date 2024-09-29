@@ -33,13 +33,6 @@ jobs:
     env:
       HUGO_VERSION: 0.128.0
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          submodules: true  # 確保子模組被檢出
-
-      - name: Update submodules
-        run: git submodule update --init --recursive
 
       - name: Install Hugo CLI
         run: |
@@ -66,7 +59,10 @@ jobs:
           fi
 
       - name: Initialize Hugo Modules
-        run: hugo mod get -u ./...
+        run: |
+          hugo mod get -u ./...
+          hugo mod get github.com/linxinemily/hugo-tania
+          hugo --minify
 
       - name: Build with Hugo
         env:
