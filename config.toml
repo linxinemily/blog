@@ -1,4 +1,4 @@
-baseurl = "/"
+baseURL = "https://linxinemily.github.io/"
 languageCode = 'en-us'
 title = '''Emmie' s Workspace'''
 theme = "hugo-tania"
