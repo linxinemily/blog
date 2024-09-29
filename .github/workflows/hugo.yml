@@ -1,10 +1,11 @@
 # Sample workflow for building and deploying a Hugo site to GitHub Pages
-name: Deploy Hugo site to Pages
+name: Build and Deploy
 
 on:
   # Runs on pushes targeting the default branch
   push:
-    branches: ["main"]
+    branches:
+      - main
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -30,19 +31,12 @@ jobs:
   # Build job
   build:
     runs-on: ubuntu-latest
-    env:
-      HUGO_VERSION: 0.128.0
     steps:
 
       - name: Checkout repository
         uses: actions/checkout@v2
         with:
           submodules: recursive  # 確保 submodule 被遞歸下載
-
-      - name: Initialize submodules
-        run: |
-          git submodule update --init --recursive
-          git submodule foreach git pull origin main
 
       - name: Set up Hugo
         uses: peaceiris/actions-hugo@v2
